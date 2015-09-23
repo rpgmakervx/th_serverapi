@@ -21,7 +21,12 @@ public class TimeUtil {
 		DateTime dt = dtf.parseDateTime(datetime);
 		return dt.toDate();
 	}
-
+	
+	public static Date getFormatShortDate(String datetime){
+		DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd");
+		DateTime dt = dtf.parseDateTime(datetime);
+		return dt.toDate();
+	}
 	public static String getFormatString(Date date) {
 		 DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		 return format.format(date);

@@ -27,7 +27,6 @@ public class LabelDaoImpl implements LabelDao{
 	@Override
 	public void save(Label label) {
 		// TODO Auto-generated method stub
-//		System.out.println("开始插入"+label.getLabel_name());
 		sessionFactory.getCurrentSession().save(label);
 	}
 
@@ -61,6 +60,12 @@ public class LabelDaoImpl implements LabelDao{
 	public Label findLabelById(String id) {
 		// TODO Auto-generated method stub
 		return (Label) sessionFactory.getCurrentSession().get(Label.class, id);
+	}
+
+	@Override
+	public void saveOrUpdate(Label label) {
+		// TODO Auto-generated method stub
+		sessionFactory.getCurrentSession().saveOrUpdate(label);
 	}
 
 	

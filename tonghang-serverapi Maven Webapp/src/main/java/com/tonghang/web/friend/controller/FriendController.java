@@ -92,9 +92,9 @@ public class FriendController {
 		User friend = userService.findUserById(inviter_id);
 		if(status){
 			friendService.addFriend(my, friend);
-			JPushUtil.push(inviter_id,my.getClient_id(), my.getUsername(),Constant.AGREE_ADD_FRIEND,Constant.AGREE_ADD_MSG);
+			JPushUtil.push(inviter_id,my.getClient_id(), my.getUsername(),Constant.AGREE_ADD_FRIEND,my.getUsername()+Constant.AGREE_ADD_MSG);
 		}else
-			JPushUtil.push(inviter_id,my.getClient_id(), my.getUsername(),Constant.REFUSE_ADD_FRIEND,Constant.REFUSE_ADD_MSG);
+			JPushUtil.push(inviter_id,my.getClient_id(), my.getUsername(),Constant.REFUSE_ADD_FRIEND,my.getUsername()+Constant.REFUSE_ADD_MSG);
 		Map<String,Object> result = friendService.deleteInvitation(inviter_id,invitee_id);
 		friendService.deleteInvitation(invitee_id,inviter_id);
 		return new ResponseEntity<Map<String,Object>>(result,HttpStatus.OK);

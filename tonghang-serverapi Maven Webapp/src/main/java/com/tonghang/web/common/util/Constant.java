@@ -23,6 +23,8 @@ public class Constant extends HuanXinUtil{
 	public static final String ISOLATE_MSG = "您已被管理员封号，详情请咨询客服tonghangtinghang@126.com";
 	public static final String DEISOLATE_MSG = "您已被管理员解封，欢迎您再次使用";
 	public static final String DELETE_TOPIC_MSG = "该话题已被房主解散";
+	public static final String EXCHANGE_CARD_MSG = "请求和您交换名片";
+	public static final String AGREE_CARD_MSG = "同意和您交换名片";
 	
 	public static final String PICTURE_SERVER = "http://114.215.143.83:8080/tonghang-serverapi";
 	public static final String ADV_SERVER = "http://114.215.143.83:8080/tonghang";
@@ -68,4 +70,6 @@ public class Constant extends HuanXinUtil{
 	public static final String ISOLATE = "4";
 	public static final String DEISOLATE = "5";
 	public static final String DELETE_TOPIC = "6";
+	public static final String REQUESTCARD = "7";
+	public static final String AGREEEXCHANGECARD = "7";
 }

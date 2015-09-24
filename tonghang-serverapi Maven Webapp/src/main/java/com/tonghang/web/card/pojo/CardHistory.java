@@ -24,9 +24,6 @@ import com.tonghang.web.user.pojo.User;
 @Entity
 public class CardHistory implements Serializable{
 
-	@Id
-	@GenericGenerator(strategy="assigned",name="idGenerator")
-	@GeneratedValue(generator="idGenerator")
 	@ManyToOne()
 	@JoinColumn(name="client_id",columnDefinition="default null")
 	@ForeignKey(name="null")
@@ -36,6 +33,9 @@ public class CardHistory implements Serializable{
 	private String attribute;
 	@Column(name="value")
 	private String value;
+	@Id
+	@GenericGenerator(strategy="assigned",name="idGenerator")
+	@GeneratedValue(generator="idGenerator")
 	@Column(name="change_at")
 	private Date change_at;
 	public User getUser() {

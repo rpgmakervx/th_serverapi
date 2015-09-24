@@ -12,6 +12,7 @@ import javax.annotation.Resource;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.tonghang.web.common.util.CommonMapUtil;
 import com.tonghang.web.common.util.HuanXinUtil;
@@ -23,6 +24,7 @@ import com.tonghang.web.user.pojo.User;
 import com.tonghang.web.user.util.UserUtil;
 
 @Component("userCache")
+@Transactional
 public class UserCache {
 
 	@Resource(name="userUtil")

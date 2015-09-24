@@ -156,7 +156,7 @@ public class UserService {
 //调修改密码方法
 			EmailUtil.sendEmail(user);
 			user.setPassword(SecurityUtil.getMD5(user.getPassword()));
-			HuanXinUtil.changePassword(SecurityUtil.getMD5(user.getPassword()), user.getClient_id());
+			HuanXinUtil.changePassword(user.getPassword(), user.getClient_id());
 			userDao.saveOrUpdate(user);
 			result.put("success", userUtil.messageToMapConvertor(200, "密码重置请求成功!"));
 		}

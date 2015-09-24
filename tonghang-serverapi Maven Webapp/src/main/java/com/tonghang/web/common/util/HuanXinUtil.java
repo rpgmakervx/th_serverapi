@@ -70,6 +70,7 @@ public class HuanXinUtil {
 	 * @param user(注册时必须的用户信息都封装在这个User中)
 	 */
 	public static void registUser(User user){
+		System.out.println("环信token:  "+HUANXINtoken);
 		HttpHeaders header = new HttpHeaders();
 		Map<String,Object> parts = new HashMap<String, Object>();
 		header.add("Content-Type","application/json");
@@ -121,6 +122,7 @@ public class HuanXinUtil {
 	 */
 	public static void operateFriends(String my,String friend,String httpmethod){
 		HttpHeaders header = new HttpHeaders();
+		System.out.println("环信 token: "+HUANXINtoken);
 		Map<String,Object> parts = new HashMap<String, Object>();
 		header.add("Authorization","Bearer "+HUANXINtoken);
 		HttpEntity<Map<String,Object>> requestEntity=
@@ -128,7 +130,7 @@ public class HuanXinUtil {
 		if ("POST".equalsIgnoreCase(httpmethod)) {
 			DataUtil.postEntity(Constant.HUANXIN_URL+"users/"+my+"/contacts/users/"+friend,requestEntity, Map.class);
 		}else{
-			DataUtil.deleteEntity(Constant.HUANXIN_URL+"users/"+my+"/contacts/users/"+friend);
+			DataUtil.deleteForEntity(Constant.HUANXIN_URL+"users/"+my+"/contacts/users/"+friend,requestEntity);
 		}
 	}
 	
@@ -179,6 +181,7 @@ public class HuanXinUtil {
 	 * @param huanxin_group_id
 	 */
 	public static void deleteTopic(String huanxin_group_id){
+		System.out.println("环信 token: "+HUANXINtoken);
 		HttpHeaders header = new HttpHeaders();
 		header.add("Authorization","Bearer "+HUANXINtoken);
 		System.out.println("deleteTopic:　　"+HUANXINtoken);
@@ -193,6 +196,7 @@ public class HuanXinUtil {
 	 * @param blocker
 	 */
 	public static void blockUser(String owner,String blocker){
+		System.out.println("环信 token: "+HUANXINtoken);
 		HttpHeaders header = new HttpHeaders();
 		List<String> blockerlist = new ArrayList<String>();
 		blockerlist.add(blocker);
@@ -209,6 +213,7 @@ public class HuanXinUtil {
 	 * @param blocker
 	 */
 	public static void deblockUser(String owner,String blocker){
+		System.out.println("环信 token: "+HUANXINtoken);
 		HttpHeaders header = new HttpHeaders();
 		Map<String,Object> parts = new HashMap<String, Object>();
 		header.add("Authorization","Bearer "+HUANXINtoken);

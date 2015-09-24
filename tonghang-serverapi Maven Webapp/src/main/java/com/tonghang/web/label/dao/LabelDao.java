@@ -8,7 +8,7 @@ import com.tonghang.web.user.pojo.User;
 public interface LabelDao {
 
 	public void save(Label label);
-	
+	public void saveOrUpdate(Label label);
 	public List<Label> findLabelByName(String label_name);
 	public List<Label> findLabelByUser(User user);
 	

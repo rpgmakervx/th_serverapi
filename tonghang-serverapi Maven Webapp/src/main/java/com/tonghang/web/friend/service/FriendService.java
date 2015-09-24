@@ -63,7 +63,7 @@ public class FriendService {
 		invitation.setInviter(inviter);
 		invitation.setReason(reason);
 		friendDao.saveInvitation(invitation);
-		JPushUtil.push(invitee_id, inviter_id,inviter.getUsername(),Constant.INVITATION,Constant.INVITATION_MSG);
+		JPushUtil.push(invitee_id, inviter_id,inviter.getUsername(),Constant.INVITATION,inviter.getUsername()+Constant.INVITATION_MSG);
 		Map<String,Object>  result = new HashMap<String, Object>();
 		result.put("success", CommonMapUtil.baseMsgToMapConvertor());
 		return result;
@@ -142,8 +142,8 @@ public class FriendService {
 		User friend = userDao.findUserById(friend_id);
 		userDao.deleteFriend(my, friend);
 		userDao.deleteFriend(friend, my);
-//		HuanXinUtil.operateFriends(my.getClient_id(), friend.getClient_id(), "DELETE");
-//		HuanXinUtil.operateFriends(friend.getClient_id(), my.getClient_id(), "DELETE");
+		HuanXinUtil.operateFriends(my.getClient_id(), friend.getClient_id(), "DELETE");
+		HuanXinUtil.operateFriends(friend.getClient_id(), my.getClient_id(), "DELETE");
 		return result;
 	}
 

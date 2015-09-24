@@ -22,7 +22,6 @@ public class UserDaoImpl implements UserDao {
 	@Override
 	public User findUserById(String client_id) {
 		// TODO Auto-generated method stub
-		System.out.println("走数据库方法：findUserById");
 		User user = (User)sessionFactory.getCurrentSession().get(User.class, client_id);
 		return user;
 	}

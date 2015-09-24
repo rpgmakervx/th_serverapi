@@ -34,7 +34,6 @@ public class Card implements Serializable{
 	@GeneratedValue(generator="idGenerator")
 	@ManyToOne()
 	@JoinColumn(name="client_id",columnDefinition="default null")
-	@ForeignKey(name="null")
 	private User user;
 	
 	@Column(name="companyname")
@@ -122,6 +121,15 @@ public class Card implements Serializable{
 	}
 	public void setExchange_times(int exchange_times) {
 		this.exchange_times = exchange_times;
+	}
+	@Override
+	public String toString() {
+		return "Card [user=" + user + ", companyname=" + companyname
+				+ ", position=" + position + ", work_date=" + work_date
+				+ ", email=" + email + ", phone=" + phone + ", schoolname="
+				+ schoolname + ", major=" + major + ", diploma=" + diploma
+				+ ", school_date=" + school_date + ", exchange_times="
+				+ exchange_times + "]";
 	}
 	
 	

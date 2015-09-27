@@ -4,7 +4,13 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.ForeignKey;
+
+import com.tonghang.web.app.pojo.Apk;
 
 @Entity
 @Table(name="system_config")
@@ -29,8 +35,10 @@ public class SystemConfig {
 	private int third_adv;
 	@Column(name="self_adv_url")
 	private String self_adv_url;
-	@Column(name="app_version")
-	private String app_version;
+	@OneToOne()
+	@JoinColumn(name="app_code")
+	@ForeignKey(name="null")
+	private Apk app;
 	public int getId() {
 		return id;
 	}
@@ -87,13 +95,12 @@ public class SystemConfig {
 		this.use_adv = use_adv;
 	}
 
-	public String getApp_version() {
-		return app_version;
+	public Apk getApp() {
+		return app;
 	}
 
-	public void setApp_version(String app_version) {
-		this.app_version = app_version;
+	public void setApp(Apk app) {
+		this.app = app;
 	}
-	
 	
 }

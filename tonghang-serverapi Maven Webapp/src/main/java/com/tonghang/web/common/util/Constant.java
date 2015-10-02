@@ -28,7 +28,7 @@ public class Constant extends HuanXinUtil{
 	
 	public static final String PICTURE_SERVER = "http://114.215.143.83:8080/tonghang-serverapi";
 	public static final String ADV_SERVER = "http://114.215.143.83:8080/tonghang";
-	public static final String APP_LINK = "http://114.215.143.83:8080/tonghang-serverapi/home/app/Peer_umeng_unsign_signed.apk";
+	public static final String APP_LINK = "http://114.215.143.83:8080/tonghang/home/app/Peer_umeng_unsign_signed.apk";
 	public static final String NATIVE_ADV_SERVER = "http://192.168.23.1:8080/tonghang";
 	public static final String HUANXIN_URL = "http://a1.easemob.com/tonghang/tonghang/";
 	public static final String IMAGE_PATH = "/images/";
@@ -63,13 +63,20 @@ public class Constant extends HuanXinUtil{
 	public static int SUCCEES = 200;
 	
 	/**JPUSH Type*/
+	/**好友邀请的推送标记*/
 	public static final String INVITATION = "0";
+	/**同意添加为好友的推送标记*/
 	public static final String AGREE_ADD_FRIEND = "1";
+	/**拒绝添加为好友的推送标记*/
 	public static final String REFUSE_ADD_FRIEND = "2";
+	/**新人推荐的推送标记*/
 	public static final String RECOMMEND_NEWBE = "3";
+	/**封号的推送标记*/
 	public static final String ISOLATE = "4";
+	/**解封的推送标记*/
 	public static final String DEISOLATE = "5";
+	/**删除话题的推送标记*/
 	public static final String DELETE_TOPIC = "6";
 	public static final String REQUESTCARD = "7";
-	public static final String AGREEEXCHANGECARD = "7";
+	public static final String AGREEEXCHANGECARD = "8";
 }

@@ -1,6 +1,7 @@
 package com.tonghang.web.user.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -86,6 +87,7 @@ public class UserService {
 					usermap.putAll(CommonMapUtil.baseMsgToMapConvertor());
 					result.put("success", usermap);
 					user.setIsonline("1");
+					user.setLast_login_at(new Date());
 					userDao.saveOrUpdate(user);
 				}else if(user.getPassword().equals(password)){
 					Map<String,Object> usermap = userUtil.userToMapConvertor(user,false,user.getClient_id());
@@ -94,6 +96,7 @@ public class UserService {
 					user.setIsonline("1");
 					user.setPassword(SecurityUtil.getMD5(password));
 					HuanXinUtil.changePassword(SecurityUtil.getMD5(password), user.getClient_id());
+					user.setLast_login_at(new Date());
 					userDao.saveOrUpdate(user);
 				}else{
 					result.put("success", CommonMapUtil.baseMsgToMapConvertor("登录失败，用户名或密码错误！", 510));

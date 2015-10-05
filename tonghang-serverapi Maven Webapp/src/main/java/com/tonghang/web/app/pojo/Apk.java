@@ -20,6 +20,8 @@ public class Apk {
 	public String app_code;
 	@Column(name="app_version")
 	public String app_version;
+	@Column(name="context")
+	public String context;
 	@Column(name="upload_at")
 	public Date upload_at;
 	public String getApp_code() {
@@ -33,6 +35,12 @@ public class Apk {
 	}
 	public void setApp_version(String app_version) {
 		this.app_version = app_version;
+	}
+	public String getContext() {
+		return context;
+	}
+	public void setContext(String context) {
+		this.context = context;
 	}
 	public Date getUpload_at() {
 		return upload_at;

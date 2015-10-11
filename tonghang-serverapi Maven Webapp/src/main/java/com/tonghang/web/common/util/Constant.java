@@ -25,9 +25,11 @@ public class Constant extends HuanXinUtil{
 	public static final String DELETE_TOPIC_MSG = "该话题已被房主解散";
 	public static final String EXCHANGE_CARD_MSG = "请求和您交换名片";
 	public static final String AGREE_CARD_MSG = "同意和您交换名片";
+	public static final String SM_VALID_MSG = "您的注册验证码是：";
 	
 	public static final String PICTURE_SERVER = "http://114.215.143.83:8080/tonghang-serverapi";
 	public static final String ADV_SERVER = "http://114.215.143.83:8080/tonghang";
+	public static final String CHUANGLAN_URL ="http://222.73.117.158/msg/HttpBatchSendSM";
 	public static final String APP_LINK = "http://114.215.143.83:8080/tonghang/home/app/Peer_umeng_unsign_signed.apk";
 	public static final String NATIVE_ADV_SERVER = "http://192.168.23.1:8080/tonghang";
 	public static final String HUANXIN_URL = "http://a1.easemob.com/tonghang/tonghang/";
@@ -40,6 +42,9 @@ public class Constant extends HuanXinUtil{
 	public static final String CLIENT_ID = "YXA6zpmeoHX8EeS5LFOLSMeZrA";
 	public static final String CLIENT_SECRET = "YXA62xaG_k1OsmSdGYtjIKE3XbO0ahw";
 	public static final String CHANGER_ID = "0ba20eab27544eb8867e543b4db8c13e";
+	public static final String CHUANGLAN_USER = "jiekou-clcs-05";
+	public static final String CHUANGLAN_PWD = "Tch147269";
+	
 	public static final int PAGESIZE = 10;
 	
 	public static String CREATEGROUP = "server create group";

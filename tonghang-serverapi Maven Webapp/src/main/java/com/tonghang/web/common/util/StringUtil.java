@@ -39,6 +39,27 @@ public class StringUtil {
 		return password;
 	}
 	
+	public String buildValidRandomCode(String phonenumber){
+		String base = "0123456789";
+		String result = "";
+		StringBuffer salt_part = new StringBuffer();
+		StringBuffer base_part = new StringBuffer();
+		Random rand = new Random();
+		String salt = phonenumber.substring(rand.nextInt(phonenumber.length()-1), phonenumber.length());
+		int salt_len = salt.length();
+		for(int i=0;i<salt_len;i++){
+			if(i>3)
+				break;
+			salt_part.append(salt.charAt(rand.nextInt(salt_len)));
+		}
+		for(int i=0;i<6-salt_len;i++){
+			if(i>3)
+				break;
+			base_part.append(base.charAt(rand.nextInt(base.length())));
+		}
+		return salt_part.toString()+base_part.toString();
+	}
+	
 	/**
 	 * TOKEN通过email生成
 	 */

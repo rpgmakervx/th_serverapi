@@ -38,6 +38,8 @@ public class Card implements Serializable{
 	
 	@Column(name="companyname")
 	private String companyname;
+	@Column(name="realname")
+	private String realname;
 	@Column(name="position")
 	private String position;
 	@Column(name="work_date")
@@ -61,6 +63,13 @@ public class Card implements Serializable{
 	}
 	public void setUser(User user) {
 		this.user = user;
+	}
+	
+	public String getRealname() {
+		return realname;
+	}
+	public void setRealname(String realname) {
+		this.realname = realname;
 	}
 	public String getCompanyname() {
 		return companyname;

@@ -39,7 +39,7 @@ public class StringUtil {
 		return password;
 	}
 	
-	public String buildValidRandomCode(String phonenumber){
+	public static String buildValidRandomCode(String phonenumber){
 		String base = "0123456789";
 		String result = "";
 		StringBuffer salt_part = new StringBuffer();

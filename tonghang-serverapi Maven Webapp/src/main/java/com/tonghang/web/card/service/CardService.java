@@ -62,7 +62,9 @@ public class CardService {
 		for(String attr_name:key.keySet()){
 			System.out.println("attribute_name : "+attr_name);
 			if(attr_name!=null){
-				if(attr_name.equals("companyname")){
+				if(attr_name.equals("realname")){
+					c.setCompanyname((String) key.get("realname"));
+				}else if(attr_name.equals("companyname")){
 					c.setCompanyname((String) key.get("companyname"));
 				}else if(attr_name.equals("position")){
 					c.setPosition((String)key.get("position"));

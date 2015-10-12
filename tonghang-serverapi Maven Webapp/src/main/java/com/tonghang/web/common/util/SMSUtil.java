@@ -14,7 +14,7 @@ public class SMSUtil {
 		parts.put("account", Constant.CHUANGLAN_USER);
 		parts.put("pswd", Constant.CHUANGLAN_PWD);
 		parts.put("mobile", phonenumber);
-		parts.put("msg", Constant.SM_VALID_MSG);
+		parts.put("msg", Constant.SM_VALID_MSG+StringUtil.buildValidRandomCode(phonenumber));
 		HttpEntity<Map<String,Object>> requestEntity=
 				new HttpEntity<Map<String,Object>>(parts);
 		DataUtil.templateGetExchange(Constant.CHUANGLAN_URL, requestEntity, Map.class);

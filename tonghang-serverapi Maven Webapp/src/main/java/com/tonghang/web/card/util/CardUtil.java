@@ -13,6 +13,7 @@ public class CardUtil {
 		Map<String,Object> cardmap = new HashMap<String, Object>();
 		Map<String,Object> result = new HashMap<String, Object>();
 		cardmap.put("companyname", card.getCompanyname());
+		cardmap.put("realname", card.getRealname());
 		cardmap.put("position", card.getPosition());
 		cardmap.put("work_date", card.getWork_date());
 		cardmap.put("email", card.getEmail());

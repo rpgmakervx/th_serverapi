@@ -51,6 +51,7 @@ public class CardController {
 		card.setCompanyname((String) map.get("companyname"));
 		card.setDiploma((String)map.get("diploma"));
 		card.setEmail((String) map.get("email"));
+		card.setRealname((String)map.get("realname"));
 		card.setExchange_times(0);
 		card.setWork_date(TimeUtil.getFormatShortDate((String)map.get("work_date")));
 		card.setMajor((String)map.get("major"));

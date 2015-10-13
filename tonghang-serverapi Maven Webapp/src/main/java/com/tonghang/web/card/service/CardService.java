@@ -1,7 +1,9 @@
 package com.tonghang.web.card.service;
 
+import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -59,38 +61,41 @@ public class CardService {
 		Card c = cardDao.findCardByClient_id(client_id);
 		User user = userService.findUserById(client_id);
 		CardHistory history = new CardHistory();
-		for(String attr_name:key.keySet()){
-			System.out.println("attribute_name : "+attr_name);
-			if(attr_name!=null){
-				if(attr_name.equals("realname")){
-					c.setCompanyname((String) key.get("realname"));
-				}else if(attr_name.equals("companyname")){
-					c.setCompanyname((String) key.get("companyname"));
-				}else if(attr_name.equals("position")){
-					c.setPosition((String)key.get("position"));
-				}else if(attr_name.equals("work_date")){
-					c.setWork_date(TimeUtil.getFormatShortDate((String)key.get("work_date")));
-				}else if(attr_name.equals("email")){
-					c.setEmail((String)key.get("email"));
-				}else if(attr_name.equals("phone")){
-					c.setPhone((String)key.get("phone"));
-				}else if(attr_name.equals("schoolname")){
-					c.setSchoolname((String)key.get("schoolname"));
-				}else if(attr_name.equals("major")){
-					c.setMajor((String)key.get("major"));
-				}else if(attr_name.equals("diploma")){
-					c.setDiploma((String)key.get("diploma"));
-				}else if(attr_name.equals("school_date")){
-					c.setSchool_date(TimeUtil.getFormatShortDate((String)key.get("school_date")));
-				}
-				history.setAttribute(attr_name);
-				history.setValue((String)key.get(attr_name));
-				history.setUser(user);
-				history.setChange_at(new Date());
-			}
-		}
+		if(!c.getRealname().equals((String) key.get("realname")))
+			history.setRealname((String) key.get("realname"));
+		c.setRealname((String) key.get("realname"));
+		if(!c.getCompanyname().equals((String) key.get("companyname")))
+			history.setCompanyname((String) key.get("companyname"));
+		c.setCompanyname((String) key.get("companyname"));
+		if(!c.getPosition().equals((String) key.get("position")))
+			history.setPosition((String) key.get("position"));
+		c.setPosition((String)key.get("position"));
+		if(!c.getWork_date().equals((String)key.get("work_date")))
+			history.setWork_date((String)key.get("work_date"));
+		c.setWork_date((String)key.get("work_date"));
+		if(!c.getEmail().equals((String)key.get("email")))
+			history.setEmail((String)key.get("email"));
+		c.setEmail((String)key.get("email"));
+		if(!c.getPhone().equals((String)key.get("phone")))
+			history.setPhone((String)key.get("phone"));
+		c.setPhone((String)key.get("phone"));
+		if(!c.getSchoolname().equals((String)key.get("schoolname")))
+			history.setSchoolname((String)key.get("schoolname"));
+		c.setSchoolname((String)key.get("schoolname"));
+		if(!c.getMajor().equals((String)key.get("major")))
+			history.setMajor((String)key.get("major"));
+		c.setMajor((String)key.get("major"));
+		if(!c.getDiploma().equals((String)key.get("diploma")))
+			history.setDiploma((String)key.get("diploma"));
+		c.setDiploma((String)key.get("diploma"));
+		if(!c.getSchool_date().equals((String)key.get("school_date")))
+			history.setSchool_date((String)key.get("school_date"));
+		c.setSchool_date((String)key.get("school_date"));
+		history.setUser(user);
+		history.setChange_at(TimeUtil.getFormatString(new Date()));
 		cardDao.saveOrUpdate(c);
 		cardDao.addHistory(history);
+		System.out.println("update successfully");
 		success.put("success", CommonMapUtil.baseMsgToMapConvertor());
 		return success;
 	}
@@ -155,4 +160,175 @@ public class CardService {
 		return success;
 	}
 	
+	private void setCardAttribute(Map<String,Object> key){
+		
+		
+	}
+	
+	private void setCardHistoryAttribute(CardHistory history){
+		
+	}
+	
 }
+
+class Attribute{
+	protected Card card;
+	protected CardHistory history;
+	public Attribute(){
+		
+	}
+	void setCardAttribute(String attr){
+	}
+	void setCardHisoryAttribute(String attr){
+	}
+}
+class RealName extends Attribute {
+	
+	@Override
+	void setCardAttribute(String attr){
+		super.card.setRealname(attr);
+	}
+	@Override
+	void setCardHisoryAttribute(String attr){
+		super.history.setRealname(attr);
+	}
+}
+class CompanyName extends Attribute{
+
+	@Override
+	void setCardAttribute(String attr) {
+		// TODO Auto-generated method stub
+		super.card.setCompanyname(attr);
+	}
+
+	@Override
+	void setCardHisoryAttribute(String attr) {
+		// TODO Auto-generated method stub
+		super.history.setCompanyname(attr);
+	}
+}
+class Position extends Attribute{
+
+	@Override
+	void setCardAttribute(String attr) {
+		// TODO Auto-generated method stub
+		super.card.setPosition(attr);
+	}
+
+	@Override
+	void setCardHisoryAttribute(String attr) {
+		// TODO Auto-generated method stub
+		super.history.setPosition(attr);
+	}
+}
+class WorkDate extends Attribute{
+
+	@Override
+	void setCardAttribute(String attr) {
+		// TODO Auto-generated method stub
+		super.card.setWork_date(attr);
+	}
+
+	@Override
+	void setCardHisoryAttribute(String attr) {
+		// TODO Auto-generated method stub
+		super.history.setWork_date(attr);
+	}
+}
+class Email extends Attribute{
+
+	@Override
+	void setCardAttribute(String attr) {
+		// TODO Auto-generated method stub
+		super.card.setEmail(attr);
+	}
+
+	@Override
+	void setCardHisoryAttribute(String attr) {
+		// TODO Auto-generated method stub
+		super.history.setEmail(attr);
+	}
+}
+class Phone extends Attribute{
+
+	@Override
+	void setCardAttribute(String attr) {
+		// TODO Auto-generated method stub
+		super.card.setPhone(attr);
+	}
+
+	@Override
+	void setCardHisoryAttribute(String attr) {
+		// TODO Auto-generated method stub
+		super.history.setPhone(attr);
+	}
+}
+class SchoolName  extends Attribute{
+
+	@Override
+	void setCardAttribute(String attr) {
+		// TODO Auto-generated method stub
+		super.card.setSchoolname(attr);
+	}
+
+	@Override
+	void setCardHisoryAttribute(String attr) {
+		// TODO Auto-generated method stub
+		super.history.setSchoolname(attr);
+	}
+}
+class Major extends Attribute{
+
+	@Override
+	void setCardAttribute(String attr) {
+		// TODO Auto-generated method stub
+		super.card.setMajor(attr);
+	}
+
+	@Override
+	void setCardHisoryAttribute(String attr) {
+		// TODO Auto-generated method stub
+		super.history.setMajor(attr);
+	}
+}
+class Diploma extends Attribute{
+
+	@Override
+	void setCardAttribute(String attr) {
+		// TODO Auto-generated method stub
+		super.card.setDiploma(attr);
+	}
+
+	@Override
+	void setCardHisoryAttribute(String attr) {
+		// TODO Auto-generated method stub
+		super.history.setDiploma(attr);
+	}
+}
+class SchoolDate extends Attribute{
+
+	@Override
+	void setCardAttribute(String attr) {
+		// TODO Auto-generated method stub
+		super.card.setSchool_date(attr);
+	}
+
+	@Override
+	void setCardHisoryAttribute(String attr) {
+		// TODO Auto-generated method stub
+		super.history.setSchool_date(attr);
+	}
+}
+class Strategy{
+	
+	void setCardAttribute(Attribute attr,String card) {
+		// TODO Auto-generated method stub
+		attr.setCardAttribute(card);
+	}
+	void setCardHisoryAttribute(Attribute attr,String history) {
+		// TODO Auto-generated method stub
+		attr.setCardHisoryAttribute(history);
+	}
+	
+}
+

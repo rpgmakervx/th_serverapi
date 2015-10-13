@@ -43,7 +43,7 @@ public class Card implements Serializable{
 	@Column(name="position")
 	private String position;
 	@Column(name="work_date")
-	private Date work_date;
+	private String work_date;
 	@Column(name="email")
 	private String email;
 	@Column(name="phone")
@@ -55,9 +55,11 @@ public class Card implements Serializable{
 	@Column(name="diploma")
 	private String diploma;
 	@Column(name="school_date")
-	private Date school_date;
+	private String school_date;
 	@Column(name="exchange_times")
 	private int exchange_times;
+	@Column(name="chat_times")
+	private int chat_times;
 	public User getUser() {
 		return user;
 	}
@@ -83,10 +85,10 @@ public class Card implements Serializable{
 	public void setPosition(String position) {
 		this.position = position;
 	}
-	public Date getWork_date() {
+	public String getWork_date() {
 		return work_date;
 	}
-	public void setWork_date(Date work_date) {
+	public void setWork_date(String work_date) {
 		this.work_date = work_date;
 	}
 	public String getEmail() {
@@ -119,10 +121,10 @@ public class Card implements Serializable{
 	public void setDiploma(String diploma) {
 		this.diploma = diploma;
 	}
-	public Date getSchool_date() {
+	public String getSchool_date() {
 		return school_date;
 	}
-	public void setSchool_date(Date school_date) {
+	public void setSchool_date(String school_date) {
 		this.school_date = school_date;
 	}
 	public int getExchange_times() {
@@ -130,6 +132,13 @@ public class Card implements Serializable{
 	}
 	public void setExchange_times(int exchange_times) {
 		this.exchange_times = exchange_times;
+	}
+	
+	public int getChat_times() {
+		return chat_times;
+	}
+	public void setChat_times(int chat_times) {
+		this.chat_times = chat_times;
 	}
 	@Override
 	public String toString() {

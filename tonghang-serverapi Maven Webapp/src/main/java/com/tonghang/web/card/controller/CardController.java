@@ -53,11 +53,11 @@ public class CardController {
 		card.setEmail((String) map.get("email"));
 		card.setRealname((String)map.get("realname"));
 		card.setExchange_times(0);
-		card.setWork_date(TimeUtil.getFormatShortDate((String)map.get("work_date")));
+		card.setWork_date((String)map.get("work_date"));
 		card.setMajor((String)map.get("major"));
 		card.setPhone((String)map.get("phone"));
 		card.setPosition((String)map.get("position"));
-		card.setSchool_date(TimeUtil.getFormatShortDate((String)map.get("school_date")));
+		card.setSchool_date((String)map.get("school_date"));
 		card.setSchoolname((String)map.get("schoolname"));
 		card.setUser(user);
 		return new ResponseEntity<Map<String,Object>>(cardService.addCard(card),HttpStatus.OK);
@@ -70,6 +70,7 @@ public class CardController {
 	 * @throws JsonParseException
 	 * @throws JsonMappingException
 	 * @throws IOException
+	 * notice:现在每个请求的param中都带着token参数，直接获取会把token一并获取。
 	 */
 	@RequestMapping("{client_id}/update")
 	@ResponseBody public ResponseEntity<Map<String,Object>> updateCard(@PathVariable String client_id,@RequestParam String mapstr) throws JsonParseException, JsonMappingException, IOException{

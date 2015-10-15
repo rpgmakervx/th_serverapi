@@ -26,6 +26,7 @@ import com.tonghang.web.common.util.Constant;
 import com.tonghang.web.common.util.EmailUtil;
 import com.tonghang.web.common.util.HuanXinUtil;
 import com.tonghang.web.common.util.JPushUtil;
+import com.tonghang.web.common.util.SMSUtil;
 import com.tonghang.web.common.util.SecurityUtil;
 import com.tonghang.web.common.util.StringUtil;
 import com.tonghang.web.friend.dao.FriendDao;
@@ -61,6 +62,8 @@ public class UserService {
 	private UserUtil userUtil;
 	@Resource(name="userCache")
 	private UserCache cache;
+	@Resource(name="smsUtil")
+	private SMSUtil sms;
 	
 	/**
 	 * 用户登录
@@ -535,6 +538,15 @@ public class UserService {
 		User user = findUserById(client_id);
 		locationService.saveLocation(user, x_point, y_point);
 	}
-	
+	/**
+	 * 业务功能：获发送随机验证码给客户端并响应给客户端（验证码校验逻辑目前放在客户端）
+	 * @param phonenumber	客户端手机号
+	 * @return
+	 */
+	public Map<String,Object> generateValideCode(String phonenumber){
+		Map<String,Object>  result = CommonMapUtil.baseMsgToMapConvertor();
+		result.put("validecode", sms.sendSM(phonenumber));
+		return result;
+	}
 	
 }

@@ -61,7 +61,8 @@ public class SystemService {
 	 * notice:记得图片IP地址要改成远端服务器
 	 */
 	public Map<String,Object> getSystemConfig(){
-		Map<String,Object> result = CommonMapUtil.baseMsgToMapConvertor();
+		Map<String,Object> msg = CommonMapUtil.baseMsgToMapConvertor();
+		Map<String,Object> result = new HashMap<String, Object>();
 		Map<String,Object> sysmsg= new HashMap<String, Object>();
 		Map<String,Object> config = new HashMap<String, Object>();
 		SystemConfig system = systemDao.findSystemConfig();
@@ -75,9 +76,11 @@ public class SystemService {
 		config.put("self_img", Constant.ADV_SERVER+Constant.ADV_PATH+Constant.ADV_NAME+ system.getSelf_adv_url()+".jpg");
 		config.put("app_link", Constant.APP_LINK);
 		config.put("app_code", system.getApp().getApp_code());
+		config.put("app_version", system.getApp().getApp_version());
 		sysmsg.put("system", config);
-		result.put("success", sysmsg);
-		System.out.println("系统参数详情："+config);
+		msg.putAll(sysmsg);
+		result.put("success", msg);
+		System.out.println("系统参数详情："+sysmsg);
 		return result;
 	}
 	

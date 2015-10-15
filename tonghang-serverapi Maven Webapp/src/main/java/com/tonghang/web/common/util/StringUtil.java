@@ -1,5 +1,9 @@
 package com.tonghang.web.common.util;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
 import javax.crypto.Mac;
@@ -39,25 +43,46 @@ public class StringUtil {
 		return password;
 	}
 	
+	/**
+	 * 
+	 * 加密手段：将手机号随机排序后，随机取出3位，然后从乱序的0~9中随机取3个数字。
+	 * 组合后再将这个组合用shuffle函数打散作为随机数。
+	 * @param phonenumber	手机号
+	 * @return
+	 */
 	public static String buildValidRandomCode(String phonenumber){
-		String base = "0123456789";
+		String base = "6729013854";
+		String timestamp = (new Date().getTime()+"");
+		timestamp = timestamp.substring(8, timestamp.length());
+		String mix = "";
 		String result = "";
 		StringBuffer salt_part = new StringBuffer();
 		StringBuffer base_part = new StringBuffer();
 		Random rand = new Random();
-		String salt = phonenumber.substring(rand.nextInt(phonenumber.length()-1), phonenumber.length());
+		String salt = "";
+		for(int i=0;i<phonenumber.length();i++){
+			salt += phonenumber.charAt(rand.nextInt(phonenumber.length()));
+		}
 		int salt_len = salt.length();
 		for(int i=0;i<salt_len;i++){
-			if(i>3)
+			if(i>2)
 				break;
 			salt_part.append(salt.charAt(rand.nextInt(salt_len)));
 		}
-		for(int i=0;i<6-salt_len;i++){
-			if(i>3)
+		System.out.println("salt_part: "+salt_part);
+		for(int i=0;i<6-salt_part.length();i++){
+			if(i>2)
 				break;
 			base_part.append(base.charAt(rand.nextInt(base.length())));
 		}
-		return salt_part.toString()+base_part.toString();
+		System.out.println("base_part: "+base_part);
+		mix =salt_part.toString()+base_part.toString();
+		List<String> randlist = Arrays.asList(mix.split(""));
+		Collections.shuffle(randlist);
+		for(String s:randlist){
+			result += s;
+		}
+		return result;
 	}
 	
 	/**

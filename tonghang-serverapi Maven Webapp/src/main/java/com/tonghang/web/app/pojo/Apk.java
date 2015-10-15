@@ -17,17 +17,17 @@ public class Apk {
 	@Id
 	@GenericGenerator(strategy="assigned",name="idGenerator")
 	@GeneratedValue(generator="idGenerator")
-	public String app_code;
+	public int app_code;
 	@Column(name="app_version")
 	public String app_version;
 	@Column(name="context")
 	public String context;
 	@Column(name="upload_at")
 	public Date upload_at;
-	public String getApp_code() {
+	public int getApp_code() {
 		return app_code;
 	}
-	public void setApp_code(String app_code) {
+	public void setApp_code(int app_code) {
 		this.app_code = app_code;
 	}
 	public String getApp_version() {

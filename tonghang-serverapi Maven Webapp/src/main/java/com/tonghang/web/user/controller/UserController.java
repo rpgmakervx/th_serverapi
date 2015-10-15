@@ -385,7 +385,7 @@ public class UserController extends BaseController{
 		return new ResponseEntity<Map<String,Object>>(userService.recommend(client_id,true,(Integer)map.get("pageindex")), HttpStatus.OK);
 	}
 	/**
-	 * 
+	 * 业务功能：修改个人地理位置信息
 	 * @return
 	 * @throws IOException 
 	 * @throws JsonMappingException 
@@ -401,6 +401,12 @@ public class UserController extends BaseController{
 		System.out.println("地理位置信息：X= "+x_point+" Y= "+y_point);
 		userService.saveUsersLocation(client_id, x_point, y_point);
 		return new ResponseEntity<Map<String,Object>>(result,HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="phone/regist")
+	public ResponseEntity<Map<String,Object>> registPhone(@RequestParam String mapstr) throws JsonParseException, JsonMappingException, IOException{
+		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
+		return new ResponseEntity<Map<String,Object>>(userService.generateValideCode((String)map.get("phone")),HttpStatus.OK);
 	}
 	
 }

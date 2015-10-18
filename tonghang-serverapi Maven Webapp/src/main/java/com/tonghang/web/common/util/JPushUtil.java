@@ -29,7 +29,10 @@ public class JPushUtil {
 		map2.put("id", from_id);
 		map2.put("name", name);
 		map2.put("type", type);
+		//to_id 测试用 后期可以删除.
+		map2.put("to_id", to_id);
 		map2.put("message", message);
+		map2.put("image", Constant.IMAGE_PATH+from_id+"/"+Constant.IMAGE_NAME);
 		Map<String, Object> map3 = new HashMap<String, Object>();
 		map3.put("msg_content", map2);
 		parts.put("message", map3);

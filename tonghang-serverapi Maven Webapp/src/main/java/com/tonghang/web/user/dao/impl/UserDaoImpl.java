@@ -158,4 +158,12 @@ public class UserDaoImpl implements UserDao {
 		return users;
 	}
 
+	@Override
+	public User findUserByPhone(String phone) {
+		// TODO Auto-generated method stub
+		User user = (User) sessionFactory.getCurrentSession().createQuery("from User as user where user.phone = :phone")
+				.setParameter("phone", phone).uniqueResult();
+		return user;
+	}
+
 }

@@ -28,7 +28,9 @@ public class SystemConfig {
 	
 	@Column(name="can_upgrade_silently")
 	private int can_upgrade_silence;
-
+	
+	@Column(name="can_upgrade")
+	private int can_upgrade;
 	@Column(name="use_adv")
 	private int use_adv;
 	@Column(name="third_adv")
@@ -45,6 +47,14 @@ public class SystemConfig {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public int getCan_upgrade() {
+		return can_upgrade;
+	}
+
+	public void setCan_upgrade(int can_upgrade) {
+		this.can_upgrade = can_upgrade;
 	}
 
 	public int getCan_regist() {

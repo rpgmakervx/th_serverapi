@@ -70,6 +70,7 @@ public class SystemService {
 		config.put("can_register_user", system.getCan_regist()==1?true:false);
 		config.put("can_login", system.getCan_login()==1?true:false);
 		config.put("can_upgrade_silently", system.getCan_upgrade_silence()==1?true:false);
+		config.put("can_upgrade", system.getCan_upgrade()==1?true:false);
 		config.put("use_adv", system.getUse_adv()==1?true:false);
 		config.put("third_adv", system.getThird_adv()==1?true:false);
 		config.put("self_adv_url", system.getSelf_adv_url());

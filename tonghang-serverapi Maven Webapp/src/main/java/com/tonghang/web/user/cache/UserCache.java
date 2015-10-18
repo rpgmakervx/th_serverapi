@@ -85,7 +85,7 @@ public class UserCache {
 	 * @param byDistance
 	 * @return
 	 */
-	@Cacheable(value="com.tonghang.web.user.cache.UserCache.getSearchLabelCache",key="#client_id+#byDistance")
+	@Cacheable(value="com.tonghang.web.user.cache.UserCache.getSearchLabelCache",key="#client_id+#byDistance+#label_name")
 	public List<Map<String,Object>> getSearchLabelCache(String client_id,String label_name,boolean  byDistance){
 		List<Label> labels = labelDao.findLabelByName(label_name);
 		Set<User> userss = new HashSet<User>(); 
@@ -101,7 +101,7 @@ public class UserCache {
 		return us;
 	}
 	
-	@Cacheable(value="com.tonghang.web.user.cache.UserCache.getSearchNickNameCache",key="#client_id+#byDistance")
+	@Cacheable(value="com.tonghang.web.user.cache.UserCache.getSearchNickNameCache",key="#client_id+#byDistance+#username")
 	public List<Map<String,Object>> getSearchNickNameCache(String client_id,String username,boolean byDistance, int page){
 		List<User> users = userDao.findUserByUsername(username, page);
 		Map<String,Object> result = byDistance?userUtil.usersToMapSortByDistanceConvertor(users, client_id):userUtil.usersToMapConvertor(users,client_id);

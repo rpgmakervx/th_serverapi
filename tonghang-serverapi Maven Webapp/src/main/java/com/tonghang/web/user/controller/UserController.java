@@ -402,11 +402,18 @@ public class UserController extends BaseController{
 		userService.saveUsersLocation(client_id, x_point, y_point);
 		return new ResponseEntity<Map<String,Object>>(result,HttpStatus.OK);
 	}
-	
+	/**
+	 * 业务功能：注册过程中手机验证码校验，并存储非用户的手机号。
+	 * @param mapstr
+	 * @return
+	 * @throws JsonParseException
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
 	@RequestMapping(value="phone/regist")
 	public ResponseEntity<Map<String,Object>> registPhone(@RequestParam String mapstr) throws JsonParseException, JsonMappingException, IOException{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
-		return new ResponseEntity<Map<String,Object>>(userService.generateValideCode((String)map.get("phone")),HttpStatus.OK);
+		return new ResponseEntity<Map<String,Object>>(userService.validePhone_regist((String)map.get("phone"),(String)map.get("zone"),(String)map.get("code")),HttpStatus.OK);
 	}
 	
 }

@@ -539,13 +539,22 @@ public class UserService {
 		locationService.saveLocation(user, x_point, y_point);
 	}
 	/**
-	 * 业务功能：获发送随机验证码给客户端并响应给客户端（验证码校验逻辑目前放在客户端）
+	 * 业务功能：向share sdk 发送请求校验验证码，将校验信息反馈给客户端。
+	 * 校验前先检查手机号是否已被注册，注册过则不能注册。
 	 * @param phonenumber	客户端手机号
 	 * @return
 	 */
-	public Map<String,Object> generateValideCode(String phonenumber){
-		Map<String,Object>  result = CommonMapUtil.baseMsgToMapConvertor();
-		result.put("validecode", sms.sendSM(phonenumber));
+	public Map<String,Object> validePhone_regist(String phonenumber,String zone,String validecode){
+		Map<String,Object>  result = null;
+		User user = userDao.findUserByPhone("+"+zone+phonenumber);
+		if(user!=null){
+			result = CommonMapUtil.baseMsgToMapConvertor(Constant.PHONE_ALREADY_EXISTS,201);
+		}else{
+			user.setPhone(phonenumber);
+			userDao.saveOrUpdate(user);
+			result = CommonMapUtil.baseMsgToMapConvertor();
+			result.put("status", sms.sendSM(phonenumber, zone, validecode));
+		}
 		return result;
 	}
 	

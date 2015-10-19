@@ -402,7 +402,7 @@ public class UserController extends BaseController{
 		userService.saveUsersLocation(client_id, x_point, y_point);
 		return new ResponseEntity<Map<String,Object>>(result,HttpStatus.OK);
 	}
-	/**
+	/**修改日期 ：2015-10-18 
 	 * 业务功能：注册过程中手机验证码校验，并存储非用户的手机号。
 	 * @param mapstr
 	 * @return
@@ -414,6 +414,44 @@ public class UserController extends BaseController{
 	public ResponseEntity<Map<String,Object>> registPhone(@RequestParam String mapstr) throws JsonParseException, JsonMappingException, IOException{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
 		return new ResponseEntity<Map<String,Object>>(userService.validePhone_regist((String)map.get("phone"),(String)map.get("zone"),(String)map.get("code")),HttpStatus.OK);
+	}
+	/**
+	 *业务功能：用户修改薪资信息 
+	 * @param mapstr
+	 * @param client_id
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="salary/{client_id}/modify")
+	public ResponseEntity<Map<String,Object>> modifySalary(@RequestParam String mapstr,@PathVariable String client_id) throws Exception{
+		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
+		return new ResponseEntity<Map<String,Object>>(userService.updateSalary(client_id, (Integer)map.get("salary")),HttpStatus.OK);
+	}
+	/**
+	 * 业务功能：请求和某人交换薪资
+	 * @param mapstr
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="salary/request")
+	public ResponseEntity<Map<String,Object>> requestExchangeSalary(@RequestParam String mapstr) throws  Exception{
+		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
+		String self_id = (String) map.get("self_id");
+		String other_id = (String) map.get("other_id");
+		return new ResponseEntity<Map<String,Object>>(userService.createRequest(self_id, other_id),HttpStatus.OK);
+	}
+	/**
+	 * 业务功能：用户同意交换薪资
+	 * @param mapstr
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(name="salary/agree")
+	public ResponseEntity<Map<String,Object>> agreeExchangeSalary(@RequestParam String mapstr) throws Exception{
+		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
+		String self_id = (String) map.get("self_id");
+		String other_id = (String) map.get("other_id");
+		return new ResponseEntity<Map<String,Object>>(userService.agreeExchange(self_id, other_id),HttpStatus.OK);
 	}
 	
 }

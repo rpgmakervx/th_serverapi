@@ -43,4 +43,17 @@ public class TimeUtil {
 		dt.plusHours(hours);
 		return dt.toDate();
 	}
+	
+	public static Date plusDate(int days,Date datetime){
+		DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd");
+		DateTime dt = dtf.parseDateTime(getFormatString(datetime));
+		dt.plusDays(days);
+		return dt.toDate();
+	}
+	public static Date plusMonth(int months,Date datetime){
+		DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd");
+		DateTime dt = dtf.parseDateTime(getFormatString(datetime));
+		dt.plusMonths(months);
+		return dt.toDate();
+	}
 }

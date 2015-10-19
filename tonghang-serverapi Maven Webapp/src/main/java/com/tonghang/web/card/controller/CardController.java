@@ -111,7 +111,7 @@ public class CardController {
 	 */
 	@RequestMapping("{self_id}/chat/{other_id}")
 	@ResponseBody public ResponseEntity<Map<String,Object>> chatAfterExchange(@PathVariable String self_id,@PathVariable String other_id){
-		return new ResponseEntity<Map<String,Object>>(cardService.addExchangeTimes(self_id,other_id),HttpStatus.OK);
+		return new ResponseEntity<Map<String,Object>>(cardService.addChatTimes(self_id,other_id),HttpStatus.OK);
 	}
 	/**
 	 * 业务功能：请求和某人交换名片

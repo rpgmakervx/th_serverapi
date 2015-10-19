@@ -115,17 +115,17 @@ public class CardService {
 		return success;
 	}
 	/**
-	 * 业务功能：添加名片交换次数（双向添加）
+	 * 业务功能：添加名片交换后又聊天的次数（双向添加）
 	 * @param self_id
 	 * @param other_id
 	 * @return
 	 */
-	public Map<String,Object> addExchangeTimes(String self_id,String other_id){
+	public Map<String,Object> addChatTimes(String self_id,String other_id){
 		Map<String,Object> success = new HashMap<String, Object>();
 		Card self_card = cardDao.findCardByClient_id(self_id);
 		Card other_card = cardDao.findCardByClient_id(other_id);
-		self_card.setExchange_times(self_card.getExchange_times()+1);
-		other_card.setExchange_times(other_card.getExchange_times()+1);
+		self_card.setChat_times(self_card.getChat_times()+1);
+		other_card.setChat_times(other_card.getChat_times()+1);
 		cardDao.saveOrUpdate(self_card);
 		cardDao.saveOrUpdate(other_card);
 		success.put("success", CommonMapUtil.baseMsgToMapConvertor());
@@ -155,180 +155,11 @@ public class CardService {
 	public Map<String,Object> agreeExchange(String self_id,String other_id){
 		Map<String,Object> success = new HashMap<String, Object>();
 		User self = userService.findUserById(self_id);
+		Card card = cardDao.findCardByClient_id(self_id);
+		card.setExchange_times(card.getExchange_times()+1);
+		cardDao.saveOrUpdate(card);
 		JPushUtil.push(other_id, self_id, self.getUsername(), Constant.AGREEEXCHANGECARD,self.getUsername()+Constant.AGREE_CARD_MSG);
 		success.put("success", CommonMapUtil.baseMsgToMapConvertor());
 		return success;
 	}
-	
-	private void setCardAttribute(Map<String,Object> key){
-		
-		
-	}
-	
-	private void setCardHistoryAttribute(CardHistory history){
-		
-	}
-	
 }
-
-class Attribute{
-	protected Card card;
-	protected CardHistory history;
-	public Attribute(){
-		
-	}
-	void setCardAttribute(String attr){
-	}
-	void setCardHisoryAttribute(String attr){
-	}
-}
-class RealName extends Attribute {
-	
-	@Override
-	void setCardAttribute(String attr){
-		super.card.setRealname(attr);
-	}
-	@Override
-	void setCardHisoryAttribute(String attr){
-		super.history.setRealname(attr);
-	}
-}
-class CompanyName extends Attribute{
-
-	@Override
-	void setCardAttribute(String attr) {
-		// TODO Auto-generated method stub
-		super.card.setCompanyname(attr);
-	}
-
-	@Override
-	void setCardHisoryAttribute(String attr) {
-		// TODO Auto-generated method stub
-		super.history.setCompanyname(attr);
-	}
-}
-class Position extends Attribute{
-
-	@Override
-	void setCardAttribute(String attr) {
-		// TODO Auto-generated method stub
-		super.card.setPosition(attr);
-	}
-
-	@Override
-	void setCardHisoryAttribute(String attr) {
-		// TODO Auto-generated method stub
-		super.history.setPosition(attr);
-	}
-}
-class WorkDate extends Attribute{
-
-	@Override
-	void setCardAttribute(String attr) {
-		// TODO Auto-generated method stub
-		super.card.setWork_date(attr);
-	}
-
-	@Override
-	void setCardHisoryAttribute(String attr) {
-		// TODO Auto-generated method stub
-		super.history.setWork_date(attr);
-	}
-}
-class Email extends Attribute{
-
-	@Override
-	void setCardAttribute(String attr) {
-		// TODO Auto-generated method stub
-		super.card.setEmail(attr);
-	}
-
-	@Override
-	void setCardHisoryAttribute(String attr) {
-		// TODO Auto-generated method stub
-		super.history.setEmail(attr);
-	}
-}
-class Phone extends Attribute{
-
-	@Override
-	void setCardAttribute(String attr) {
-		// TODO Auto-generated method stub
-		super.card.setPhone(attr);
-	}
-
-	@Override
-	void setCardHisoryAttribute(String attr) {
-		// TODO Auto-generated method stub
-		super.history.setPhone(attr);
-	}
-}
-class SchoolName  extends Attribute{
-
-	@Override
-	void setCardAttribute(String attr) {
-		// TODO Auto-generated method stub
-		super.card.setSchoolname(attr);
-	}
-
-	@Override
-	void setCardHisoryAttribute(String attr) {
-		// TODO Auto-generated method stub
-		super.history.setSchoolname(attr);
-	}
-}
-class Major extends Attribute{
-
-	@Override
-	void setCardAttribute(String attr) {
-		// TODO Auto-generated method stub
-		super.card.setMajor(attr);
-	}
-
-	@Override
-	void setCardHisoryAttribute(String attr) {
-		// TODO Auto-generated method stub
-		super.history.setMajor(attr);
-	}
-}
-class Diploma extends Attribute{
-
-	@Override
-	void setCardAttribute(String attr) {
-		// TODO Auto-generated method stub
-		super.card.setDiploma(attr);
-	}
-
-	@Override
-	void setCardHisoryAttribute(String attr) {
-		// TODO Auto-generated method stub
-		super.history.setDiploma(attr);
-	}
-}
-class SchoolDate extends Attribute{
-
-	@Override
-	void setCardAttribute(String attr) {
-		// TODO Auto-generated method stub
-		super.card.setSchool_date(attr);
-	}
-
-	@Override
-	void setCardHisoryAttribute(String attr) {
-		// TODO Auto-generated method stub
-		super.history.setSchool_date(attr);
-	}
-}
-class Strategy{
-	
-	void setCardAttribute(Attribute attr,String card) {
-		// TODO Auto-generated method stub
-		attr.setCardAttribute(card);
-	}
-	void setCardHisoryAttribute(Attribute attr,String history) {
-		// TODO Auto-generated method stub
-		attr.setCardHisoryAttribute(history);
-	}
-	
-}
-

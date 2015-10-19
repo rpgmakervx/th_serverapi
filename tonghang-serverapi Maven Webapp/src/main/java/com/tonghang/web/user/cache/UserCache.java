@@ -21,6 +21,7 @@ import com.tonghang.web.label.dao.LabelDao;
 import com.tonghang.web.label.pojo.Label;
 import com.tonghang.web.user.dao.UserDao;
 import com.tonghang.web.user.pojo.User;
+import com.tonghang.web.user.service.UserService;
 import com.tonghang.web.user.util.UserUtil;
 
 @Component("userCache")
@@ -33,6 +34,8 @@ public class UserCache {
 	private UserDao userDao;
 	@Resource(name="labelDao")
 	private LabelDao labelDao;
+	@Resource(name="userService")
+	private UserService userService;
 	
 	/**
 	 * 业务功能：缓存UserService类中 getRecommendCache 方法的值，全部缓存。外部通过分页截取部分缓存结果
@@ -50,18 +53,19 @@ public class UserCache {
 		long begin = System.currentTimeMillis();
 		System.out.println("### 走数据库开始："+begin);
 		User user = userDao.findUserById(client_id);
-		Set<Label> labels = user.getLabellist();
-		for(Label label : labels){
-			List<User> us = userDao.findUserByLabel(label.getLabel_name(), 0);
-			if(us.contains(user)){
-				us.remove(user);
-			}
-			label_names.add(label.getLabel_name());
-			userss.addAll(us);
-		}
-		//按日期倒序 一次取出一个用户，去重复 不包括自己 取满100人
+		users = userService.recommendUsers(user);
+//		Set<Label> labels = user.getLabellist();
+//		for(Label label : labels){
+//			List<User> us = userDao.findUserByLabel(label.getLabel_name(), 0);
+//			if(us.contains(user)){
+//				us.remove(user);
+//			}
+//			label_names.add(label.getLabel_name());
+//			userss.addAll(us);
+//		}
+//		//按日期倒序 一次取出一个用户，去重复 不包括自己 取满100人
+//		users.addAll(userss);
 		System.out.println("###走数据库总耗时："+(System.currentTimeMillis()-begin));
-		users.addAll(userss);
 		Map<String,Object> result = byDistance?userUtil.usersToMapSortedWithDistanceConvertor(users, user):userUtil.usersToMapSortedConvertor(users,user);
 		Map<String,Object> success = (Map<String, Object>) result.get("success");
 		List<Map<String,Object>> us = (List<Map<String, Object>>) success.get("users");

@@ -25,6 +25,9 @@ public class Constant extends HuanXinUtil{
 	public static final String DELETE_TOPIC_MSG = "该话题已被房主解散";
 	public static final String EXCHANGE_CARD_MSG = "请求和您交换名片";
 	public static final String AGREE_CARD_MSG = "同意和您交换名片";
+	public static final String EXCHANGE_SALARY_MSG = "请求和您交换薪资";
+	public static final String AGREE_SALARY_MSG = "同意和您交换薪资";
+	
 	public static final String SM_VALID_MSG = "您的注册验证码是：";
 	public static final String PHONE_NOT_EXISTS = "该手机号没有注册同行";
 	public static final String PHONE_ALREADY_EXISTS = "该手机号已被注册过";
@@ -51,6 +54,7 @@ public class Constant extends HuanXinUtil{
 	public static final String CHUANGLAN_PWD = "Tch147269";
 	
 	public static final int PAGESIZE = 10;
+	public static final int MONTH_GAP = 3;
 	
 	public static String CREATEGROUP = "server create group";
 	public static String HUANXIN_SALT = "HUANXIN-SECRET";
@@ -87,6 +91,13 @@ public class Constant extends HuanXinUtil{
 	public static final String DEISOLATE = "5";
 	/**删除话题的推送标记*/
 	public static final String DELETE_TOPIC = "6";
+	/**请求交换名片推送标记*/
 	public static final String REQUESTCARD = "7";
+	/**同意交换名片推送标记*/
 	public static final String AGREEEXCHANGECARD = "8";
+	/**请求交换薪资推送标记*/
+	public static final String REQUESTSALARY= "9";
+	/**同意交换薪资推送标记*/
+	public static final String AGREEEXCHANGESALARY= "10";
+	
 }

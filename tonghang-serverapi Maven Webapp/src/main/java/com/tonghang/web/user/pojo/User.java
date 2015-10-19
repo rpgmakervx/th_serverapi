@@ -33,6 +33,7 @@ import com.tonghang.web.topic.pojo.Topic;
  *         电话号(phone) 性别(sex) 生日(birth) 状态(正常或封号) 是否在线(isonline) 所在省份(city),地市级(ext1,ext2)
  *         头像(image) 创建时间(created_time) 最近登录时间(last_login_time)关联属性(labellist:用户包含的标签，topic:用户加入的话题)
  * 			关联属性均由多的地方管理，所以user_topics关系由Topic类管理
+ * 			salary(薪资) next_change(下次可以修改薪资信息的时间)
  */
 @Component("user")
 @Entity
@@ -78,6 +79,8 @@ public class User implements Serializable{
 	@JoinColumn(name="channel_id")
 	private Channel channel;
 	
+	@Column(name="")
+	private Date next_change;
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="created_at",updatable=true)
 	private Date created_at = new Date();
@@ -115,6 +118,8 @@ public class User implements Serializable{
 	@LazyCollection(LazyCollectionOption.FALSE)
 	private Set<User> blacklist;
 	
+	@Column(name="salary")
+	private int salary;
 	
 	public String getImage() {
 		return image;
@@ -261,6 +266,20 @@ public class User implements Serializable{
 	}
 	public void setBlacklist(Set<User> blacklist) {
 		this.blacklist = blacklist;
+	}
+	
+	public int getSalary() {
+		return salary;
+	}
+	public void setSalary(int salary) {
+		this.salary = salary;
+	}
+	
+	public Date getNext_change() {
+		return next_change;
+	}
+	public void setNext_change(Date next_change) {
+		this.next_change = next_change;
 	}
 	@Override
 	public int hashCode() {

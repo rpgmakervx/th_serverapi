@@ -1,6 +1,7 @@
 package com.tonghang.web.user.util;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,6 +113,12 @@ public class UserUtil {
 		Map<String,Object> msg = new HashMap<String, Object>();
 		Map<String,Object> usermap = new HashMap<String, Object>();
 		boolean is_friend = userService.isFriend(client_id, user.getClient_id());
+		boolean can_change = true;
+		if(user.getNext_change()!=null){
+			if(new Date().before(user.getNext_change())){
+				can_change = false;
+			}			
+		}
 		if(user.getLabellist()!=null){
 			for(Label l:user.getLabellist()){
 				labels.add(l.getLabel_name());
@@ -133,6 +140,8 @@ public class UserUtil {
 		msg.put("image", Constant.IMAGE_PATH+user.getClient_id()+"/"+Constant.IMAGE_NAME);
 		msg.put("created_at", user.getCreated_at());
 		msg.put("birth", user.getBirth());
+		msg.put("salary", user.getSalary());
+		msg.put("can_change", can_change);
 		msg.put("is_friend", is_friend);
 		if(!is_friend)
 			msg.put("has_invitation", friendService.isInvited(client_id, user.getClient_id()));
@@ -368,5 +377,52 @@ public class UserUtil {
 			}
 		}
 		return labels;
+	}
+	/**
+	 * 添加时间：2015-10-19
+	 * 业务功能：返回带薪资的用户信息，并返回是否可以更改薪资信息
+	 * @param user
+	 * @param ignore
+	 * @param client_id
+	 * @return
+	 */
+	public Map<String,Object> salaryConvertor(User user,String client_id){
+//		List<String> labels = new ArrayList<String>();
+		Map<String,Object> msg = new HashMap<String, Object>();
+		Map<String,Object> usermap = new HashMap<String, Object>();
+//		boolean is_friend = userService.isFriend(client_id, user.getClient_id());
+		boolean can_change = false;
+		if(user.getNext_change().before(new Date())){
+			can_change = true;
+		}
+		msg.put("client_id", user.getClient_id());
+		msg.put("image", Constant.IMAGE_PATH+user.getClient_id()+"/"+Constant.IMAGE_NAME);
+		msg.put("salary", user.getSalary());
+		msg.put("can_change", can_change);
+//		if(user.getLabellist()!=null){
+//			for(Label l:user.getLabellist()){
+//				labels.add(l.getLabel_name());
+//			}
+//			msg.put("labels", labels);			
+//		}else{
+//			msg.put("labels", null);	
+//		}
+//		String city = "";
+//		if(user.getProvince()==null||"".equals(user.getProvince()))
+//			city = "未知";
+//		else city = user.getCity()==null||"".equals(user.getCity())?user.getProvince():user.getProvince()+"-"+user.getCity();
+//		msg.put("email", user.getEmail());
+//		msg.put("sex", user.getSex());
+//		msg.put("username", user.getUsername());
+//		msg.put("phone", user.getPhone());
+//		msg.put("city", city);
+//		msg.put("created_at", user.getCreated_at());
+//		msg.put("birth", user.getBirth());
+//		msg.put("is_friend", is_friend);
+//		if(!is_friend)
+//			msg.put("has_invitation", friendService.isInvited(client_id, user.getClient_id()));
+//		else msg.put("has_invitation",!is_friend);
+		usermap.put("user", msg);
+		return usermap;
 	}
 }

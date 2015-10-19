@@ -15,6 +15,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tonghang.web.card.pojo.Card;
 import com.tonghang.web.common.exception.BaseException;
 import com.tonghang.web.common.exception.EmailExistException;
 import com.tonghang.web.common.exception.LoginException;
@@ -29,6 +30,7 @@ import com.tonghang.web.common.util.JPushUtil;
 import com.tonghang.web.common.util.SMSUtil;
 import com.tonghang.web.common.util.SecurityUtil;
 import com.tonghang.web.common.util.StringUtil;
+import com.tonghang.web.common.util.TimeUtil;
 import com.tonghang.web.friend.dao.FriendDao;
 import com.tonghang.web.label.dao.LabelDao;
 import com.tonghang.web.label.pojo.Label;
@@ -284,15 +286,11 @@ public class UserService {
 		//用来覆盖缓存方法中 succss键对应的users列表
 		Map<String,Object> success = new HashMap<String, Object>();
 		List<Map<String,Object>> users = cache.getRecommendCache(client_id, byDistance);		
-		System.out.println("缓存的数据量: "+users.size());
 		int front = (page-1)*Constant.PAGESIZE;
 		//当前页数的尾索引
 		int now = page*Constant.PAGESIZE;
 		//缓存中数据页数
-		System.out.println("当前页数："+page);
 		int cache_page = (users.size()/Constant.PAGESIZE)+1;
-		System.out.println("缓存总页数："+cache_page);
-		System.out.println("缓存方法中取出的数据："+users);
 		if((users==null||users.size()==0)&&page==1){
 			result.put("success", CommonMapUtil.baseMsgToMapConvertor("首页推荐没有结果", 520));
 		}else if(users==null&&page!=1||page>cache_page){
@@ -556,6 +554,69 @@ public class UserService {
 			result.put("status", sms.sendSM(phonenumber, zone, validecode));
 		}
 		return result;
+	}
+	/**
+	 * 业务功能：修改用户的薪资信息，并记录下一次可以修改薪资的时间。
+	 * @param client_id
+	 * @param salary
+	 * @return
+	 */
+	public Map<String,Object> updateSalary(String client_id,int salary){
+		Map<String,Object>  result = CommonMapUtil.baseMsgToMapConvertor();
+		User user = userDao.findUserById(client_id);
+		user.setSalary(salary);
+		//目前限制3个月之内不能再次更改
+		user.setNext_change(TimeUtil.plusDate(Constant.MONTH_GAP,new Date()));
+		userDao.saveOrUpdate(user);
+		return result;
+	}
+	/**
+	 * 业务功能：创建交换薪资请求。
+	 * @param self_id		请求发起方ID
+	 * @param other_id		请求接收方ID
+	 * @return
+	 * notice:给接收方发送推送
+	 */
+	public Map<String,Object> createRequest(String self_id,String other_id){
+		Map<String,Object> success = new HashMap<String, Object>();
+		User self = findUserById(self_id);
+		JPushUtil.push(other_id, self_id, self.getUsername(), Constant.AGREE_SALARY_MSG, self.getUsername()+Constant.EXCHANGE_SALARY_MSG);
+		success.put("success", CommonMapUtil.baseMsgToMapConvertor());
+		return success;
+	}
+	/**
+	 * 业务功能：对方同意交换名片
+	 * @param self_id		请求发起方ID
+	 * @param other_id		请求接收方ID
+	 * @return
+	 */
+	public Map<String,Object> agreeExchange(String self_id,String other_id){
+		Map<String,Object> success = new HashMap<String, Object>();
+		User self = findUserById(self_id);
+		JPushUtil.push(other_id, self_id, self.getUsername(), Constant.AGREEEXCHANGESALARY,self.getUsername()+Constant.AGREE_SALARY_MSG);
+		success.put("success", CommonMapUtil.baseMsgToMapConvertor());
+		return success;
+	}
+	/**
+	 * 业务功能：按首页推荐的条件获得User对象
+	 * @param client_id
+	 * @return
+	 */
+	public List<User> recommendUsers(User user){
+		List<User> users = new ArrayList<User>();
+		Set<User> userss = new HashSet<User>();
+		List<String> label_names = new ArrayList<String>();
+		Set<Label> labels = user.getLabellist();
+		for(Label label : labels){
+			List<User> us = userDao.findUserByLabel(label.getLabel_name(), 0);
+			if(us.contains(user)){
+				us.remove(user);
+			}
+			label_names.add(label.getLabel_name());
+			userss.addAll(us);
+		}
+		users.addAll(userss);
+		return users;
 	}
 	
 }

@@ -6,6 +6,7 @@ import java.util.Date;
 
 
 import org.joda.time.DateTime;
+import org.joda.time.Days;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -55,5 +56,11 @@ public class TimeUtil {
 		DateTime dt = dtf.parseDateTime(getFormatString(datetime));
 		dt.plusMonths(months);
 		return dt.toDate();
+	}
+	//d2-d1
+	public static int dateGap(Date d1,Date d2){
+		DateTime dt1 = new DateTime(d1);
+  		DateTime dt2 = new DateTime(d2);
+  		return Days.daysBetween(dt1, dt2).getDays();
 	}
 }

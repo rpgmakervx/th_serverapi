@@ -53,8 +53,13 @@ public class Constant extends HuanXinUtil{
 	public static final String SHARE_SDK_APPKEY = "b18fc111a689";
 	public static final String CHUANGLAN_PWD = "Tch147269";
 	
+	/** Gap size*/
 	public static final int PAGESIZE = 10;
 	public static final int MONTH_GAP = 3;
+	//人民币
+	public static final int SALARY_GAP = 1000;
+	//单位：千元
+	public static final int SALARY_SIZE = 20;
 	
 	public static String CREATEGROUP = "server create group";
 	public static String HUANXIN_SALT = "HUANXIN-SECRET";

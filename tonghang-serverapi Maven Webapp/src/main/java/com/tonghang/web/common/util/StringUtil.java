@@ -1,5 +1,6 @@
 package com.tonghang.web.common.util;
 
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -85,6 +86,10 @@ public class StringUtil {
 		return result;
 	}
 	
+	public static String doubleToPercent(double object){
+		 DecimalFormat df = new DecimalFormat("0.00%");
+	     return df.format(object);
+	}
 	/**
 	 * TOKEN通过email生成
 	 */

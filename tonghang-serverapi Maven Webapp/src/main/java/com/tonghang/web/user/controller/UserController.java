@@ -16,7 +16,9 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -422,7 +424,7 @@ public class UserController extends BaseController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value="salary/{client_id}/modify")
+	@RequestMapping(value="salary/{client_id}/modify",method=RequestMethod.POST)
 	public ResponseEntity<Map<String,Object>> modifySalary(@RequestParam String mapstr,@PathVariable String client_id) throws Exception{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
 		return new ResponseEntity<Map<String,Object>>(userService.updateSalary(client_id, (Integer)map.get("salary")),HttpStatus.OK);
@@ -433,7 +435,7 @@ public class UserController extends BaseController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value="salary/request")
+	@RequestMapping(value="salary/request",method=RequestMethod.POST)
 	public ResponseEntity<Map<String,Object>> requestExchangeSalary(@RequestParam String mapstr) throws  Exception{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
 		String self_id = (String) map.get("self_id");
@@ -446,12 +448,48 @@ public class UserController extends BaseController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(name="salary/agree")
+	@RequestMapping(value="salary/agree",method=RequestMethod.POST)
 	public ResponseEntity<Map<String,Object>> agreeExchangeSalary(@RequestParam String mapstr) throws Exception{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
 		String self_id = (String) map.get("self_id");
 		String other_id = (String) map.get("other_id");
 		return new ResponseEntity<Map<String,Object>>(userService.agreeExchange(self_id, other_id),HttpStatus.OK);
+	}
+	/**
+	 * 业务功能：查看其他人的薪资信息
+	 * @param mapstr
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="salary/check")
+	public ResponseEntity<Map<String,Object>> checkUserSalary(@RequestParam String mapstr) throws Exception{
+		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
+		Map<String,Object> success = new HashMap<String, Object>();
+		String self_id = (String) map.get("self_id");
+		String other_id = (String) map.get("other_id");
+		success.put("data", userService.salarySuvey(self_id));
+		success.putAll(userService.checkSalary(other_id));
+		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
+	}
+	
+	/**
+	 * 业务功能：查看其自己的薪资信息
+	 * @param mapstr
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="salary/{client_id}/check")
+	public ResponseEntity<Map<String,Object>> checkSelfSalary(@PathVariable String client_id) throws Exception{
+		return new ResponseEntity<Map<String,Object>>(userService.checkSalary(client_id),HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="salary/chart")
+	public ResponseEntity<Map<String,Object>> salaryChart(@RequestBody(required=false) Map map){
+		String client_id ="";
+		if(map!=null){
+			client_id = (String) map.get("client_id");
+		}
+		return new ResponseEntity<Map<String,Object>>(userService.analyzeUserSalary(client_id),HttpStatus.OK);
 	}
 	
 }

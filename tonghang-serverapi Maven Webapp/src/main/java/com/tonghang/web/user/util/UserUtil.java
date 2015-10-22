@@ -113,12 +113,7 @@ public class UserUtil {
 		Map<String,Object> msg = new HashMap<String, Object>();
 		Map<String,Object> usermap = new HashMap<String, Object>();
 		boolean is_friend = userService.isFriend(client_id, user.getClient_id());
-		boolean can_change = true;
-		if(user.getNext_change()!=null){
-			if(new Date().before(user.getNext_change())){
-				can_change = false;
-			}			
-		}
+		
 		if(user.getLabellist()!=null){
 			for(Label l:user.getLabellist()){
 				labels.add(l.getLabel_name());
@@ -140,8 +135,6 @@ public class UserUtil {
 		msg.put("image", Constant.IMAGE_PATH+user.getClient_id()+"/"+Constant.IMAGE_NAME);
 		msg.put("created_at", user.getCreated_at());
 		msg.put("birth", user.getBirth());
-		msg.put("salary", user.getSalary());
-		msg.put("can_change", can_change);
 		msg.put("is_friend", is_friend);
 		if(!is_friend)
 			msg.put("has_invitation", friendService.isInvited(client_id, user.getClient_id()));
@@ -386,42 +379,17 @@ public class UserUtil {
 	 * @param client_id
 	 * @return
 	 */
-	public Map<String,Object> salaryConvertor(User user,String client_id){
-//		List<String> labels = new ArrayList<String>();
+	public Map<String,Object> salaryConvertor(User user){
 		Map<String,Object> msg = new HashMap<String, Object>();
 		Map<String,Object> usermap = new HashMap<String, Object>();
-//		boolean is_friend = userService.isFriend(client_id, user.getClient_id());
-		boolean can_change = false;
-		if(user.getNext_change().before(new Date())){
-			can_change = true;
+		int nextdate = TimeUtil.dateGap(user.getNext_change(), new Date());
+		if(nextdate<=0){
+			nextdate = 0;
 		}
 		msg.put("client_id", user.getClient_id());
 		msg.put("image", Constant.IMAGE_PATH+user.getClient_id()+"/"+Constant.IMAGE_NAME);
 		msg.put("salary", user.getSalary());
-		msg.put("can_change", can_change);
-//		if(user.getLabellist()!=null){
-//			for(Label l:user.getLabellist()){
-//				labels.add(l.getLabel_name());
-//			}
-//			msg.put("labels", labels);			
-//		}else{
-//			msg.put("labels", null);	
-//		}
-//		String city = "";
-//		if(user.getProvince()==null||"".equals(user.getProvince()))
-//			city = "未知";
-//		else city = user.getCity()==null||"".equals(user.getCity())?user.getProvince():user.getProvince()+"-"+user.getCity();
-//		msg.put("email", user.getEmail());
-//		msg.put("sex", user.getSex());
-//		msg.put("username", user.getUsername());
-//		msg.put("phone", user.getPhone());
-//		msg.put("city", city);
-//		msg.put("created_at", user.getCreated_at());
-//		msg.put("birth", user.getBirth());
-//		msg.put("is_friend", is_friend);
-//		if(!is_friend)
-//			msg.put("has_invitation", friendService.isInvited(client_id, user.getClient_id()));
-//		else msg.put("has_invitation",!is_friend);
+		msg.put("date_gap", nextdate);
 		usermap.put("user", msg);
 		return usermap;
 	}

@@ -598,6 +598,37 @@ public class UserService {
 		return success;
 	}
 	/**
+	 * 业务功能：查看薪资概况（比多少人高比多少人低）
+	 * @param client_id
+	 * @return
+	 */
+	public Map<String,Object> salarySuvey(String client_id){
+		Map<String,Object> result = new HashMap<String, Object>();
+		User self = findUserById(client_id);
+		List<User> users = userDao.findAllUser();
+		int high = 0;
+		int low = 0;
+		for(User u:users){
+			if(self.getSalary()>u.getSalary()){
+				low++;
+			}else{
+				high++;
+			}
+		}
+		result.put("high", high);
+		result.put("low", low);
+		return result;
+	}
+	/**
+	 * 业务功能：查看某人的薪资，目前用于查看自己的薪资
+	 * @param client_id
+	 * @return
+	 */
+	public Map<String,Object> checkSalary(String client_id){
+		User user = findUserById(client_id);
+		return userUtil.salaryConvertor(user);
+	}
+	/**
 	 * 业务功能：按首页推荐的条件获得User对象
 	 * @param client_id
 	 * @return
@@ -618,5 +649,36 @@ public class UserService {
 		users.addAll(userss);
 		return users;
 	}
+	/**
+	 * 业务功能：薪资概况预览
+	 * @param client_id
+	 * @return
+	 * noticce:目前返回信息包括所有人的薪资分布 
+	 * 			以及 比自己高和比自己低的人的百分比
+	 */
+	public Map<String,Object> analyzeUserSalary(String client_id){
+		Map<String,Object> success = new HashMap<String, Object>();
+		List<Integer> data = new ArrayList<Integer>();
+		Map<String,Object> distribution = new HashMap<String, Object>();
+		List<User> users = userDao.findAllUser();
+		//初始化数据列
+		for(int i=0;i<=Constant.SALARY_SIZE+1;i++){
+			data.add(0);
+		}
+		//填充数据列，在对应薪资等级的数据列索引的元素基础上+1
+		for(User u:users){
+			int level = u.getSalary()/Constant.SALARY_GAP;
+			if(level<=20){
+				data.set(level,(Integer)data.get(level)+1);
+			}else{
+				data.set(Constant.SALARY_SIZE+1,(Integer)data.get(Constant.SALARY_SIZE+1)+1);
+			}
+		}
+		distribution.put("data", data);
+		distribution.putAll(CommonMapUtil.baseMsgToMapConvertor());
+		success.put("success", distribution);
+		return success;
+	}
+	
 	
 }

@@ -668,7 +668,7 @@ public class UserService {
 		//填充数据列，在对应薪资等级的数据列索引的元素基础上+1
 		for(User u:users){
 			int level = u.getSalary()/Constant.SALARY_GAP;
-			if(level<=20){
+			if(level<=Constant.SALARY_SIZE){
 				data.set(level,(Integer)data.get(level)+1);
 			}else{
 				data.set(Constant.SALARY_SIZE+1,(Integer)data.get(Constant.SALARY_SIZE+1)+1);

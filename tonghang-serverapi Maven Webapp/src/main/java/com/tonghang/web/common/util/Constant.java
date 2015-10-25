@@ -12,10 +12,14 @@ public class Constant extends HuanXinUtil{
 	}
 	
 	public static final String ISOLATED = "您已被同行管理员封号，如有疑问请联系我们";
-	public static final String PASSWORD_INVALID = "邮箱或密码不正确";
+	public static final String PASSWORD_INVALID = "账号或密码不正确";
 	public static final String NOUSER = "用户不存在";
+	public static final String USER_ISOLATED = "该用户已被封号！";
 	public static final String EMAIL = "邮件已发送";
 	public static final String EMAIL_EXIST = "该邮箱已被注册";
+	
+	public static final String LOGIN_FAIL = "登录失败！";
+	
 	public static final String AGREE_ADD_MSG = "同意添加您为好友"; 
 	public static final String REFUSE_ADD_MSG = "拒绝添加您为好友";
 	public static final String INVITATION_MSG = "请求添加您为好友";
@@ -73,6 +77,10 @@ public class Constant extends HuanXinUtil{
 	//邮箱验证码时长
 	public static final long EMAIL_CODETIME = 2*60*1000;
 	public static final long PHONE_CODETIME = 1*60*1000;
+	
+	//登录方式
+	public static String EMAIL_LOGIN = "email";
+	public static String PHONE_LOGIN = "phone";
 	
 	public static String CREATEGROUP = "server create group";
 	public static String HUANXIN_SALT = "HUANXIN-SECRET";

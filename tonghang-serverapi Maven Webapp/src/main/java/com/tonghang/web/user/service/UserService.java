@@ -76,19 +76,29 @@ public class UserService {
 	 * @return
 	 * @throws Exception 
 	 * 自己和自己肯定不是好友，调用带ignore参数的userToMapConvertor方法
+	 * update：
+	 * 修改时间：2015-10-25  取消所有MD5，添加手机登录
 	 */
-	public Map<String,Object> login(String email,String password) throws BaseException{
+	public Map<String,Object> login(String number,String password,String what) throws BaseException{
 		Map<String,Object> result = new HashMap<String, Object>();
 		System.out.println("登录时的密码MD5加密后："+SecurityUtil.getMD5(password));
-		User user = userDao.findUserByEmail(email);
+		User user = null;
+		if(what.equals(Constant.EMAIL_LOGIN)){
+			user = userDao.findUserByEmail(number);
+		}else{
+			user = userDao.findUserByPhone(number);
+		}
 		if(user==null){
-			result.put("success", CommonMapUtil.baseMsgToMapConvertor("登录失败，该邮箱不存在！", 510));
+			if(what.equals(Constant.EMAIL_LOGIN))
+				result.put("success", CommonMapUtil.baseMsgToMapConvertor(Constant.LOGIN_FAIL+Constant.EMAIL_NOT_EXISTS, 510));
+			else
+				result.put("success", CommonMapUtil.baseMsgToMapConvertor(Constant.LOGIN_FAIL+Constant.PHONE_NOT_EXISTS, 510));
 			return result;
 		}else{
 			if(user.getStatus().equals("0")){
-				result.put("success", CommonMapUtil.baseMsgToMapConvertor("登录失败，用户被封号！", 510));
+				result.put("success", CommonMapUtil.baseMsgToMapConvertor(Constant.LOGIN_FAIL+Constant.USER_ISOLATED, 510));
 				return result;
-			}else{
+			}else{/*
 				//新需求需要密码MD5加密，此处用来兼容老用户
 				if(user.getPassword().equals(SecurityUtil.getMD5(password))){
 					Map<String,Object> usermap = userUtil.userToMapConvertor(user,false,user.getClient_id());
@@ -97,64 +107,65 @@ public class UserService {
 					user.setIsonline("1");
 					user.setLast_login_at(new Date());
 					userDao.saveOrUpdate(user);
-				}else if(user.getPassword().equals(password)){
+				}else */if(user.getPassword().equals(password)){
 					Map<String,Object> usermap = userUtil.userToMapConvertor(user,false,user.getClient_id());
 					usermap.putAll(CommonMapUtil.baseMsgToMapConvertor());
 					result.put("success", usermap);
 					user.setIsonline("1");
-					user.setPassword(SecurityUtil.getMD5(password));
+					user.setPassword(/*SecurityUtil.getMD5(password)*/password);
 					HuanXinUtil.changePassword(SecurityUtil.getMD5(password), user.getClient_id());
 					user.setLast_login_at(new Date());
 					userDao.saveOrUpdate(user);
 				}else{
-					result.put("success", CommonMapUtil.baseMsgToMapConvertor("登录失败，用户名或密码错误！", 510));
+					result.put("success", CommonMapUtil.baseMsgToMapConvertor(Constant.LOGIN_FAIL+Constant.PASSWORD_INVALID, 510));
 					return result;
 				}
 			}
 		}
 		return result;
 	}
-	/**
-	 * 业务功能:旧版本0.8的APP登录通道
-	 * @param email
-	 * @param password
-	 * @return
-	 * @throws BaseException
-	 */
-	public Map<String,Object> oldLogin(String email,String password) throws BaseException{
-		Map<String,Object> result = new HashMap<String, Object>();
-		User user = userDao.findUserByEmail(email);
-		if(user==null){
-			result.put("success", CommonMapUtil.baseMsgToMapConvertor("登录失败，该邮箱不存在！", 510));
-			return result;
-		}else{
-			if(user.getStatus().equals(0)){
-				result.put("success", CommonMapUtil.baseMsgToMapConvertor("登录失败，用户被封号！", 510));
-				return result;
-			}else{
-				if(user.getPassword().equals(password)){
-					Map<String,Object> usermap = userUtil.userToMapConvertor(user,false,user.getClient_id());
-					usermap.putAll(CommonMapUtil.baseMsgToMapConvertor());
-					result.put("success", usermap);
-					user.setIsonline("1");
-					userDao.saveOrUpdate(user);
-				}else{
-					result.put("success", CommonMapUtil.baseMsgToMapConvertor("登录失败，用户名或密码错误！", 510));
-					return result;
-				}
-			}
-		}
-		return result;
-	}
+//	/**
+//	 * 业务功能:旧版本0.8的APP登录通道
+//	 * @param email
+//	 * @param password
+//	 * @return
+//	 * @throws BaseException
+//	 */
+//	public Map<String,Object> oldLogin(String email,String password) throws BaseException{
+//		Map<String,Object> result = new HashMap<String, Object>();
+//		User user = userDao.findUserByEmail(email);
+//		if(user==null){
+//			result.put("success", CommonMapUtil.baseMsgToMapConvertor("登录失败，该邮箱不存在！", 510));
+//			return result;
+//		}else{
+//			if(user.getStatus().equals(0)){
+//				result.put("success", CommonMapUtil.baseMsgToMapConvertor("登录失败，用户被封号！", 510));
+//				return result;
+//			}else{
+//				if(user.getPassword().equals(password)){
+//					Map<String,Object> usermap = userUtil.userToMapConvertor(user,false,user.getClient_id());
+//					usermap.putAll(CommonMapUtil.baseMsgToMapConvertor());
+//					result.put("success", usermap);
+//					user.setIsonline("1");
+//					userDao.saveOrUpdate(user);
+//				}else{
+//					result.put("success", CommonMapUtil.baseMsgToMapConvertor("登录失败，用户名或密码错误！", 510));
+//					return result;
+//				}
+//			}
+//		}
+//		return result;
+//	}
 	
 	/**
-	 * 找回密码
+	 * 业务功能：邮箱找回密码
 	 * @param 
 	 * @return
 	 * @throws EmailExistException 
 	 * @throws LoginException 
 	 * 
-	 * notice: 2015-08-28 忘记密码的随机密码进行了MD5加密
+	 * 修改时间: 2015-08-28 忘记密码的随机密码进行了MD5加密
+	 * 
 	 */
 	public Map<String,Object> forgetPassword_Email(String email) throws LoginException{
 		Map<String,Object> result = new HashMap<String, Object>();
@@ -207,37 +218,37 @@ public class UserService {
 		}
 		return result;
 	}
-	/**
-	 *  旧的注册接口，因为注册业务换成三步注册，为了兼容0.8app留下该接口
-	 * @param user
-	 * @return
-	 * @throws EmailExistException
-	 * @throws NickNameExistException
-	 */
-	public Map<String,Object> oldRegistUser(User user) throws EmailExistException, NickNameExistException{
-		Map<String,Object> result = new HashMap<String, Object>();
-		//去掉标签部分
-		Iterator<Label> it = user.getLabellist().iterator();
-		while(it.hasNext()){
-			Label label = it.next();
-			if(labelDao.findLabelById(label.getLabel_name())==null)
-				labelDao.save(label);
-		}
-		if(userDao.findUserByEmail(user.getEmail())!=null){
-			result.put("success", CommonMapUtil.baseMsgToMapConvertor("注册失败！该邮箱已被注册", 511));
-			return result;
-		}else/* if(userDao.findUserByNickName(user.getUsername())!=null){
-			throw new NickNameExistException("注册失败！该昵称已经被注册");
-		}else*/{
-			user.setClient_id(SecurityUtil.getUUID());
-			userDao.save(user);
-			HuanXinUtil.registUser(user);
-			Map<String,Object> usermap = userUtil.userToMapConvertor(user,false,user.getClient_id());
-			usermap.putAll(CommonMapUtil.baseMsgToMapConvertor());
-			result.put("success", usermap);
-		}
-		return result;
-	}
+//	/**
+//	 *  旧的注册接口，因为注册业务换成三步注册，为了兼容0.8app留下该接口
+//	 * @param user
+//	 * @return
+//	 * @throws EmailExistException
+//	 * @throws NickNameExistException
+//	 */
+//	public Map<String,Object> oldRegistUser(User user) throws EmailExistException, NickNameExistException{
+//		Map<String,Object> result = new HashMap<String, Object>();
+//		//去掉标签部分
+//		Iterator<Label> it = user.getLabellist().iterator();
+//		while(it.hasNext()){
+//			Label label = it.next();
+//			if(labelDao.findLabelById(label.getLabel_name())==null)
+//				labelDao.save(label);
+//		}
+//		if(userDao.findUserByEmail(user.getEmail())!=null){
+//			result.put("success", CommonMapUtil.baseMsgToMapConvertor("注册失败！该邮箱已被注册", 511));
+//			return result;
+//		}else/* if(userDao.findUserByNickName(user.getUsername())!=null){
+//			throw new NickNameExistException("注册失败！该昵称已经被注册");
+//		}else*/{
+//			user.setClient_id(SecurityUtil.getUUID());
+//			userDao.save(user);
+//			HuanXinUtil.registUser(user);
+//			Map<String,Object> usermap = userUtil.userToMapConvertor(user,false,user.getClient_id());
+//			usermap.putAll(CommonMapUtil.baseMsgToMapConvertor());
+//			result.put("success", usermap);
+//		}
+//		return result;
+//	}
 	
 	/**
 	 * 查看用户详细信息

@@ -54,6 +54,7 @@ public class UserController extends BaseController{
 	
 	
 	/**
+	 * 
 	 * 业务功能：用户登录（调试通过）
 	 * @param mapstr 前端的JSON数据，全部包括在mapstr中(email,password)
 	 * @return user(Map) [labels(List) email (String) image(String) 
@@ -63,23 +64,28 @@ public class UserController extends BaseController{
 	 * 1.jackson类库ObjectMapper类  readVlaue()方法 参数一为json格式的字符串，转换结果的类型
 	 * 2.login()方法返回的map集合包括前端所需要的所有数据，并由ResponseEntity包装成JSON返回给前台
 	 * 3.所有返回用户信息的地方都会返回是否是好友关系
+	 * 
+	 * update:
+	 * 修改时间：2015-10-25  1.取消服务器MD5，客户端传来的密码均为MD5。
+	 * 								2.取消email字段，添加number(String)字段，添加what(String)字段  what用来表示使用何种账号登陆
 	 */
-	@RequestMapping(value = "/newlogin")
+//	@RequestMapping(value = "/newlogin")
+	@RequestMapping(value = "/login")
 	@ResponseBody public ResponseEntity<Map<String,Object>> login(@RequestParam String mapstr) throws Exception {		
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
-		return new ResponseEntity<Map<String,Object>>(userService.login((String)map.get("email"),(String)map.get("password")), HttpStatus.OK);
+		return new ResponseEntity<Map<String,Object>>(userService.login((String)map.get("number"),(String)map.get("password"),(String)map.get("what")), HttpStatus.OK);
 	}
-	/**
-	 * 业务功能：兼容旧版本APP登录功能
-	 * @param mapstr
-	 * @return
-	 * @throws Exception
-	 */
-	@RequestMapping(value = "/login")
-	public ResponseEntity<Map<String,Object>> oldLogin(@RequestParam String mapstr) throws Exception {		
-		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
-		return new ResponseEntity<Map<String,Object>>(userService.oldLogin((String)map.get("email"),(String)map.get("password")), HttpStatus.OK);
-	}
+//	/**
+//	 * 业务功能：兼容旧版本APP登录功能
+//	 * @param mapstr
+//	 * @return
+//	 * @throws Exception
+//	 */
+//	@RequestMapping(value = "/login")
+//	public ResponseEntity<Map<String,Object>> oldLogin(@RequestParam String mapstr) throws Exception {		
+//		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
+//		return new ResponseEntity<Map<String,Object>>(userService.oldLogin((String)map.get("email"),(String)map.get("password")), HttpStatus.OK);
+//	}
 	
 	/**
 	 * 业务功能：忘记密码(调试通过)
@@ -121,7 +127,8 @@ public class UserController extends BaseController{
 	 * notice:2015-08-28 注册用户的密码用MD,客户端传过来的password就是MD5所以后台不必再加密
 	 *			2015-10-25 注册用户密码取消服务端MD5计算，同时注册手机号
 	 */
-	@RequestMapping(value = "/newregist")
+//	@RequestMapping(value = "/newregist")
+	@RequestMapping(value = "/regist")
 	public ResponseEntity<Map<String,Object>> registUser(@RequestParam String mapstr) throws JsonParseException, JsonMappingException, IOException, EmailExistException, NickNameExistException {
 //		AccountBean acc = objectMapper.readValue(json, AccountBean.class);
 		System.out.println("开始注册");
@@ -136,37 +143,37 @@ public class UserController extends BaseController{
 		user.setStatus("1");
 		return new ResponseEntity<Map<String,Object>>(userService.registUser(user), HttpStatus.OK);
 	}
-	/**
-	 * 业务功能：  旧的注册接口，因为注册业务换成三步注册，为了兼容0.8app留下该接口
-	 * 旧的通道新加了密码MD5加密
-	 * @param mapstr
-	 * @return
-	 * @throws JsonParseException
-	 * @throws JsonMappingException
-	 * @throws IOException
-	 * @throws EmailExistException
-	 * @throws NickNameExistException
-	 */
-	@RequestMapping(value = "/regist")
-	public ResponseEntity<Map<String,Object>> oldRegistUser(@RequestParam String mapstr) throws JsonParseException, JsonMappingException, IOException, EmailExistException, NickNameExistException {
-//		AccountBean acc = objectMapper.readValue(json, AccountBean.class);
-		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
-		User user = new User();
-		String username = (String)map.get("username");
-		user.setUsername(username);
-		user.setPassword(SecurityUtil.getMD5((String)map.get("password")));
-		user.setEmail((String)map.get("email"));
-		user.setIsonline("0");
-		user.setStatus("1");
-		Set<Label> set = new HashSet<Label>();
-		for(String s : (List<String>)map.get("labels")){
-			Label label = new Label();
-			label.setLabel_name(s);
-			set.add(label);
-		}
-		user.setLabellist(set);
-		return new ResponseEntity<Map<String,Object>>(userService.oldRegistUser(user), HttpStatus.OK);
-	}
+//	/**
+//	 * 业务功能：  旧的注册接口，因为注册业务换成三步注册，为了兼容0.8app留下该接口
+//	 * 旧的通道新加了密码MD5加密
+//	 * @param mapstr
+//	 * @return
+//	 * @throws JsonParseException
+//	 * @throws JsonMappingException
+//	 * @throws IOException
+//	 * @throws EmailExistException
+//	 * @throws NickNameExistException
+//	 */
+//	@RequestMapping(value = "/regist")
+//	public ResponseEntity<Map<String,Object>> oldRegistUser(@RequestParam String mapstr) throws JsonParseException, JsonMappingException, IOException, EmailExistException, NickNameExistException {
+////		AccountBean acc = objectMapper.readValue(json, AccountBean.class);
+//		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
+//		User user = new User();
+//		String username = (String)map.get("username");
+//		user.setUsername(username);
+//		user.setPassword(SecurityUtil.getMD5((String)map.get("password")));
+//		user.setEmail((String)map.get("email"));
+//		user.setIsonline("0");
+//		user.setStatus("1");
+//		Set<Label> set = new HashSet<Label>();
+//		for(String s : (List<String>)map.get("labels")){
+//			Label label = new Label();
+//			label.setLabel_name(s);
+//			set.add(label);
+//		}
+//		user.setLabellist(set);
+//		return new ResponseEntity<Map<String,Object>>(userService.oldRegistUser(user), HttpStatus.OK);
+//	}
 	/**
 	 * 2015-08-28新增按距离推荐,新增字段 byDistance,是否需要按照距离排序
 	 * 

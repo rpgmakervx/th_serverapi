@@ -118,6 +118,7 @@ public class UserController extends BaseController{
 	 * @throws NickNameExistException 
 	 * 
 	 * notice:2015-08-28 注册用户的密码用MD,客户端传过来的password就是MD5所以后台不必再加密
+	 *			2015-10-25 注册用户密码取消服务端MD5计算，同时注册手机号
 	 */
 	@RequestMapping(value = "/newregist")
 	public ResponseEntity<Map<String,Object>> registUser(@RequestParam String mapstr) throws JsonParseException, JsonMappingException, IOException, EmailExistException, NickNameExistException {
@@ -126,9 +127,10 @@ public class UserController extends BaseController{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
 		User user = new User();
 		String username = (String)map.get("username");
+		String phone = (String)map.get("phone");
+		user.setPhone(phone);
 		user.setUsername(username);
 		user.setPassword((String)map.get("password"));
-		user.setEmail((String)map.get("email"));
 		user.setIsonline("0");
 		user.setStatus("1");
 		return new ResponseEntity<Map<String,Object>>(userService.registUser(user), HttpStatus.OK);
@@ -412,7 +414,7 @@ public class UserController extends BaseController{
 	 * @throws JsonMappingException
 	 * @throws IOException
 	 */
-	@RequestMapping(value="phone/regist")
+	@RequestMapping(value="phone/validate")
 	public ResponseEntity<Map<String,Object>> registPhone(@RequestParam String mapstr) throws JsonParseException, JsonMappingException, IOException{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
 		return new ResponseEntity<Map<String,Object>>(userService.validePhone_regist((String)map.get("phone"),(String)map.get("zone"),(String)map.get("code")),HttpStatus.OK);
@@ -427,7 +429,12 @@ public class UserController extends BaseController{
 	@RequestMapping(value="salary/{client_id}/modify",method=RequestMethod.POST)
 	public ResponseEntity<Map<String,Object>> modifySalary(@RequestParam String mapstr,@PathVariable String client_id) throws Exception{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
-		return new ResponseEntity<Map<String,Object>>(userService.updateSalary(client_id, (Integer)map.get("salary")),HttpStatus.OK);
+		Map<String,Object> success = new HashMap<String, Object>();
+		Map<String,Object> result = new HashMap<String, Object>();
+		result.putAll(CommonMapUtil.baseMsgToMapConvertor());
+		result.putAll(userService.updateSalary(client_id,Integer.parseInt((String)map.get("salary"))));
+		success.put("success", result);
+		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
 	}
 	/**
 	 * 业务功能：请求和某人交换薪资
@@ -465,10 +472,13 @@ public class UserController extends BaseController{
 	public ResponseEntity<Map<String,Object>> checkUserSalary(@RequestParam String mapstr) throws Exception{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
 		Map<String,Object> success = new HashMap<String, Object>();
+		Map<String,Object> result = new HashMap<String, Object>();
 		String self_id = (String) map.get("self_id");
 		String other_id = (String) map.get("other_id");
-		success.put("data", userService.salarySuvey(self_id));
-		success.putAll(userService.checkSalary(other_id));
+		result.put("data", userService.salarySuvey(self_id));
+		result.putAll(userService.checkSalary(other_id));
+		result.putAll(CommonMapUtil.baseMsgToMapConvertor());
+		success.put("success", result);
 		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
 	}
 	
@@ -480,9 +490,19 @@ public class UserController extends BaseController{
 	 */
 	@RequestMapping(value="salary/{client_id}/check")
 	public ResponseEntity<Map<String,Object>> checkSelfSalary(@PathVariable String client_id) throws Exception{
-		return new ResponseEntity<Map<String,Object>>(userService.checkSalary(client_id),HttpStatus.OK);
+		Map<String,Object> success = new HashMap<String, Object>();
+		Map<String,Object> result = new HashMap<String, Object>();
+		result.putAll(userService.checkSalary(client_id));
+		result.putAll(CommonMapUtil.baseMsgToMapConvertor());
+		success.put("success", result);
+		System.out.println("success: "+success);
+		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
 	}
-	
+	/**
+	 * 业务功能：返回给客户端html，以图标形式反馈给用户总体薪资趋势
+	 * @param map
+	 * @return
+	 */
 	@RequestMapping(value="salary/chart")
 	public ResponseEntity<Map<String,Object>> salaryChart(@RequestBody(required=false) Map map){
 		String client_id ="";
@@ -491,5 +511,6 @@ public class UserController extends BaseController{
 		}
 		return new ResponseEntity<Map<String,Object>>(userService.analyzeUserSalary(client_id),HttpStatus.OK);
 	}
+	
 	
 }

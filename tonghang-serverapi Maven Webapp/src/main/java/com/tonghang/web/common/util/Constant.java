@@ -57,7 +57,8 @@ public class Constant extends HuanXinUtil{
 	public static final int PAGESIZE = 10;
 	public static final int MONTH_GAP = 3;
 	//人民币
-	public static final int SALARY_GAP = 1000;
+	public static final int SALARY_GAP_1 = 1000;
+	public static final int SALARY_GAP_2 = 5000;
 	//单位：千元
 	public static final int SALARY_SIZE = 20;
 	

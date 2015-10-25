@@ -191,15 +191,10 @@ public class UserService {
 		},allEntries = true)
 	public Map<String,Object> registUser(User user) throws EmailExistException, NickNameExistException{
 		Map<String,Object> result = new HashMap<String, Object>();
-		if(userDao.findUserByEmail(user.getEmail())!=null){
-			result.put("success", CommonMapUtil.baseMsgToMapConvertor("注册失败！该邮箱已被注册", 511));
-			return result;
-		}else if(userDao.findUserByNickName(user.getUsername())!=null){
+		if(userDao.findUserByNickName(user.getUsername())!=null){
 			result.put("success", CommonMapUtil.baseMsgToMapConvertor("注册失败！该昵称已经被注册", 512));
 			return result;
 		}else{
-			user.setClient_id(SecurityUtil.getUUID());
-			userDao.save(user);
 			HuanXinUtil.registUser(user);
 			Map<String,Object> usermap = userUtil.userToMapConvertor(user,false,user.getClient_id());
 			usermap.putAll(CommonMapUtil.baseMsgToMapConvertor());
@@ -547,11 +542,10 @@ public class UserService {
 		User user = userDao.findUserByPhone("+"+zone+phonenumber);
 		if(user!=null){
 			result = CommonMapUtil.baseMsgToMapConvertor(Constant.PHONE_ALREADY_EXISTS,201);
+		}else if(sms.sendSM(phonenumber, zone, validecode)==Constant.SUCCEES){
+			result = CommonMapUtil.baseMsgToMapConvertor(Constant.VALIDECODE_SUCCESS,Constant.SUCCEES);
 		}else{
-			user.setPhone(phonenumber);
-			userDao.saveOrUpdate(user);
-			result = CommonMapUtil.baseMsgToMapConvertor();
-			result.put("status", sms.sendSM(phonenumber, zone, validecode));
+			result = CommonMapUtil.baseMsgToMapConvertor(Constant.VALIDECODE_ERROR,Constant.ERROR);
 		}
 		return result;
 	}
@@ -566,7 +560,9 @@ public class UserService {
 		User user = userDao.findUserById(client_id);
 		user.setSalary(salary);
 		//目前限制3个月之内不能再次更改
-		user.setNext_change(TimeUtil.plusDate(Constant.MONTH_GAP,new Date()));
+		Date d = TimeUtil.plusMonth(Constant.MONTH_GAP,TimeUtil.getFormatShortDate(TimeUtil.getFormatStringDate(new Date())));
+		user.setNext_change(d);
+		System.out.println("下次才能修改的日期为："+d);
 		userDao.saveOrUpdate(user);
 		return result;
 	}
@@ -580,7 +576,7 @@ public class UserService {
 	public Map<String,Object> createRequest(String self_id,String other_id){
 		Map<String,Object> success = new HashMap<String, Object>();
 		User self = findUserById(self_id);
-		JPushUtil.push(other_id, self_id, self.getUsername(), Constant.AGREE_SALARY_MSG, self.getUsername()+Constant.EXCHANGE_SALARY_MSG);
+		JPushUtil.push(other_id, self_id, self.getUsername(), Constant.REQUESTSALARY, self.getUsername()+Constant.EXCHANGE_SALARY_MSG);
 		success.put("success", CommonMapUtil.baseMsgToMapConvertor());
 		return success;
 	}
@@ -667,7 +663,7 @@ public class UserService {
 		}
 		//填充数据列，在对应薪资等级的数据列索引的元素基础上+1
 		for(User u:users){
-			int level = u.getSalary()/Constant.SALARY_GAP;
+			int level = u.getSalary()/Constant.SALARY_GAP_1;
 			if(level<=Constant.SALARY_SIZE){
 				data.set(level,(Integer)data.get(level)+1);
 			}else{
@@ -679,6 +675,4 @@ public class UserService {
 		success.put("success", distribution);
 		return success;
 	}
-	
-	
 }

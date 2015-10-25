@@ -382,13 +382,16 @@ public class UserUtil {
 	public Map<String,Object> salaryConvertor(User user){
 		Map<String,Object> msg = new HashMap<String, Object>();
 		Map<String,Object> usermap = new HashMap<String, Object>();
-		int nextdate = TimeUtil.dateGap(user.getNext_change(), new Date());
+		int nextdate = 0;
+		if(user.getNext_change()!=null){
+			nextdate = TimeUtil.dateGap(user.getNext_change(), new Date());
+		}
 		if(nextdate<=0){
 			nextdate = 0;
 		}
 		msg.put("client_id", user.getClient_id());
-		msg.put("image", Constant.IMAGE_PATH+user.getClient_id()+"/"+Constant.IMAGE_NAME);
-		msg.put("salary", user.getSalary());
+		msg.put("username", user.getUsername());
+		msg.put("salary", user.getSalary()+"");
 		msg.put("date_gap", nextdate);
 		usermap.put("user", msg);
 		return usermap;

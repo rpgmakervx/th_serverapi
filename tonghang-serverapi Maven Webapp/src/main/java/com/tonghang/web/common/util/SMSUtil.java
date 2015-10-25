@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component("smsUtil")
 public class SMSUtil {
 
-	public String sendSM(String phonenumber,String zone,String validecode){
+	public int sendSM(String phonenumber,String zone,String validecode){
 		Map<String,Object> parts = new HashMap<String, Object>();
 		parts.put("appkey", Constant.SHARE_SDK_APPKEY);
 		parts.put("zone", zone);
@@ -22,7 +22,7 @@ public class SMSUtil {
 		Map map = response.getBody();
 		String status = (String) map.get("status");
 		if(status.equals("468")){
-			return Constant.VALIDECODE_ERROR;
-		}else return Constant.VALIDECODE_SUCCESS;
+			return Constant.ERROR;
+		}else return Constant.SUCCEES;
 	}
 }

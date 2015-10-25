@@ -48,13 +48,13 @@ public class TimeUtil {
 	public static Date plusDate(int days,Date datetime){
 		DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd");
 		DateTime dt = dtf.parseDateTime(getFormatString(datetime));
-		dt.plusDays(days);
+		dt = dt.plusDays(days);
 		return dt.toDate();
 	}
 	public static Date plusMonth(int months,Date datetime){
 		DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd");
-		DateTime dt = dtf.parseDateTime(getFormatString(datetime));
-		dt.plusMonths(months);
+		DateTime dt = dtf.parseDateTime(getFormatStringDate(datetime));
+		dt = dt.plusMonths(months);
 		return dt.toDate();
 	}
 	//d2-d1

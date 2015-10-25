@@ -32,8 +32,10 @@ public class Constant extends HuanXinUtil{
 	public static final String PHONE_NOT_EXISTS = "该手机号没有注册同行";
 	public static final String PHONE_ALREADY_EXISTS = "该手机号已被注册过";
 	public static final String VALIDECODE_ERROR = "验证码错误";
+	public static final String MODIFY_SUCCESS = "修改成功！";
 	public static final String VALIDECODE_SUCCESS = "验证码正确";
 	
+	public static final String VALIDATE_SECURETY = "未通过安全验证！用户未授权！";
 	
 	public static final String PICTURE_SERVER = "http://114.215.143.83:8080/tonghang-serverapi";
 	public static final String ADV_SERVER = "http://114.215.143.83:8080/tonghang";
@@ -80,7 +82,9 @@ public class Constant extends HuanXinUtil{
 
 	/** fail code*/
 	public static int ERROR = 500;
-	public static int SUCCEES = 200;
+	public static int SUCCESS = 200;
+	public static int UNAUTHORIZED = 401;
+	
 	
 	/**JPUSH Type*/
 	/**好友邀请的推送标记*/

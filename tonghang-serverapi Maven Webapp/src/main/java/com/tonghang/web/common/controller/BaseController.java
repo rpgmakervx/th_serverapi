@@ -9,6 +9,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.tonghang.web.common.exception.BaseException;
+import com.tonghang.web.common.util.Constant;
+import com.tonghang.web.common.util.EmailUtil;
 import com.tonghang.web.common.util.LogUtil;
 
 @Controller
@@ -28,8 +30,9 @@ public class BaseController {
 			result.put("code", ((BaseException)e).getCode());
 			System.err.println("抛出自定义异常！！：\n\t"+((BaseException) e).getCode()+"\n\t"+((BaseException) e).getMessage());;
 		}else{
-			result.put("code", 500);
+			result.put("code", Constant.ERROR);
 			result.put("message", "server exception");
+			EmailUtil.noticeEmail(e.getMessage());
 			e.printStackTrace();
 		}
 		map.put("result", result);

@@ -23,6 +23,6 @@ public class SMSUtil {
 		String status = (String) map.get("status");
 		if(status.equals("468")){
 			return Constant.ERROR;
-		}else return Constant.SUCCEES;
+		}else return Constant.SUCCESS;
 	}
 }

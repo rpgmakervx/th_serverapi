@@ -31,6 +31,7 @@ import com.tonghang.web.common.exception.NickNameExistException;
 import com.tonghang.web.common.exception.SearchNoResultException;
 import com.tonghang.web.common.exception.UpdateUserException;
 import com.tonghang.web.common.util.CommonMapUtil;
+import com.tonghang.web.common.util.Constant;
 import com.tonghang.web.common.util.RequestUtil;
 import com.tonghang.web.common.util.SecurityUtil;
 import com.tonghang.web.label.pojo.Label;
@@ -94,9 +95,9 @@ public class UserController extends BaseController{
 	 * @throws LoginException 
 	 */
 	@RequestMapping(value = "/forget_password")
-	public ResponseEntity<Map<String,Object>> forgetPassword(@RequestParam String mapstr) throws JsonParseException, JsonMappingException, IOException, LoginException {
+	public ResponseEntity<Map<String,Object>> forgetPasswordByEmail(@RequestParam String mapstr) throws JsonParseException, JsonMappingException, IOException, LoginException {
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
-		return new ResponseEntity<Map<String,Object>>(userService.forgetPassword((String)map.get("email")), HttpStatus.OK);
+		return new ResponseEntity<Map<String,Object>>(userService.forgetPassword_Email((String)map.get("email")), HttpStatus.OK);
 	}
 	
 	/**
@@ -406,19 +407,6 @@ public class UserController extends BaseController{
 		userService.saveUsersLocation(client_id, x_point, y_point);
 		return new ResponseEntity<Map<String,Object>>(result,HttpStatus.OK);
 	}
-	/**修改日期 ：2015-10-18 
-	 * 业务功能：注册过程中手机验证码校验，并存储非用户的手机号。
-	 * @param mapstr
-	 * @return
-	 * @throws JsonParseException
-	 * @throws JsonMappingException
-	 * @throws IOException
-	 */
-	@RequestMapping(value="phone/validate")
-	public ResponseEntity<Map<String,Object>> registPhone(@RequestParam String mapstr) throws JsonParseException, JsonMappingException, IOException{
-		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
-		return new ResponseEntity<Map<String,Object>>(userService.validePhone_regist((String)map.get("phone"),(String)map.get("zone"),(String)map.get("code")),HttpStatus.OK);
-	}
 	/**
 	 *业务功能：用户修改薪资信息 
 	 * @param mapstr
@@ -495,7 +483,6 @@ public class UserController extends BaseController{
 		result.putAll(userService.checkSalary(client_id));
 		result.putAll(CommonMapUtil.baseMsgToMapConvertor());
 		success.put("success", result);
-		System.out.println("success: "+success);
 		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
 	}
 	/**
@@ -512,5 +499,56 @@ public class UserController extends BaseController{
 		return new ResponseEntity<Map<String,Object>>(userService.analyzeUserSalary(client_id),HttpStatus.OK);
 	}
 	
+	/**修改日期 ：2015-10-18
+	 * 修改日期 ：2015-10-25 
+	 * 业务功能：注册过程中手机验证码校验，并存储非用户的手机号。
+	 * @param mapstr
+	 * @return
+	 * @throws JsonParseException
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 * notice: 2015-10-25 校验手机号后是否要保存该手机,并判断是否要返回client_id
+	 */
+	@RequestMapping(value="phone/validate")
+	public ResponseEntity<Map<String,Object>> validatePhone(@RequestParam String mapstr) throws Exception{
+		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
+		Map<String,Object> success = new HashMap<String, Object>();
+		String phone = (String)map.get("phone");
+		String zone = (String)map.get("zone");
+		String code = (String)map.get("code");
+		String client_id = (String)map.get("client_id");
+		boolean update = (Boolean)map.get("update");
+		boolean needId = (Boolean)map.get("needId");
+		Map<String,Object> result = userService.validePhone(phone,zone,code);
+		if(update){
+			User user = userService.findUserById(client_id);
+			user.setPhone(zone+phone);
+			userService.updateUser(user);
+		}else if(needId){
+			User user = userService.findUserByPhone(zone+phone);
+			result.put("client_id", user.getClient_id());
+		}
+		success.put("success", result);
+		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
+	}
 	
+	@RequestMapping(value="phone/validate")
+	public ResponseEntity<Map<String,Object>> forgetPasswordByPhone(@RequestParam String mapstr) throws Exception{
+		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
+		Map<String,Object> success = new HashMap<String, Object>();	
+		Map<String,Object> result = new HashMap<String, Object>();
+		String phone = (String)map.get("phone");
+		String client_id = (String)map.get("client_id");
+		String password = (String)map.get("password");
+		User user = userService.findUserById(client_id);
+		if(user.getPhone().equals(phone)){
+			user.setPassword(password);
+			userService.updateUser(user);
+			result.putAll(CommonMapUtil.baseMsgToMapConvertor(Constant.VALIDATE_SECURETY,Constant.UNAUTHORIZED));
+		}else{
+			result.putAll(CommonMapUtil.baseMsgToMapConvertor(Constant.MODIFY_SUCCESS,Constant.SUCCESS));
+		}
+		success.put("success", result);
+		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
+	}
 }

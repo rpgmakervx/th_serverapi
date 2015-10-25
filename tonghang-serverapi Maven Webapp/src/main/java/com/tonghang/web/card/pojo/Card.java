@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.ForeignKey;
@@ -32,7 +33,7 @@ public class Card implements Serializable{
 	@Id
 	@GenericGenerator(strategy="assigned",name="idGenerator")
 	@GeneratedValue(generator="idGenerator")
-	@ManyToOne()
+	@OneToOne()
 	@JoinColumn(name="client_id",columnDefinition="default null")
 	private User user;
 	

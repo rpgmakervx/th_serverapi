@@ -153,7 +153,7 @@ public class UserService {
 	 * 
 	 * notice: 2015-08-28 忘记密码的随机密码进行了MD5加密
 	 */
-	public Map<String,Object> forgetPassword(String email) throws LoginException{
+	public Map<String,Object> forgetPassword_Email(String email) throws LoginException{
 		Map<String,Object> result = new HashMap<String, Object>();
 		User user = userDao.findUserByEmail(email);
 		if(user==null){
@@ -195,6 +195,8 @@ public class UserService {
 			result.put("success", CommonMapUtil.baseMsgToMapConvertor("注册失败！该昵称已经被注册", 512));
 			return result;
 		}else{
+			user.setClient_id(SecurityUtil.getUUID());
+			userDao.save(user);
 			HuanXinUtil.registUser(user);
 			Map<String,Object> usermap = userUtil.userToMapConvertor(user,false,user.getClient_id());
 			usermap.putAll(CommonMapUtil.baseMsgToMapConvertor());
@@ -490,6 +492,10 @@ public class UserService {
 	public User findUserById(String client_id){
 		return userDao.findUserById(client_id);
 	}
+	
+	public User findUserByPhone(String phone){
+		return userDao.findUserByPhone(phone);
+	}
 	/**
 	 * 2015-08-26日新增
 	 * 
@@ -537,13 +543,13 @@ public class UserService {
 	 * @param phonenumber	客户端手机号
 	 * @return
 	 */
-	public Map<String,Object> validePhone_regist(String phonenumber,String zone,String validecode){
+	public Map<String,Object> validePhone(String phonenumber,String zone,String validecode){
 		Map<String,Object>  result = null;
-		User user = userDao.findUserByPhone("+"+zone+phonenumber);
+		User user = findUserByPhone(zone+phonenumber);
 		if(user!=null){
 			result = CommonMapUtil.baseMsgToMapConvertor(Constant.PHONE_ALREADY_EXISTS,201);
-		}else if(sms.sendSM(phonenumber, zone, validecode)==Constant.SUCCEES){
-			result = CommonMapUtil.baseMsgToMapConvertor(Constant.VALIDECODE_SUCCESS,Constant.SUCCEES);
+		}else if(sms.sendSM(phonenumber, zone, validecode)==Constant.SUCCESS){
+			result = CommonMapUtil.baseMsgToMapConvertor(Constant.VALIDECODE_SUCCESS,Constant.SUCCESS);
 		}else{
 			result = CommonMapUtil.baseMsgToMapConvertor(Constant.VALIDECODE_ERROR,Constant.ERROR);
 		}
@@ -674,5 +680,12 @@ public class UserService {
 		distribution.putAll(CommonMapUtil.baseMsgToMapConvertor());
 		success.put("success", distribution);
 		return success;
+	}
+	/**
+	 * 业务功能：修改用户信息
+	 * @param user
+	 */
+	public void updateUser(User user){
+		userDao.saveOrUpdate(user);
 	}
 }

@@ -12,7 +12,7 @@ public class CommonMapUtil {
 		Map<String,Object> result = new HashMap<String, Object>();
 		result.put("sys_time", TimeUtil.getFormatString(new Date()));
 		result.put("pic_server", Constant.PICTURE_SERVER);
-		result.put("code", "200");
+		result.put("code", Constant.SUCCESS);
 		result.put("message", "server normal");
 		return result;
 	}

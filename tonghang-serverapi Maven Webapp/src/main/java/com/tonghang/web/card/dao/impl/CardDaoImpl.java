@@ -23,7 +23,6 @@ public class CardDaoImpl implements CardDao {
 	@Override
 	public void saveOrUpdate(Card card) {
 		// TODO Auto-generated method stub
-		System.out.println("saveOrUpdate");
 		sessionFactory.getCurrentSession().saveOrUpdate(card);
 	}
 

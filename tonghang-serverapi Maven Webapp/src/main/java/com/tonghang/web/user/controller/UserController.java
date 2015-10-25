@@ -476,7 +476,7 @@ public class UserController extends BaseController{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value="salary/{client_id}/check")
+	@RequestMapping(value="salary/{client_id}/check",method=RequestMethod.POST)
 	public ResponseEntity<Map<String,Object>> checkSelfSalary(@PathVariable String client_id) throws Exception{
 		Map<String,Object> success = new HashMap<String, Object>();
 		Map<String,Object> result = new HashMap<String, Object>();
@@ -490,7 +490,7 @@ public class UserController extends BaseController{
 	 * @param map
 	 * @return
 	 */
-	@RequestMapping(value="salary/chart")
+	@RequestMapping(value="salary/chart",method=RequestMethod.POST)
 	public ResponseEntity<Map<String,Object>> salaryChart(@RequestBody(required=false) Map map){
 		String client_id ="";
 		if(map!=null){
@@ -509,7 +509,7 @@ public class UserController extends BaseController{
 	 * @throws IOException
 	 * notice: 2015-10-25 校验手机号后是否要保存该手机,并判断是否要返回client_id
 	 */
-	@RequestMapping(value="phone/validate")
+	@RequestMapping(value="phone/validate",method=RequestMethod.POST)
 	public ResponseEntity<Map<String,Object>> validatePhone(@RequestParam String mapstr) throws Exception{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
 		Map<String,Object> success = new HashMap<String, Object>();
@@ -531,8 +531,13 @@ public class UserController extends BaseController{
 		success.put("success", result);
 		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
 	}
-	
-	@RequestMapping(value="phone/validate")
+	/**
+	 * 添加时间：2015-10-25
+	 * @param mapstr
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="phone/validate",method=RequestMethod.POST)
 	public ResponseEntity<Map<String,Object>> forgetPasswordByPhone(@RequestParam String mapstr) throws Exception{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
 		Map<String,Object> success = new HashMap<String, Object>();	
@@ -547,6 +552,84 @@ public class UserController extends BaseController{
 			result.putAll(CommonMapUtil.baseMsgToMapConvertor(Constant.VALIDATE_SECURETY,Constant.UNAUTHORIZED));
 		}else{
 			result.putAll(CommonMapUtil.baseMsgToMapConvertor(Constant.MODIFY_SUCCESS,Constant.SUCCESS));
+		}
+		success.put("success", result);
+		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
+	}
+	/**
+	 * 添加时间：2015-10-25
+	 * 业务功能：绑定联系方式前，校验当前用户。
+	 * @param mapstr
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="bind/validate",method=RequestMethod.POST)
+	public ResponseEntity<Map<String,Object>> validateBeforeBind(@RequestParam String mapstr) throws Exception{
+		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
+		Map<String,Object> success = new HashMap<String, Object>();	
+		Map<String,Object> result = new HashMap<String, Object>();	
+		String client_id = (String)map.get("client_id");
+		String password = (String)map.get("password");
+		User user = userService.findUserById(client_id);
+		if(user.getPassword().equals(password)){
+			result.putAll(CommonMapUtil.baseMsgToMapConvertor());
+		}else{
+			result.putAll(CommonMapUtil.baseMsgToMapConvertor(Constant.VALIDATE_PASSWORD_ERROR,Constant.PASSWORD_ERROR));
+		}
+		success.put("success", result);
+		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
+	}
+	/**
+	 * 添加时间：2015-10-25
+	 * 业务功能：获得邮箱验证码，有效时间2分钟
+	 * @param mapstr
+	 * @return
+	 * @throws Exception
+	 * notice:
+	 */
+	@RequestMapping(value="email/validatecode",method=RequestMethod.POST)
+	public ResponseEntity<Map<String,Object>> obtainEmailValidateCode(@RequestParam String mapstr) throws Exception{
+		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
+		Map<String,Object> success = new HashMap<String, Object>();	
+		Map<String,Object> result = new HashMap<String, Object>();
+		String client_id = (String)map.get("client_id");
+		String email = (String)map.get("email");
+		String code = userService.generateEmailCode(email, client_id);
+		if(code!=null){
+			result.putAll(CommonMapUtil.baseMsgToMapConvertor(Constant.EMAIL,Constant.SUCCESS));
+			result.put("code", code);
+		}else{
+			result.putAll(CommonMapUtil.baseMsgToMapConvertor(Constant.EMAIL_NOT_EXISTS,Constant.ERROR));
+		}
+		success.put("success", result);
+		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
+	}
+	/**
+	 * 添加时间：2015-10-25
+	 * 业务功能：校验邮箱验证码并绑定邮箱
+	 * @param mapstr
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="bind/email",method=RequestMethod.POST)
+	public ResponseEntity<Map<String,Object>> bindEmail(@RequestParam String mapstr) throws Exception{
+		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
+		Map<String,Object> success = new HashMap<String, Object>();	
+		Map<String,Object> result = new HashMap<String, Object>();
+		String email = (String) map.get("email");
+		String code = (String) map.get("code");
+		String client_id = (String)map.get("client_id");
+		User user = userService.findUserById(client_id);
+		if(!user.getEmail().equals(email)){
+			Map<String,Object> m = userService.validateEmailCode(client_id, code);
+			if(Constant.ERROR==(Integer)m.get("code")){
+				User u = userService.findUserById(client_id);
+				u.setEmail(email);
+				userService.updateUser(user);
+			}
+			result.putAll(CommonMapUtil.baseMsgToMapConvertor((String)m.get("message"), (Integer)m.get("code")));
+		}else{
+			result.putAll(CommonMapUtil.baseMsgToMapConvertor(Constant.EMAIL_EXIST, Constant.ERROR));
 		}
 		success.put("success", result);
 		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);

@@ -15,7 +15,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.tonghang.web.card.pojo.Card;
 import com.tonghang.web.common.exception.BaseException;
 import com.tonghang.web.common.exception.EmailExistException;
 import com.tonghang.web.common.exception.LoginException;
@@ -43,6 +42,8 @@ import com.tonghang.web.user.cache.UserCache;
 import com.tonghang.web.user.dao.UserDao;
 import com.tonghang.web.user.pojo.User;
 import com.tonghang.web.user.util.UserUtil;
+import com.tonghang.web.validate.pojo.ValidateCode;
+import com.tonghang.web.validate.service.ValidateCodeService;
 
 @Service("userService")
 @Transactional
@@ -60,6 +61,8 @@ public class UserService {
 	private StatisticsService statisticsService;
 	@Resource(name="locationService")
 	private LocationService locationService;
+	@Resource(name="validateService")
+	private ValidateCodeService validateService;
 	@Resource(name="userUtil")
 	private UserUtil userUtil;
 	@Resource(name="userCache")
@@ -687,5 +690,58 @@ public class UserService {
 	 */
 	public void updateUser(User user){
 		userDao.saveOrUpdate(user);
+	}
+	/**
+	 * 业务功能：生成邮箱验证码，并保存或更新该验证码
+	 * @param email
+	 * @param client_id
+	 * @return
+	 */
+	public String generateEmailCode(String email,String client_id){
+		String code = StringUtil.randomCode(6);
+		ValidateCode vc = validateService.findValidateCode(client_id);
+		User user = userDao.findUserByEmail(email);
+		if(user==null){
+			return null;
+		}
+		if(vc==null){
+			vc = new ValidateCode();
+			vc.setEmail_code(code);
+			vc.setEmail_timestamp(new Date().getTime());
+			validateService.addValidateCode(vc);
+		}else{
+			vc.setEmail_code(code);
+			vc.setEmail_timestamp(new Date().getTime());
+			validateService.updateValidateCode(vc);
+		}
+		EmailUtil.sendEmail(user, "尊敬的" + user.getUsername() + "，您好！\n\n"
+				+ "您本次操作获取的验证码为：" + code+"\n 请在两分钟内完成相关操作");
+		return code;
+	}
+	/**
+	 * 业务功能：邮箱验证码校验
+	 * @param client_id
+	 * @param code
+	 * @return
+	 */
+	public Map<String,Object> validateEmailCode(String client_id,String code){
+		Map<String,Object> result = new HashMap<String, Object>();
+		ValidateCode vc = validateService.findValidateCode(client_id);
+		if(vc==null){
+			result.put("message", Constant.NO_VALIDCODE);
+			result.put("code", Constant.ERROR);
+		}else if((new Date().getTime()-vc.getEmail_timestamp())<=Constant.EMAIL_CODETIME){
+			if(vc.getEmail_code().equals(code)){
+				result.put("message", Constant.VALIDECODE_SUCCESS);
+				result.put("code", Constant.SUCCESS);
+			}else{
+				result.put("message", Constant.INVALID_CODE);
+				result.put("code", Constant.ERROR);
+			}
+		}else{
+			result.put("message", Constant.VALID_CODE_TIMEOUT);
+			result.put("code", Constant.ERROR);
+		}
+		return result;
 	}
 }

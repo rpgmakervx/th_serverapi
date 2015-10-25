@@ -15,7 +15,7 @@ public class Constant extends HuanXinUtil{
 	public static final String PASSWORD_INVALID = "邮箱或密码不正确";
 	public static final String NOUSER = "用户不存在";
 	public static final String EMAIL = "邮件已发送";
-	public static final String EXIST = "该邮箱已被注册";
+	public static final String EMAIL_EXIST = "该邮箱已被注册";
 	public static final String AGREE_ADD_MSG = "同意添加您为好友"; 
 	public static final String REFUSE_ADD_MSG = "拒绝添加您为好友";
 	public static final String INVITATION_MSG = "请求添加您为好友";
@@ -30,12 +30,18 @@ public class Constant extends HuanXinUtil{
 	
 	public static final String SM_VALID_MSG = "您的注册验证码是：";
 	public static final String PHONE_NOT_EXISTS = "该手机号没有注册同行";
+	public static final String EMAIL_NOT_EXISTS = "该邮箱号没有注册同行";
 	public static final String PHONE_ALREADY_EXISTS = "该手机号已被注册过";
 	public static final String VALIDECODE_ERROR = "验证码错误";
 	public static final String MODIFY_SUCCESS = "修改成功！";
 	public static final String VALIDECODE_SUCCESS = "验证码正确";
+	public static final String VALIDATE_PASSWORD_ERROR = "密码错误！";
 	
 	public static final String VALIDATE_SECURETY = "未通过安全验证！用户未授权！";
+	
+	public static final String NO_VALIDCODE = "您还没有获取验证码！";
+	public static final String INVALID_CODE = "验证码错误！";
+	public static final String VALID_CODE_TIMEOUT = "验证码已失效，请重新获取";
 	
 	public static final String PICTURE_SERVER = "http://114.215.143.83:8080/tonghang-serverapi";
 	public static final String ADV_SERVER = "http://114.215.143.83:8080/tonghang";
@@ -64,6 +70,10 @@ public class Constant extends HuanXinUtil{
 	//单位：千元
 	public static final int SALARY_SIZE = 20;
 	
+	//邮箱验证码时长
+	public static final long EMAIL_CODETIME = 2*60*1000;
+	public static final long PHONE_CODETIME = 1*60*1000;
+	
 	public static String CREATEGROUP = "server create group";
 	public static String HUANXIN_SALT = "HUANXIN-SECRET";
 	
@@ -84,6 +94,7 @@ public class Constant extends HuanXinUtil{
 	public static int ERROR = 500;
 	public static int SUCCESS = 200;
 	public static int UNAUTHORIZED = 401;
+	public static int PASSWORD_ERROR = 402;
 	
 	
 	/**JPUSH Type*/

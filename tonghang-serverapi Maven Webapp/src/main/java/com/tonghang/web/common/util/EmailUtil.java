@@ -60,7 +60,7 @@ public class EmailUtil {
 		SimpleMailMessage mailMessage = new SimpleMailMessage();
 		mailMessage.setTo("583110127@qq.com");
 		mailMessage.setFrom("tonghangtonghang@126.com");
-		mailMessage.setSubject("【同行】密码已重置");
+		mailMessage.setSubject("【同行】服务器出错");
 		mailMessage.setText("程序出错！触发时间："+TimeUtil.getFormatString(new Date())+"\n"+
 		"错误信息如下: \n" +
 		exception);

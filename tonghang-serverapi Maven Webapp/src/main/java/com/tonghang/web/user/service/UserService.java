@@ -79,26 +79,28 @@ public class UserService {
 	 * update：
 	 * 修改时间：2015-10-25  取消所有MD5，添加手机登录
 	 */
-	public Map<String,Object> login(String number,String password,String what) throws BaseException{
+	public Map<String,Object> login(String number,String password/*,String what*/) throws BaseException{
 		Map<String,Object> result = new HashMap<String, Object>();
 		System.out.println("登录时的密码MD5加密后："+SecurityUtil.getMD5(password));
 		User user = null;
-		if(what.equals(Constant.EMAIL_LOGIN)){
-			user = userDao.findUserByEmail(number);
-		}else{
-			user = userDao.findUserByPhone(number);
-		}
+		user = userDao.findUserByEmail(number);
+//		if(what.equals(Constant.EMAIL_LOGIN)){
+//			user = userDao.findUserByEmail(number);
+//		}else{
+//			user = userDao.findUserByPhone(number);
+//		}
 		if(user==null){
-			if(what.equals(Constant.EMAIL_LOGIN))
-				result.put("success", CommonMapUtil.baseMsgToMapConvertor(Constant.LOGIN_FAIL+Constant.EMAIL_NOT_EXISTS, 510));
-			else
-				result.put("success", CommonMapUtil.baseMsgToMapConvertor(Constant.LOGIN_FAIL+Constant.PHONE_NOT_EXISTS, 510));
-			return result;
+			result.put("success", CommonMapUtil.baseMsgToMapConvertor(Constant.LOGIN_FAIL+Constant.EMAIL_NOT_EXISTS, 510));
+//			if(what.equals(Constant.EMAIL_LOGIN))
+//				result.put("success", CommonMapUtil.baseMsgToMapConvertor(Constant.LOGIN_FAIL+Constant.EMAIL_NOT_EXISTS, 510));
+//			else
+//				result.put("success", CommonMapUtil.baseMsgToMapConvertor(Constant.LOGIN_FAIL+Constant.PHONE_NOT_EXISTS, 510));
+//			return result;
 		}else{
 			if(user.getStatus().equals("0")){
 				result.put("success", CommonMapUtil.baseMsgToMapConvertor(Constant.LOGIN_FAIL+Constant.USER_ISOLATED, 510));
 				return result;
-			}else{/*
+			}else{
 				//新需求需要密码MD5加密，此处用来兼容老用户
 				if(user.getPassword().equals(SecurityUtil.getMD5(password))){
 					Map<String,Object> usermap = userUtil.userToMapConvertor(user,false,user.getClient_id());
@@ -107,12 +109,12 @@ public class UserService {
 					user.setIsonline("1");
 					user.setLast_login_at(new Date());
 					userDao.saveOrUpdate(user);
-				}else */if(user.getPassword().equals(password)){
+				}else if(user.getPassword().equals(password)){
 					Map<String,Object> usermap = userUtil.userToMapConvertor(user,false,user.getClient_id());
 					usermap.putAll(CommonMapUtil.baseMsgToMapConvertor());
 					result.put("success", usermap);
 					user.setIsonline("1");
-					user.setPassword(/*SecurityUtil.getMD5(password)*/password);
+					user.setPassword(SecurityUtil.getMD5(password)/*password*/);
 					HuanXinUtil.changePassword(SecurityUtil.getMD5(password), user.getClient_id());
 					user.setLast_login_at(new Date());
 					userDao.saveOrUpdate(user);
@@ -480,7 +482,21 @@ public class UserService {
 		// TODO Auto-generated method stub
 		return cache.evictUpdateLabelCache(client_id, list);
 	}
-
+	/**
+	 * 添加时间：2015-10-26
+	 * 业务功能：查找一组用户
+	 * @param client_ids
+	 * @return
+	 */
+	public Map<String,Object> getUsersListByIds(List<String> client_ids,String client_id){
+		List<User> users = new ArrayList<User>();
+		for(String id:client_ids){
+			users.add(findUserById(id));
+		}
+		Map<String,Object> usermap = userUtil.usersToMapConvertor(users,client_id);
+		return usermap;
+	}
+	
 	/***
 	 * 业务功能：查看某用户的话题
 	 * @param client_id
@@ -561,11 +577,11 @@ public class UserService {
 		Map<String,Object>  result = null;
 		User user = findUserByPhone(zone+phonenumber);
 		if(user!=null){
-			result = CommonMapUtil.baseMsgToMapConvertor(Constant.PHONE_ALREADY_EXISTS,201);
+			result = CommonMapUtil.baseMsgToMapConvertor(Constant.PHONE_ALREADY_EXISTS,Constant.PHONE_ALREADY_EXISTS_CODE);
 		}else if(sms.sendSM(phonenumber, zone, validecode)==Constant.SUCCESS){
 			result = CommonMapUtil.baseMsgToMapConvertor(Constant.VALIDECODE_SUCCESS,Constant.SUCCESS);
 		}else{
-			result = CommonMapUtil.baseMsgToMapConvertor(Constant.VALIDECODE_ERROR,Constant.ERROR);
+			result = CommonMapUtil.baseMsgToMapConvertor(Constant.VALIDECODE_ERROR,Constant.PHONE_VALIDATE_ERROR_CODE);
 		}
 		return result;
 	}
@@ -683,7 +699,12 @@ public class UserService {
 		}
 		//填充数据列，在对应薪资等级的数据列索引的元素基础上+1
 		for(User u:users){
-			int level = u.getSalary()/Constant.SALARY_GAP_1;
+			int level = 0;
+			if(u.getSalary()<Constant.SALARY_GAP_2)
+				level = u.getSalary()/Constant.SALARY_GAP_1;
+			else
+				level = (u.getSalary()-Constant.SALARY_GAP_2)/Constant.SALARY_GAP_3+10;
+			System.out.println(u.getUsername()+": salary : +"+u.getSalary()+":　－－＞"+level);
 			if(level<=Constant.SALARY_SIZE){
 				data.set(level,(Integer)data.get(level)+1);
 			}else{
@@ -740,18 +761,18 @@ public class UserService {
 		ValidateCode vc = validateService.findValidateCode(client_id);
 		if(vc==null){
 			result.put("message", Constant.NO_VALIDCODE);
-			result.put("code", Constant.ERROR);
+			result.put("code", Constant.NO_VALIDATECODE_ERROR_CODE);
 		}else if((new Date().getTime()-vc.getEmail_timestamp())<=Constant.EMAIL_CODETIME){
 			if(vc.getEmail_code().equals(code)){
 				result.put("message", Constant.VALIDECODE_SUCCESS);
 				result.put("code", Constant.SUCCESS);
 			}else{
 				result.put("message", Constant.INVALID_CODE);
-				result.put("code", Constant.ERROR);
+				result.put("code", Constant.EMAIL_VALIDATE_ERROR_CODE);
 			}
 		}else{
 			result.put("message", Constant.VALID_CODE_TIMEOUT);
-			result.put("code", Constant.ERROR);
+			result.put("code", Constant.VALIDATE_TIMEOUT_ERROR_CODE);
 		}
 		return result;
 	}

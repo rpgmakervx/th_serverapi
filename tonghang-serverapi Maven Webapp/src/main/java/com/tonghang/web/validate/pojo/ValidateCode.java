@@ -1,5 +1,7 @@
 package com.tonghang.web.validate.pojo;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -22,7 +24,7 @@ import com.tonghang.web.user.pojo.User;
 @Component("validateCode")
 @Entity
 @Table(name="validatecode")
-public class ValidateCode {
+public class ValidateCode implements Serializable{
 
 	@Id
 	@GenericGenerator(strategy="assigned",name="idGenerator")

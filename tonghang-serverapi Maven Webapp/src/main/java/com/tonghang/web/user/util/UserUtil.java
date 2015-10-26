@@ -35,7 +35,6 @@ public class UserUtil {
 	 * @param users
 	 * @return
 	 */
-	@Deprecated
 	public Map<String,Object> usersToMapConvertor(List<User> users){
 		List<Map<String,Object>> usersmsg = new ArrayList<Map<String,Object>>();
 		Map<String,Object> usermap = CommonMapUtil.baseMsgToMapConvertor();
@@ -58,10 +57,8 @@ public class UserUtil {
 			msg.put("birth", u.getBirth());
 			usersmsg.add(msg);
 		}
-		
 		usermap.put("users", usersmsg);
-		result.put("success", usermap);
-		return result;
+		return usermap;
 	}
 	
 	/**

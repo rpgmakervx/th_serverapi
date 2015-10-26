@@ -70,9 +70,10 @@ public class Constant extends HuanXinUtil{
 	public static final int MONTH_GAP = 3;
 	//人民币
 	public static final int SALARY_GAP_1 = 1000;
-	public static final int SALARY_GAP_2 = 5000;
+	public static final int SALARY_GAP_2 = 10000;
+	public static final int SALARY_GAP_3 = 5000;
 	//单位：千元
-	public static final int SALARY_SIZE = 20;
+	public static final int SALARY_SIZE = 48;
 	
 	//邮箱验证码时长
 	public static final long EMAIL_CODETIME = 2*60*1000;
@@ -103,6 +104,15 @@ public class Constant extends HuanXinUtil{
 	public static int SUCCESS = 200;
 	public static int UNAUTHORIZED = 401;
 	public static int PASSWORD_ERROR = 402;
+	
+	public static int EMAIL_NO_EXIST_CODE= 410;
+	public static int EMAIL_ALREADY_EXIST_CODE= 411;
+	public static int PHONE_ALREADY_EXISTS_CODE= 412;
+	public static int PHONE_VALIDATE_ERROR_CODE= 413;
+	public static int EMAIL_VALIDATE_ERROR_CODE= 414;
+	public static int VALIDATE_TIMEOUT_ERROR_CODE= 415;
+	public static int NO_VALIDATECODE_ERROR_CODE= 416;
+	
 	
 	
 	/**JPUSH Type*/

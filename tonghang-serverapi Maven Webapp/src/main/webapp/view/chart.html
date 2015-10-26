@@ -20,10 +20,12 @@
 				for(var index=1;index<=size;index++){
 					if(index<10)
 						array[index] = index+"K";
-					else 
+					else if(index>10)
+						array[index] = parseFloat((index-10)/2)+1+"W";
+					else
 						array[index] = parseFloat(index/10)+"W";
 				}
-				array[size+1] = "> 2W";
+				array[size+1] = "> 20W";
 				return array;
 			}
 			$(function(){
@@ -60,6 +62,7 @@
 					data:JSON.stringify(json),
 					success:function(data){
 						var numbers = data.success.data;
+						alert(numbers)
 						require(
 				            [
 				                'echarts',

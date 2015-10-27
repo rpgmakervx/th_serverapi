@@ -32,7 +32,7 @@ public class BaseController {
 		}else{
 			result.put("code", Constant.ERROR);
 			result.put("message", "server exception");
-			EmailUtil.noticeEmail(e.getMessage());
+//			EmailUtil.noticeEmail(e.getMessage());
 			e.printStackTrace();
 		}
 		map.put("result", result);

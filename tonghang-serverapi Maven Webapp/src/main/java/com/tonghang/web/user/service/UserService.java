@@ -79,43 +79,45 @@ public class UserService {
 	 * update：
 	 * 修改时间：2015-10-25  取消所有MD5，添加手机登录
 	 */
-	public Map<String,Object> login(String number,String password/*,String what*/) throws BaseException{
+	public Map<String,Object> login(String number,String password,String what) throws BaseException{
 		Map<String,Object> result = new HashMap<String, Object>();
 		System.out.println("登录时的密码MD5加密后："+SecurityUtil.getMD5(password));
 		User user = null;
-		user = userDao.findUserByEmail(number);
-//		if(what.equals(Constant.EMAIL_LOGIN)){
-//			user = userDao.findUserByEmail(number);
-//		}else{
-//			user = userDao.findUserByPhone(number);
-//		}
+		if(what.equals(Constant.EMAIL_LOGIN)){
+			System.out.println("邮箱登录");
+			System.out.println("邮箱号："+number);
+			user = userDao.findUserByEmail(number);
+		}else{
+			System.out.println("手机登录");
+			user = userDao.findUserByPhone(number); 
+		}
 		if(user==null){
 			result.put("success", CommonMapUtil.baseMsgToMapConvertor(Constant.LOGIN_FAIL+Constant.EMAIL_NOT_EXISTS, 510));
-//			if(what.equals(Constant.EMAIL_LOGIN))
-//				result.put("success", CommonMapUtil.baseMsgToMapConvertor(Constant.LOGIN_FAIL+Constant.EMAIL_NOT_EXISTS, 510));
-//			else
-//				result.put("success", CommonMapUtil.baseMsgToMapConvertor(Constant.LOGIN_FAIL+Constant.PHONE_NOT_EXISTS, 510));
-//			return result;
+			if(what.equals(Constant.EMAIL_LOGIN))
+				result.put("success", CommonMapUtil.baseMsgToMapConvertor(Constant.LOGIN_FAIL+Constant.EMAIL_NOT_EXISTS, 510));
+			else
+				result.put("success", CommonMapUtil.baseMsgToMapConvertor(Constant.LOGIN_FAIL+Constant.PHONE_NOT_EXISTS, 510));
+			return result;
 		}else{
 			if(user.getStatus().equals("0")){
 				result.put("success", CommonMapUtil.baseMsgToMapConvertor(Constant.LOGIN_FAIL+Constant.USER_ISOLATED, 510));
 				return result;
 			}else{
 				//新需求需要密码MD5加密，此处用来兼容老用户
-				if(user.getPassword().equals(SecurityUtil.getMD5(password))){
+				/*if(user.getPassword().equals(SecurityUtil.getMD5(password))){
 					Map<String,Object> usermap = userUtil.userToMapConvertor(user,false,user.getClient_id());
 					usermap.putAll(CommonMapUtil.baseMsgToMapConvertor());
 					result.put("success", usermap);
 					user.setIsonline("1");
 					user.setLast_login_at(new Date());
 					userDao.saveOrUpdate(user);
-				}else if(user.getPassword().equals(password)){
+				}else */if(user.getPassword().equals(password)){
 					Map<String,Object> usermap = userUtil.userToMapConvertor(user,false,user.getClient_id());
 					usermap.putAll(CommonMapUtil.baseMsgToMapConvertor());
 					result.put("success", usermap);
 					user.setIsonline("1");
-					user.setPassword(SecurityUtil.getMD5(password)/*password*/);
-					HuanXinUtil.changePassword(SecurityUtil.getMD5(password), user.getClient_id());
+					user.setPassword(/*SecurityUtil.getMD5(password)*/password);
+//					HuanXinUtil.changePassword(password, user.getClient_id());
 					user.setLast_login_at(new Date());
 					userDao.saveOrUpdate(user);
 				}else{
@@ -731,49 +733,63 @@ public class UserService {
 	 */
 	public String generateEmailCode(String email,String client_id){
 		String code = StringUtil.randomCode(6);
-		ValidateCode vc = validateService.findValidateCode(client_id);
 		User user = userDao.findUserByEmail(email);
-		if(user==null){
-			return null;
-		}
-		if(vc==null){
-			vc = new ValidateCode();
-			vc.setEmail_code(code);
-			vc.setEmail_timestamp(new Date().getTime());
-			validateService.addValidateCode(vc);
-		}else{
-			vc.setEmail_code(code);
-			vc.setEmail_timestamp(new Date().getTime());
-			validateService.updateValidateCode(vc);
-		}
-		EmailUtil.sendEmail(user, "尊敬的" + user.getUsername() + "，您好！\n\n"
+		User me = userDao.findUserById(client_id);
+//		if(user!=null){
+//			return null;
+//		}
+//		if(vc==null){
+//			vc = new ValidateCode();
+//			vc.setUser(me);
+//			vc.setEmail_code(code);
+//			vc.setEmail_timestamp(new Date().getTime());
+//			validateService.addValidateCode(vc);
+//		}else{
+//			vc.setEmail_code(code);
+//			vc.setEmail_timestamp(new Date().getTime());
+//			validateService.updateValidateCode(vc);
+//		}
+		code = cache.generateValidateCode(client_id);
+		EmailUtil.sendEmail(email, "尊敬的" + me.getUsername() + "，您好！\n\n"
 				+ "您本次操作获取的验证码为：" + code+"\n 请在两分钟内完成相关操作");
 		return code;
 	}
 	/**
+	 * 添加时间：2015-10-26
 	 * 业务功能：邮箱验证码校验
 	 * @param client_id
 	 * @param code
 	 * @return
+	 * notice: 修改时间 2015-10-27
+	 * 			目前改为 将验证码存储在缓存中，邮箱缓存时间设定为2分钟
 	 */
 	public Map<String,Object> validateEmailCode(String client_id,String code){
 		Map<String,Object> result = new HashMap<String, Object>();
-		ValidateCode vc = validateService.findValidateCode(client_id);
-		if(vc==null){
-			result.put("message", Constant.NO_VALIDCODE);
-			result.put("code", Constant.NO_VALIDATECODE_ERROR_CODE);
-		}else if((new Date().getTime()-vc.getEmail_timestamp())<=Constant.EMAIL_CODETIME){
-			if(vc.getEmail_code().equals(code)){
-				result.put("message", Constant.VALIDECODE_SUCCESS);
-				result.put("code", Constant.SUCCESS);
-			}else{
-				result.put("message", Constant.INVALID_CODE);
-				result.put("code", Constant.EMAIL_VALIDATE_ERROR_CODE);
-			}
+		String c = cache.generateValidateCode(client_id);
+		if(c.equals(code)){
+			cache.evictValidateCode(client_id);
+			result.put("message", Constant.VALIDECODE_SUCCESS);
+			result.put("code", Constant.SUCCESS);
 		}else{
-			result.put("message", Constant.VALID_CODE_TIMEOUT);
-			result.put("code", Constant.VALIDATE_TIMEOUT_ERROR_CODE);
+			result.put("message", Constant.INVALID_CODE);
+			result.put("code", Constant.EMAIL_VALIDATE_ERROR_CODE);
 		}
+//		ValidateCode vc = validateService.findValidateCode(client_id);
+//		if(vc==null){
+//			result.put("message", Constant.NO_VALIDCODE);
+//			result.put("code", Constant.NO_VALIDATECODE_ERROR_CODE);
+//		}else if((new Date().getTime()-vc.getEmail_timestamp())<=Constant.EMAIL_CODETIME){
+//			if(vc.getEmail_code().equals(code)){
+//				result.put("message", Constant.VALIDECODE_SUCCESS);
+//				result.put("code", Constant.SUCCESS);
+//			}else{
+//				result.put("message", Constant.INVALID_CODE);
+//				result.put("code", Constant.EMAIL_VALIDATE_ERROR_CODE);
+//			}
+//		}else{
+//			result.put("message", Constant.VALID_CODE_TIMEOUT);
+//			result.put("code", Constant.VALIDATE_TIMEOUT_ERROR_CODE);
+//		}
 		return result;
 	}
 }

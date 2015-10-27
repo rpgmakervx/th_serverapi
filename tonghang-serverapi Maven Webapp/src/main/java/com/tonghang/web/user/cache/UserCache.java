@@ -9,6 +9,10 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import net.sf.ehcache.Element;
+
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
@@ -36,6 +40,8 @@ public class UserCache {
 	private LabelDao labelDao;
 	@Resource(name="userService")
 	private UserService userService;
+	@Resource(name="ehcacheManager")
+	private CacheManager cacheManager;
 	
 	/**
 	 * 业务功能：缓存UserService类中 getRecommendCache 方法的值，全部缓存。外部通过分页截取部分缓存结果
@@ -197,5 +203,18 @@ public class UserCache {
 		result.put("success", usermap);
 		return result;
 	}
+	/**
+	 * 业务功能：缓存中生成验证码
+	 * @param client_id
+	 * @return
+	 */
+	@Cacheable(value="com.tonghang.web.user.cache.UserCache.generateValidateCode",key="#client_id+generateValidateCode")
+	public String generateValidateCode(String client_id){
+		String code = StringUtil.randomCode(6);
+		return code;
+	}
+	@CacheEvict(value={"com.tonghang.web.user.cache.UserCache.generateValidateCode"}
+	 	,key = "#client_id+generateValidateCode")
+	public void evictValidateCode(String client_id){ }
 	
 }

@@ -31,5 +31,13 @@
 	    timeToIdleSeconds="0"   
 	    timeToLiveSeconds="300"    
 	    memoryStoreEvictionPolicy="LRU" />
+	    <cache name="com.tonghang.web.user.cache.UserCache.generateValidateCode"  
+		    eternal="false"    
+		    maxElementsInMemory="300"   
+		    overflowToDisk="false"   
+		    diskPersistent="false"    
+		    timeToIdleSeconds="120"   
+		    timeToLiveSeconds="120"    
+		    memoryStoreEvictionPolicy="LRU" />
 </ehcache>
   

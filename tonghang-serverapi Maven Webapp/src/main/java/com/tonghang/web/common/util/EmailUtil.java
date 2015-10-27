@@ -39,13 +39,13 @@ public class EmailUtil {
 		senderImpl.send(mailMessage);
 	}
 	
-	public static void sendEmail(User user,String msg){
+	public static void sendEmail(String email,String msg){
 		JavaMailSenderImpl senderImpl = new JavaMailSenderImpl();
 		senderImpl.setHost("smtp.126.com");
 		senderImpl.setUsername("tonghangtonghang@126.com");
 		senderImpl.setPassword("xiaot2015");
 		SimpleMailMessage mailMessage = new SimpleMailMessage();
-		mailMessage.setTo(user.getEmail());
+		mailMessage.setTo(email);
 		mailMessage.setFrom("tonghangtonghang@126.com");
 		mailMessage.setSubject("【同行】密码已重置");
 		mailMessage.setText(msg);

@@ -69,11 +69,11 @@ public class UserController extends BaseController{
 	 * 修改时间：2015-10-25  1.取消服务器MD5，客户端传来的密码均为MD5。
 	 * 								2.取消email字段，添加number(String)字段，添加what(String)字段  what用来表示使用何种账号登陆
 	 */
-	@RequestMapping(value = "/newlogin")
-//	@RequestMapping(value = "/login")
+//	@RequestMapping(value = "/newlogin")
+	@RequestMapping(value = "/login")
 	@ResponseBody public ResponseEntity<Map<String,Object>> login(@RequestParam String mapstr) throws Exception {		
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
-		return new ResponseEntity<Map<String,Object>>(userService.login((String)map.get("email"),(String)map.get("password")/*,(String)map.get("what")*/), HttpStatus.OK);
+		return new ResponseEntity<Map<String,Object>>(userService.login((String)map.get("number"),(String)map.get("password"),(String)map.get("what")), HttpStatus.OK);
 	}
 //	/**
 //	 * 业务功能：兼容旧版本APP登录功能
@@ -551,11 +551,12 @@ public class UserController extends BaseController{
 	}
 	/**
 	 * 添加时间：2015-10-25
+	 * 忘记密码修改
 	 * @param mapstr
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value="phone/validate",method=RequestMethod.POST)
+	@RequestMapping(value="phone/forget_password",method=RequestMethod.POST)
 	public ResponseEntity<Map<String,Object>> forgetPasswordByPhone(@RequestParam String mapstr) throws Exception{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
 		Map<String,Object> success = new HashMap<String, Object>();	
@@ -617,7 +618,7 @@ public class UserController extends BaseController{
 			result.putAll(CommonMapUtil.baseMsgToMapConvertor(Constant.EMAIL,Constant.SUCCESS));
 			result.put("code", code);
 		}else{
-			result.putAll(CommonMapUtil.baseMsgToMapConvertor(Constant.EMAIL_NOT_EXISTS,Constant.EMAIL_NO_EXIST_CODE));
+			result.putAll(CommonMapUtil.baseMsgToMapConvertor(Constant.EMAIL_EXIST,Constant.EMAIL_NO_EXIST_CODE));
 		}
 		success.put("success", result);
 		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
@@ -638,17 +639,19 @@ public class UserController extends BaseController{
 		String code = (String) map.get("code");
 		String client_id = (String)map.get("client_id");
 		User user = userService.findUserById(client_id);
-		if(!user.getEmail().equals(email)){
-			Map<String,Object> m = userService.validateEmailCode(client_id, code);
-			if(Constant.ERROR==(Integer)m.get("code")){
-				User u = userService.findUserById(client_id);
-				u.setEmail(email);
-				userService.updateUser(user);
-			}
-			result.putAll(CommonMapUtil.baseMsgToMapConvertor((String)m.get("message"), (Integer)m.get("code")));
-		}else{
-			result.putAll(CommonMapUtil.baseMsgToMapConvertor(Constant.EMAIL_EXIST, Constant.EMAIL_ALREADY_EXIST_CODE));
+		Map<String,Object> m = userService.validateEmailCode(client_id, code);
+		System.out.println("邮箱绑定返回码："+m.get("code"));
+		if(Constant.SUCCESS==(Integer)m.get("code")){
+			User u = userService.findUserById(client_id);
+			u.setEmail(email);
+			userService.updateUser(user);
 		}
+		result.putAll(CommonMapUtil.baseMsgToMapConvertor((String)m.get("message"), (Integer)m.get("code")));
+//		if(user.getEmail().equals(email)){
+//			
+//		}else{
+//			result.putAll(CommonMapUtil.baseMsgToMapConvertor(Constant.EMAIL_EXIST, Constant.EMAIL_ALREADY_EXIST_CODE));
+//		}
 		success.put("success", result);
 		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
 	}

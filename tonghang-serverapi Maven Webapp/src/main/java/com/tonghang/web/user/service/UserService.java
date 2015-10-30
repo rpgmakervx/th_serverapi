@@ -574,13 +574,11 @@ public class UserService {
 	 * 校验前先检查手机号是否已被注册，注册过则不能注册。
 	 * @param phonenumber	客户端手机号
 	 * @return
+	 * @throws Exception 
 	 */
-	public Map<String,Object> validePhone(String phonenumber,String zone,String validecode){
+	public Map<String,Object> validePhone(String phonenumber,String zone,String validecode) throws Exception{
 		Map<String,Object>  result = null;
-		User user = findUserByPhone(zone+phonenumber);
-		if(user!=null){
-			result = CommonMapUtil.baseMsgToMapConvertor(Constant.PHONE_ALREADY_EXISTS,Constant.PHONE_ALREADY_EXISTS_CODE);
-		}else if(sms.sendSM(phonenumber, zone, validecode)==Constant.SUCCESS){
+		if(sms.sendSM(phonenumber, zone, validecode)==Constant.SUCCESS){
 			result = CommonMapUtil.baseMsgToMapConvertor(Constant.VALIDECODE_SUCCESS,Constant.SUCCESS);
 		}else{
 			result = CommonMapUtil.baseMsgToMapConvertor(Constant.VALIDECODE_ERROR,Constant.PHONE_VALIDATE_ERROR_CODE);
@@ -732,12 +730,12 @@ public class UserService {
 	 * @return
 	 */
 	public String generateEmailCode(String email,String client_id){
-		String code = StringUtil.randomCode(6);
 		User user = userDao.findUserByEmail(email);
+		if(user!=null){
+			return null;
+		}
+		String code = StringUtil.randomCode(6);
 		User me = userDao.findUserById(client_id);
-//		if(user!=null){
-//			return null;
-//		}
 //		if(vc==null){
 //			vc = new ValidateCode();
 //			vc.setUser(me);
@@ -749,7 +747,8 @@ public class UserService {
 //			vc.setEmail_timestamp(new Date().getTime());
 //			validateService.updateValidateCode(vc);
 //		}
-		code = cache.generateValidateCode(client_id);
+		code = cache.generateValidateCode(client_id,email);
+		System.out.println("当前验证码是："+code);
 		EmailUtil.sendEmail(email, "尊敬的" + me.getUsername() + "，您好！\n\n"
 				+ "您本次操作获取的验证码为：" + code+"\n 请在两分钟内完成相关操作");
 		return code;
@@ -763,17 +762,17 @@ public class UserService {
 	 * notice: 修改时间 2015-10-27
 	 * 			目前改为 将验证码存储在缓存中，邮箱缓存时间设定为2分钟
 	 */
-	public Map<String,Object> validateEmailCode(String client_id,String code){
+	public Map<String,Object> validateEmailCode(String client_id,String code,String email){
 		Map<String,Object> result = new HashMap<String, Object>();
-		String c = cache.generateValidateCode(client_id);
+		String c = cache.generateValidateCode(client_id,email);
 		if(c.equals(code)){
-			cache.evictValidateCode(client_id);
 			result.put("message", Constant.VALIDECODE_SUCCESS);
 			result.put("code", Constant.SUCCESS);
 		}else{
 			result.put("message", Constant.INVALID_CODE);
 			result.put("code", Constant.EMAIL_VALIDATE_ERROR_CODE);
 		}
+		cache.evictValidateCode(client_id,email);
 //		ValidateCode vc = validateService.findValidateCode(client_id);
 //		if(vc==null){
 //			result.put("message", Constant.NO_VALIDCODE);

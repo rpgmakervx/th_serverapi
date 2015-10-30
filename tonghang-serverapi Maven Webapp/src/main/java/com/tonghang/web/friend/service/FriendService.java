@@ -112,6 +112,7 @@ public class FriendService {
 	public Map<String,Object> getInvitationList(String client_id){
 		List<Invitation> invitations = friendDao.getInvitationByUserId(client_id);
 		Map<String,Object> result = new HashMap<String,Object>();
+		Map<String,Object> success = new HashMap<String,Object>();
 		List<Map<String,Object>> inviters = new ArrayList<Map<String,Object>>();
 		Iterator<Invitation> it = invitations.iterator();
 		while(it.hasNext()){
@@ -125,8 +126,10 @@ public class FriendService {
 			invitmsg.put("inviter_id", invitation.getInviter().getClient_id());
 			inviters.add(invitmsg);
 		}
-		result.put("success", CommonMapUtil.baseMsgToMapConvertor("invitation", inviters));
-		return result;
+		result.put("invitation", inviters);
+		result.putAll(CommonMapUtil.baseMsgToMapConvertor());
+		success.put("success", result);
+		return success;
 	}
 	
 	/**

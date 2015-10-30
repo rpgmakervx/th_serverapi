@@ -108,6 +108,7 @@ public class HuanXinUtil {
 		System.out.println("username:"+username);
 		Map<String,Object> parts = new HashMap<String, Object>();
 		header.add("Authorization","Bearer "+HUANXINtoken);
+		System.out.println("Authorization Bearer "+HUANXINtoken);
 		parts.put("newpassword", password);
 		HttpEntity<Map<String,Object>> requestEntity=
 				new HttpEntity<Map<String,Object>>(parts,header);

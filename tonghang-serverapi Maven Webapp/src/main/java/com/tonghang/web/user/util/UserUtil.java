@@ -301,7 +301,9 @@ public class UserUtil {
 		for(User u:users){
 			List<String> labels = new ArrayList<String>();
 			Location his_local = locationService.findLocationByUser(u);
-			double distance = locationService.getDistanceByLocation(my_local, his_local);
+			double distance = 0.0;
+			if(my_local!=null)
+				distance= locationService.getDistanceByLocation(my_local, his_local);
 			Map<String,Object> msg = new HashMap<String, Object>();
 			//比较当前用户哪些标签是根据使用者的标签被推出来的
 			labels.addAll(markLabel(u, label_names));
@@ -332,7 +334,8 @@ public class UserUtil {
 		}
 		//排序操作，详细请看 SortUtil 类
 		usersmsg = SortUtil.sortByLabelName(usersmsg, label_names);
-		usersmsg = SortUtil.sortByDistance(usersmsg);
+		if(my_local!=null)
+			usersmsg = SortUtil.sortByDistance(usersmsg);
 		usermap.put("users", usersmsg);
 		result.put("success", usermap);
 		return result;

@@ -77,7 +77,7 @@ public class UserCache {
 		List<Map<String,Object>> us = (List<Map<String, Object>>) success.get("users");
 		List<User> usrs = userDao.findOneUserByCreatedAtDesc(0,100);
 		for(User u:usrs){
-			if(!(userss.contains(u)||u.equals(user))){
+			if(!(users.contains(u)||u.equals(user))){
 				Map<String,Object> map = (Map<String, Object>) userUtil.userToMapConvertor(u, client_id).get("user");
 				us.add(map);
 			}
@@ -208,13 +208,14 @@ public class UserCache {
 	 * @param client_id
 	 * @return
 	 */
-	@Cacheable(value="com.tonghang.web.user.cache.UserCache.generateValidateCode",key="#client_id+generateValidateCode")
-	public String generateValidateCode(String client_id){
+	@Cacheable(value="com.tonghang.web.user.cache.UserCache.generateValidateCode",key="#client_id+#email")
+	public String generateValidateCode(String client_id,String email){
 		String code = StringUtil.randomCode(6);
+		System.out.println("进入获得验证码并缓存");
 		return code;
 	}
 	@CacheEvict(value={"com.tonghang.web.user.cache.UserCache.generateValidateCode"}
-	 	,key = "#client_id+generateValidateCode")
-	public void evictValidateCode(String client_id){ }
+	 	,key = "#client_id+#email")
+	public void evictValidateCode(String client_id,String email){ System.out.println("验证码缓存销毁");}
 	
 }

@@ -2,10 +2,8 @@ package com.tonghang.web.user.controller;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -32,10 +30,8 @@ import com.tonghang.web.common.exception.SearchNoResultException;
 import com.tonghang.web.common.exception.UpdateUserException;
 import com.tonghang.web.common.util.CommonMapUtil;
 import com.tonghang.web.common.util.Constant;
+import com.tonghang.web.common.util.HuanXinUtil;
 import com.tonghang.web.common.util.RequestUtil;
-import com.tonghang.web.common.util.SecurityUtil;
-import com.tonghang.web.label.pojo.Label;
-import com.tonghang.web.user.dao.impl.UserDaoImpl;
 import com.tonghang.web.user.pojo.User;
 import com.tonghang.web.user.service.UserService;
 
@@ -540,11 +536,14 @@ public class UserController extends BaseController{
 		Map<String,Object> result = userService.validePhone(phone,zone,code);
 		if(update){
 			User user = userService.findUserById(client_id);
-			user.setPhone(zone+phone);
+			user.setPhone(phone);
 			userService.updateUser(user);
 		}else if(needId){
-			User user = userService.findUserByPhone(zone+phone);
-			result.put("client_id", user.getClient_id());
+			User user = userService.findUserByPhone(phone);
+			if(user==null){
+				result = CommonMapUtil.baseMsgToMapConvertor(Constant.PHONE_ALREADY_EXISTS,Constant.PHONE_ALREADY_EXISTS_CODE);
+			}else 
+				result.put("client_id", user.getClient_id());
 		}
 		success.put("success", result);
 		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
@@ -566,6 +565,7 @@ public class UserController extends BaseController{
 		String password = (String)map.get("password");
 		User user = userService.findUserById(client_id);
 		if(user.getPhone().equals(phone)){
+			HuanXinUtil.changePassword(password, client_id);
 			user.setPassword(password);
 			userService.updateUser(user);
 			result.putAll(CommonMapUtil.baseMsgToMapConvertor(Constant.VALIDATE_SECURETY,Constant.UNAUTHORIZED));
@@ -618,7 +618,7 @@ public class UserController extends BaseController{
 			result.putAll(CommonMapUtil.baseMsgToMapConvertor(Constant.EMAIL,Constant.SUCCESS));
 			result.put("code", code);
 		}else{
-			result.putAll(CommonMapUtil.baseMsgToMapConvertor(Constant.EMAIL_EXIST,Constant.EMAIL_NO_EXIST_CODE));
+			result.putAll(CommonMapUtil.baseMsgToMapConvertor(Constant.EMAIL_EXIST,Constant.EMAIL_ALREADY_EXIST_CODE));
 		}
 		success.put("success", result);
 		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
@@ -639,7 +639,7 @@ public class UserController extends BaseController{
 		String code = (String) map.get("code");
 		String client_id = (String)map.get("client_id");
 		User user = userService.findUserById(client_id);
-		Map<String,Object> m = userService.validateEmailCode(client_id, code);
+		Map<String,Object> m = userService.validateEmailCode(client_id, code,email);
 		System.out.println("邮箱绑定返回码："+m.get("code"));
 		if(Constant.SUCCESS==(Integer)m.get("code")){
 			User u = userService.findUserById(client_id);

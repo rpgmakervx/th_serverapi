@@ -73,7 +73,7 @@ public class Constant extends HuanXinUtil{
 	public static final int SALARY_GAP_2 = 10000;
 	public static final int SALARY_GAP_3 = 5000;
 	//单位：千元
-	public static final int SALARY_SIZE = 48;
+	public static final int SALARY_SIZE = 28;
 	
 	//邮箱验证码时长
 	public static final long EMAIL_CODETIME = 2*60*1000;

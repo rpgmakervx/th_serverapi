@@ -13,7 +13,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -25,9 +24,9 @@ import org.springframework.stereotype.Component;
 
 import com.tonghang.web.common.pojo.FeedBack;
 import com.tonghang.web.label.pojo.Label;
+import com.tonghang.web.secret.pojo.Secret;
 import com.tonghang.web.statistics.pojo.Channel;
 import com.tonghang.web.topic.pojo.Topic;
-import com.tonghang.web.validate.pojo.ValidateCode;
 
 /**
  * 
@@ -120,8 +119,6 @@ public class User implements Serializable{
 	@LazyCollection(LazyCollectionOption.FALSE)
 	private Set<User> blacklist;
 	
-	@OneToOne(mappedBy="user")
-	private ValidateCode code;
 	@Column(name="salary")
 	private int salary;
 	

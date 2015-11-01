@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,8 +41,6 @@ import com.tonghang.web.user.cache.UserCache;
 import com.tonghang.web.user.dao.UserDao;
 import com.tonghang.web.user.pojo.User;
 import com.tonghang.web.user.util.UserUtil;
-import com.tonghang.web.validate.pojo.ValidateCode;
-import com.tonghang.web.validate.service.ValidateCodeService;
 
 @Service("userService")
 @Transactional
@@ -61,8 +58,6 @@ public class UserService {
 	private StatisticsService statisticsService;
 	@Resource(name="locationService")
 	private LocationService locationService;
-	@Resource(name="validateService")
-	private ValidateCodeService validateService;
 	@Resource(name="userUtil")
 	private UserUtil userUtil;
 	@Resource(name="userCache")
@@ -736,17 +731,6 @@ public class UserService {
 		}
 		String code = StringUtil.randomCode(6);
 		User me = userDao.findUserById(client_id);
-//		if(vc==null){
-//			vc = new ValidateCode();
-//			vc.setUser(me);
-//			vc.setEmail_code(code);
-//			vc.setEmail_timestamp(new Date().getTime());
-//			validateService.addValidateCode(vc);
-//		}else{
-//			vc.setEmail_code(code);
-//			vc.setEmail_timestamp(new Date().getTime());
-//			validateService.updateValidateCode(vc);
-//		}
 		code = cache.generateValidateCode(client_id,email);
 		System.out.println("当前验证码是："+code);
 		EmailUtil.sendEmail(email, "尊敬的" + me.getUsername() + "，您好！\n\n"
@@ -773,22 +757,6 @@ public class UserService {
 			result.put("code", Constant.EMAIL_VALIDATE_ERROR_CODE);
 		}
 		cache.evictValidateCode(client_id,email);
-//		ValidateCode vc = validateService.findValidateCode(client_id);
-//		if(vc==null){
-//			result.put("message", Constant.NO_VALIDCODE);
-//			result.put("code", Constant.NO_VALIDATECODE_ERROR_CODE);
-//		}else if((new Date().getTime()-vc.getEmail_timestamp())<=Constant.EMAIL_CODETIME){
-//			if(vc.getEmail_code().equals(code)){
-//				result.put("message", Constant.VALIDECODE_SUCCESS);
-//				result.put("code", Constant.SUCCESS);
-//			}else{
-//				result.put("message", Constant.INVALID_CODE);
-//				result.put("code", Constant.EMAIL_VALIDATE_ERROR_CODE);
-//			}
-//		}else{
-//			result.put("message", Constant.VALID_CODE_TIMEOUT);
-//			result.put("code", Constant.VALIDATE_TIMEOUT_ERROR_CODE);
-//		}
 		return result;
 	}
 }

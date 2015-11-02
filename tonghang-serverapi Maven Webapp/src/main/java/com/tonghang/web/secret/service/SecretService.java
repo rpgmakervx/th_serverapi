@@ -12,7 +12,7 @@ import com.tonghang.web.secret.dao.SecretDao;
 import com.tonghang.web.secret.pojo.Secret;
 import com.tonghang.web.secret.util.SecretUtil;
 
-@Service("secretServic")
+@Service("secretService")
 @Transactional
 public class SecretService {
 

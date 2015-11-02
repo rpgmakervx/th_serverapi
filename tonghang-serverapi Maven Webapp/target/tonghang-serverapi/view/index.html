@@ -1,0 +1,125 @@
+﻿<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>同行后台管理系统</title>
+		<meta name="keywords" content="同行" />
+		<meta name="description" content="同行" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<script src="source/echarts.js"></script>
+		<script src="js/jquery-2.0.3.min.js"></script>
+	</head>
+	<body>
+		<div id="main" style="margin-top:35%;height:350px;border:1px solid #ccc;padding:0px;"></div>
+		<script type="text/javascript">
+			// 基于准备好的dom，初始化echarts图表
+			$(function(){
+				var getParam = function(name){
+				        var search = document.location.search;
+				        var pattern = new RegExp("[?&]"+name+"\=([^&]+)", "g");
+				        var matcher = pattern.exec(search);
+				        var items = null;
+				        if(null != matcher){
+			                try{
+			                        items = decodeURIComponent(decodeURIComponent(matcher[1]));
+			                }catch(e){
+			                        try{
+			                                items = decodeURIComponent(matcher[1]);
+			                        }catch(e){
+			                                items = matcher[1];
+			                        }
+			                }
+				        }
+				        return items;
+				};
+				
+				require.config({
+		            paths: {
+		                echarts: './dist'
+		            }
+		        });
+				var json = {client_id:getParam('client_id')};
+				$.ajax({
+					type:"POST",
+					url:"/tonghang-serverapi/user/salary/chart.json",
+					dataType:"json",     
+					contentType:"application/json",
+					data:JSON.stringify(json),
+					success:function(data){
+						var numbers = data.success.data;
+						var high = data.success.highpercent;
+						var low = data.success.lowpercent;
+						require(
+				            [
+				                'echarts',
+				                'echarts/chart/bar' // 使用柱状图就加载bar模块，按需加载
+				            ],
+				            function (ec) {
+				            //--- 折柱 ---
+								var myChart = ec.init(document.getElementById('main'));
+								myChart.setOption({
+									tooltip : {
+										trigger: 'item',
+										borderRadius:10,
+										axisPointer:{type:"none"}
+									},
+									calculable : true,
+									xAxis : [
+										{
+											splitLine:{
+										　　　　show:false
+										　　},
+											type : 'category',
+											data : ["<1000","1000","2000","3000","4000","5000","6000","7000","8000","9000","10000","11000","12000","13000","14000","15000","16000","17000","18000","19000","20000",">20000"]
+										}
+									],
+									yAxis : [
+										{
+											type : 'value',
+											splitArea : {show : true},
+											axisLabel:{
+												show:true,
+												formatter:function(value){
+													return value+"人"
+												},
+											}
+										}
+									],
+									axis : [
+										{
+											boundaryGap:true
+										}
+									],
+									series : [
+										{
+											name:'人数',
+											type:'bar',
+											data:numbers,
+											itemStyle: {
+												normal: {
+													color:"#FFC412"
+												}
+											}
+										}
+									],
+									dataZoom:{
+										show:true,
+										dataBackgroundColor:"#2c5096",
+										orient:"horizontal",
+										backgroundColor:"#EFEFEF",
+										/*realtime:true,*/
+										height:38,
+										handleSize:50
+									}
+								});
+								window.onresize = function() {
+									myChart.resize();
+								}
+							}
+				        );
+					}
+				});
+			});
+		</script>
+	</body>
+	
+</html>

@@ -1,5 +1,6 @@
 package com.tonghang.web.secret.service;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -9,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.tonghang.web.secret.dao.SecretDao;
 import com.tonghang.web.secret.pojo.Secret;
+import com.tonghang.web.secret.util.SecretUtil;
 
 @Service("secretServic")
 @Transactional
@@ -16,7 +18,8 @@ public class SecretService {
 
 	@Resource(name="secretDao")
 	private SecretDao secretDao;
-	
+	@Resource(name="secretUtil")
+	private SecretUtil secretUtil;
 	/**
 	 * 业务功能：为某用户添加一个秘密
 	 * @param secret
@@ -35,9 +38,14 @@ public class SecretService {
 		s.setContent(secret.getContent());
 		secretDao.saveOrUpdate(s);
 	}
-	
-	public Map<String,Object> findSecretsByUser(String client_id){
-		
+	/**
+	 * 
+	 * @param client_id
+	 * @return
+	 */
+	public Map<String,Object> findSecretsByUser(String client_id,boolean all){
+		List<Secret> secrets = secretDao.findSecretByUser(client_id);
+		return secretUtil.secretsToMapConverter(secrets, all);
 	}
 	/**
 	 * 业务功能：按秘密的id查找秘密信息

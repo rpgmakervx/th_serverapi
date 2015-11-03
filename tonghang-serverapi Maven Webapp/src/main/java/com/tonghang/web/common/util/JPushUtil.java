@@ -66,4 +66,37 @@ public class JPushUtil {
 			// TODO Auto-generated catch block
 		}
 	}
+	/**
+	 * 业务功能：推送秘密交换
+	 * @param to_ids
+	 * @param from_id
+	 * @param from_secret
+	 * @param to_secret
+	 * @param name
+	 * @param type
+	 * @param message
+	 */
+	public static void push(String to_id,String from_id,String to_secret,String from_secret,String name,String type,String message){
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type","application/json");
+		headers.add("Authorization","Basic " + "ZWI0ZTc5YzRhYjE4MmQ3MjVlYzJmZjE1OmVkMzIxNjdhODY0MWFiMWVlODY1OGIzYQ==");
+		Map<String, Object> parts = new HashMap<String, Object>();
+		parts.put("platform","all");
+		Map<String, Object> map1 = new HashMap<String, Object>();
+		map1.put("alias", to_id);
+		parts.put("audience", map1);
+		Map<String, Object> map2 = new HashMap<String, Object>();
+		map2.put("id", from_id);
+		map2.put("name", name);
+		map2.put("type", type);
+		map2.put("message", message);
+		Map<String, Object> map3 = new HashMap<String, Object>();
+		map3.put("msg_content", map2);
+		parts.put("message", map3);
+		try {
+			DataUtil.postEntity("https://api.jpush.cn/v3/push", new HttpEntity(parts,headers),Map.class);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+		}
+	}
 }

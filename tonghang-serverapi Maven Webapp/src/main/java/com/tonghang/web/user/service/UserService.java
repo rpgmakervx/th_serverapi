@@ -204,10 +204,11 @@ public class UserService {
 		},allEntries = true)
 	public Map<String,Object> registUser(User user) throws EmailExistException, NickNameExistException{
 		Map<String,Object> result = new HashMap<String, Object>();
+		
 		if(userDao.findUserByNickName(user.getUsername())!=null){
 			result.put("success", CommonMapUtil.baseMsgToMapConvertor("注册失败！该昵称已经被注册", 512));
 			return result;
-		}else{
+		}else {
 			user.setClient_id(SecurityUtil.getUUID());
 			userDao.save(user);
 			HuanXinUtil.registUser(user);

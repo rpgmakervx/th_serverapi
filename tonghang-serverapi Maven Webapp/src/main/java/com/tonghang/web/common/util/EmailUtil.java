@@ -47,7 +47,7 @@ public class EmailUtil {
 		SimpleMailMessage mailMessage = new SimpleMailMessage();
 		mailMessage.setTo(email);
 		mailMessage.setFrom("tonghangtonghang@126.com");
-		mailMessage.setSubject("【同行】密码已重置");
+		mailMessage.setSubject("【同行】邮箱绑定");
 		mailMessage.setText(msg);
 		senderImpl.send(mailMessage);
 	}

@@ -15,19 +15,17 @@ import org.springframework.stereotype.Component;
 public class SMSUtil {
 
 	public int sendSM(String phonenumber,String zone,String validecode) throws Exception {
-		Map<String,Object> parts = new HashMap<String, Object>();
-		parts.put("appkey", Constant.SHARE_SDK_APPKEY);
-		parts.put("zone", zone);
-		parts.put("phone", phonenumber);
-		parts.put("code", validecode);
-		HttpEntity<Map<String,Object>> requestEntity=
-				new HttpEntity<Map<String,Object>>(parts);
-		ResponseEntity<String> response = DataUtil.postEntity(Constant.SHARE_SDK_URL, requestEntity, String.class);
+		String paramStr = "?appkey=" +Constant.SHARE_SDK_APPKEY+
+				"&phone="+phonenumber+
+				"&zone="+zone+
+				"&code="+validecode;
+		ResponseEntity<String> response = DataUtil.getEntity(Constant.SHARE_SDK_URL+paramStr, String.class);
 		Map map = new ObjectMapper().readValue(response.getBody(), HashMap.class);
+		System.out.println("phone url  :  "+Constant.SHARE_SDK_URL+paramStr);
 		//		Map map = response.getBody();
 		Integer status = (Integer) map.get("status");
 		System.out.println("SDK response: "+status);
-		if(status.equals(468)){
+		if(!status.equals(200)){
 			return Constant.ERROR;
 		}else return Constant.SUCCESS;
 	}

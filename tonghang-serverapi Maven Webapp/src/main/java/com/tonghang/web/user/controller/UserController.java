@@ -534,16 +534,15 @@ public class UserController extends BaseController{
 		boolean update = (Boolean)map.get("update");
 		boolean needId = (Boolean)map.get("needId");
 		Map<String,Object> result = userService.validePhone(phone,zone,code);
+		User u = userService.findUserByPhone(phone);
 		if(update){
 			User user = userService.findUserById(client_id);
 			user.setPhone(phone);
 			userService.updateUser(user);
 		}else if(needId){
-			User user = userService.findUserByPhone(phone);
-			if(user==null){
-				result = CommonMapUtil.baseMsgToMapConvertor(Constant.PHONE_ALREADY_EXISTS,Constant.PHONE_ALREADY_EXISTS_CODE);
-			}else 
-				result.put("client_id", user.getClient_id());
+			result.put("client_id", u.getClient_id());
+		}else if(u!=null){
+			result = CommonMapUtil.baseMsgToMapConvertor(Constant.PHONE_ALREADY_EXISTS,Constant.PHONE_ALREADY_EXISTS_CODE);
 		}
 		success.put("success", result);
 		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
@@ -568,9 +567,9 @@ public class UserController extends BaseController{
 			HuanXinUtil.changePassword(password, client_id);
 			user.setPassword(password);
 			userService.updateUser(user);
-			result.putAll(CommonMapUtil.baseMsgToMapConvertor(Constant.VALIDATE_SECURETY,Constant.UNAUTHORIZED));
-		}else{
 			result.putAll(CommonMapUtil.baseMsgToMapConvertor(Constant.MODIFY_SUCCESS,Constant.SUCCESS));
+		}else{
+			result.putAll(CommonMapUtil.baseMsgToMapConvertor(Constant.VALIDATE_SECURETY,Constant.UNAUTHORIZED));
 		}
 		success.put("success", result);
 		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
@@ -652,6 +651,29 @@ public class UserController extends BaseController{
 //		}else{
 //			result.putAll(CommonMapUtil.baseMsgToMapConvertor(Constant.EMAIL_EXIST, Constant.EMAIL_ALREADY_EXIST_CODE));
 //		}
+		success.put("success", result);
+		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
+	}
+	
+	/**
+	 * 添加时间：2015-11-03
+	 * 业务功能：判断该手机是否被注册
+	 * @param mapstr
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="phone/exists",method=RequestMethod.POST)
+	public ResponseEntity<Map<String,Object>> phoeExsists(@RequestParam String mapstr) throws Exception{
+		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
+		Map<String,Object> success = new HashMap<String, Object>();	
+		Map<String,Object> result = new HashMap<String, Object>();
+		String phone = (String) map.get("phone");
+		User user = userService.findUserByPhone(phone);
+		if(user!=null){
+			result = CommonMapUtil.baseMsgToMapConvertor(Constant.PHONE_ALREADY_EXISTS,Constant.PHONE_ALREADY_EXISTS_CODE);
+		}else{
+			result = CommonMapUtil.baseMsgToMapConvertor(Constant.PHONE_NOT_EXISTS,Constant.PHONE_NOT_EXISTS_CODE);
+		}
 		success.put("success", result);
 		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
 	}

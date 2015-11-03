@@ -27,10 +27,12 @@ public class Constant extends HuanXinUtil{
 	public static final String ISOLATE_MSG = "您已被管理员封号，详情请咨询客服tonghangtinghang@126.com";
 	public static final String DEISOLATE_MSG = "您已被管理员解封，欢迎您再次使用";
 	public static final String DELETE_TOPIC_MSG = "该话题已被房主解散";
-	public static final String EXCHANGE_CARD_MSG = "请求和您交换名片";
-	public static final String AGREE_CARD_MSG = "同意和您交换名片";
-	public static final String EXCHANGE_SALARY_MSG = "请求和您交换薪资";
-	public static final String AGREE_SALARY_MSG = "同意和您交换薪资";
+	public static final String EXCHANGE_CARD_MSG = "请求和您交换 名片";
+	public static final String AGREE_CARD_MSG = "同意和您交换 名片";
+	public static final String EXCHANGE_SALARY_MSG = "请求和您交换 薪资";
+	public static final String AGREE_SALARY_MSG = "同意和您交换 薪资";
+	public static final String REQUESTSECRET_MSG= "请求和您交换 秘密";
+	public static final String AGREEEXCHANGESECRET_MSG= "同意和您交换 秘密";
 	
 	public static final String SM_VALID_MSG = "您的注册验证码是：";
 	public static final String PHONE_NOT_EXISTS = "该手机号没有注册同行";
@@ -108,10 +110,11 @@ public class Constant extends HuanXinUtil{
 	public static int EMAIL_NO_EXIST_CODE= 410;
 	public static int EMAIL_ALREADY_EXIST_CODE= 411;
 	public static int PHONE_ALREADY_EXISTS_CODE= 412;
-	public static int PHONE_VALIDATE_ERROR_CODE= 413;
-	public static int EMAIL_VALIDATE_ERROR_CODE= 414;
-	public static int VALIDATE_TIMEOUT_ERROR_CODE= 415;
-	public static int NO_VALIDATECODE_ERROR_CODE= 416;
+	public static int PHONE_NOT_EXISTS_CODE= 413;
+	public static int PHONE_VALIDATE_ERROR_CODE= 414;
+	public static int EMAIL_VALIDATE_ERROR_CODE= 415;
+	public static int VALIDATE_TIMEOUT_ERROR_CODE= 416;
+	public static int NO_VALIDATECODE_ERROR_CODE= 417;
 	
 	
 	
@@ -138,5 +141,9 @@ public class Constant extends HuanXinUtil{
 	public static final String REQUESTSALARY= "9";
 	/**同意交换薪资推送标记*/
 	public static final String AGREEEXCHANGESALARY= "10";
+	/**请求交换秘密*/
+	public static final String REQUESTSECRET= "11";
+	/**同意交换秘密*/
+	public static final String AGREEEXCHANGESECRET= "12";
 	
 }

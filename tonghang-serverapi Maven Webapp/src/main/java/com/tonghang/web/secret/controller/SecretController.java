@@ -141,7 +141,7 @@ public class SecretController {
 	
 	/**
 	 * 添加时间：2015-11-02
-	 * 业务功能：查看某人的秘密（详细）
+	 * 业务功能：查看某个秘密（详细）
 	 * @param mapstr
 	 * @return
 	 * @throws Exception

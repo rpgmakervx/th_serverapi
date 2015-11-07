@@ -22,6 +22,7 @@ import com.tonghang.web.secret.pojo.Secret;
 import com.tonghang.web.secret.service.SecretService;
 import com.tonghang.web.user.pojo.User;
 import com.tonghang.web.user.service.UserService;
+import com.tonghang.web.user.util.UserUtil;
 
 @Controller("secretController")
 @RequestMapping("secret")
@@ -31,7 +32,8 @@ public class SecretController {
 	private SecretService secretService;
 	@Resource(name="userService")
 	private UserService userService;
-	
+	@Resource(name="userUtil")
+	private UserUtil userUtil;
 	/**
 	 * 创建时间：2015-11-02
 	 * 业务功能：用户添加秘密信息
@@ -166,6 +168,27 @@ public class SecretController {
 		Map<String,Object> success = new HashMap<String, Object>();
 		String client_id = (String)map.get("client_id");
 		result.putAll(secretService.findSecretsByUser(client_id, false));
+		result.putAll(CommonMapUtil.baseMsgToMapConvertor());
+		success.put("success", result);
+		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
+	}
+	
+	/**
+	 * 创建时间：2015-11-07
+	 * 业务功能：查看某用户所有的 详细秘密信息
+	 * @param mapstr
+	 * @return
+	 * @throws Exception
+	 * notice: 返回体重包含当前用户的详细信息
+	 */
+	@RequestMapping(value="check/all",method=RequestMethod.POST)
+	@ResponseBody public ResponseEntity<Map<String,Object>> checkSlefSecretContext(@RequestParam String mapstr)throws Exception{
+		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
+		Map<String,Object> result = new HashMap<String, Object>();
+		Map<String,Object> success = new HashMap<String, Object>();
+		String client_id = (String)map.get("client_id");
+		result.putAll(secretService.findSecretsByUser(client_id, true));
+		result.putAll(userUtil.userToMapConvertor(userService.findUserById(client_id), client_id));
 		result.putAll(CommonMapUtil.baseMsgToMapConvertor());
 		success.put("success", result);
 		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);

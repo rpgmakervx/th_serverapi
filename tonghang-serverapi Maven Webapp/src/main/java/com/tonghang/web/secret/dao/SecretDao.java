@@ -14,4 +14,6 @@ public interface SecretDao {
 	public Secret findSecretById(String secret_id);
 	//查询一个用户的全部秘密信息
 	public List<Secret> findSecretByUser(String client_id);
+	
+	public void delete(Secret secret);
 }

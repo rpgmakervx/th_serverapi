@@ -43,4 +43,10 @@ public class SecretDaoImpl implements SecretDao {
 		return secrets;
 	}
 
+	@Override
+	public void delete(Secret secret) {
+		// TODO Auto-generated method stub
+		sessionFactory.getCurrentSession().delete(secret);
+	}
+
 }

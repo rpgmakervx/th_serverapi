@@ -62,24 +62,19 @@ public class SecretController {
 	}
 	/**
 	 * 创建时间：2015-11-02
-	 * 业务功能：修改秘密信息
+	 * 修改时间：2015-11-07  把修改秘密信息 改为 删除秘密信息
+	 * 业务功能：删除秘密信息
 	 * @param mapstr
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value="update",method=RequestMethod.POST)
+	@RequestMapping(value="delete",method=RequestMethod.POST)
 	@ResponseBody public ResponseEntity<Map<String,Object>> modifySecret(@RequestParam String mapstr) throws Exception{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
 		Map<String,Object> result = new HashMap<String, Object>();
 		Map<String,Object> success = new HashMap<String, Object>();
 		String secret_id = (String) map.get("secret_id");
-		String title = (String) map.get("title");
-		String content = (String) map.get("content");
-		Secret secret = new Secret();
-		secret.setSecret_id(secret_id);
-		secret.setTitle(title);
-		secret.setContent(content);
-		secretService.updateSecret(secret);
+		secretService.deleteSecret(secret_id);
 		result.putAll(CommonMapUtil.baseMsgToMapConvertor());
 		success.put("success", result);
 		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
@@ -162,7 +157,7 @@ public class SecretController {
 	 * 业务功能：查看某用户的全部秘密的title
 	 * @param mapstr
 	 * @return
-	 * @throws Exception
+	 * @throws Exception check/all
 	 */
 	@RequestMapping(value="check/user",method=RequestMethod.POST)
 	@ResponseBody public ResponseEntity<Map<String,Object>> checkUserSecretContext(@RequestParam String mapstr)throws Exception{

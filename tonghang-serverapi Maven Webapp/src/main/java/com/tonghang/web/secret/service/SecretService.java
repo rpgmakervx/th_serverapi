@@ -34,11 +34,9 @@ public class SecretService {
 	 * 业务功能：修改某用户的某个标签
 	 * @param secret
 	 */
-	public void updateSecret(Secret secret){
-		Secret s = findSecretById(secret.getSecret_id());
-		s.setTitle(secret.getTitle());
-		s.setContent(secret.getContent());
-		secretDao.saveOrUpdate(s);
+	public void deleteSecret(String secret_id){
+		Secret s = findSecretById(secret_id);
+		secretDao.delete(s);
 	}
 	/**
 	 * 

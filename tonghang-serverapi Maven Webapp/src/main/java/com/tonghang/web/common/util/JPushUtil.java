@@ -76,20 +76,27 @@ public class JPushUtil {
 	 * @param type
 	 * @param message
 	 */
-	public static void push(String to_id,String from_id,String to_secret,String from_secret,String name,String type,String message){
+	public static void push(String to_id,String from_id,String my_secret,String other_secret,String name,String type,String message){
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type","application/json");
 		headers.add("Authorization","Basic " + "ZWI0ZTc5YzRhYjE4MmQ3MjVlYzJmZjE1OmVkMzIxNjdhODY0MWFiMWVlODY1OGIzYQ==");
 		Map<String, Object> parts = new HashMap<String, Object>();
 		parts.put("platform","all");
 		Map<String, Object> map1 = new HashMap<String, Object>();
-		map1.put("alias", to_id);
+		List<String> list = new ArrayList<String>();
+		list.add(to_id);
+		map1.put("alias", list);
 		parts.put("audience", map1);
 		Map<String, Object> map2 = new HashMap<String, Object>();
 		map2.put("id", from_id);
 		map2.put("name", name);
 		map2.put("type", type);
+		//to_id 测试用 后期可以删除.
+		map2.put("to_id", to_id);
+		map2.put("my_secret", my_secret);
+		map2.put("other_secret", other_secret);
 		map2.put("message", message);
+		map2.put("image", Constant.IMAGE_PATH+from_id+"/"+Constant.IMAGE_NAME);
 		Map<String, Object> map3 = new HashMap<String, Object>();
 		map3.put("msg_content", map2);
 		parts.put("message", map3);

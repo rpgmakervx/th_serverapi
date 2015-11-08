@@ -91,10 +91,13 @@ public class SecretController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value="{mysecret_id}/swap/{othersecret_id}",method=RequestMethod.POST)
-	@ResponseBody public ResponseEntity<Map<String,Object>> requestSwapSecret(@PathVariable String mysecret_id,@PathVariable String othersecret_id) throws Exception{
+	@ResponseBody public ResponseEntity<Map<String,Object>> requestSwapSecret(@RequestParam String mapstr,@PathVariable String mysecret_id,@PathVariable String othersecret_id) throws Exception{
+		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
 		Map<String,Object> result = new HashMap<String, Object>();
 		Map<String,Object> success = new HashMap<String, Object>();
-		secretService.swapRequest(mysecret_id, othersecret_id);
+		String my_id = (String) map.get("my_id");
+		String other_id = (String) map.get("other_id");
+		secretService.swapRequest(mysecret_id, othersecret_id,my_id,other_id);
 		result.putAll(CommonMapUtil.baseMsgToMapConvertor());
 		success.put("success", result);
 		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
@@ -109,10 +112,13 @@ public class SecretController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value="{othersecret_id}/swap/{mysecret_id}",method=RequestMethod.POST)
-	@ResponseBody public ResponseEntity<Map<String,Object>> agreeSwapSecret(@PathVariable String mysecret_id,@PathVariable String othersecret_id) throws Exception{
+	@ResponseBody public ResponseEntity<Map<String,Object>> agreeSwapSecret(@RequestParam String mapstr,@PathVariable String mysecret_id,@PathVariable String othersecret_id) throws Exception{
+		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
 		Map<String,Object> result = new HashMap<String, Object>();
 		Map<String,Object> success = new HashMap<String, Object>();
-		secretService.agreeSwap(mysecret_id, othersecret_id);
+		String my_id = (String) map.get("my_id");
+		String other_id = (String) map.get("other_id");
+		secretService.agreeSwap(mysecret_id, othersecret_id,my_id,other_id);
 		result.putAll(CommonMapUtil.baseMsgToMapConvertor());
 		success.put("success", result);
 		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
@@ -129,7 +135,12 @@ public class SecretController {
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
 		Map<String,Object> result = new HashMap<String, Object>();
 		Map<String,Object> success = new HashMap<String, Object>();
-		String secret_id = (String)map.get("secret");
+		String secret_id = (String)map.get("secret_id");
+		String client_id = (String)map.get("client_id");
+		System.out.println("secret_id :"+secret_id);
+		System.out.println("client_id: "+client_id);
+		User user = userService.findUserById(client_id);
+		result.putAll(userUtil.userToMapConvertor(user, client_id));
 		result.putAll(secretService.getSecretById(secret_id,false));
 		result.putAll(CommonMapUtil.baseMsgToMapConvertor());
 		success.put("success", result);
@@ -149,6 +160,9 @@ public class SecretController {
 		Map<String,Object> result = new HashMap<String, Object>();
 		Map<String,Object> success = new HashMap<String, Object>();
 		String secret_id = (String)map.get("secret_id");
+		String client_id = (String)map.get("client_id");
+		User user = userService.findUserById(client_id);
+		result.putAll(userUtil.userToMapConvertor(user, client_id));
 		result.putAll(secretService.getSecretById(secret_id,true));
 		result.putAll(CommonMapUtil.baseMsgToMapConvertor());
 		success.put("success", result);
@@ -187,8 +201,10 @@ public class SecretController {
 		Map<String,Object> result = new HashMap<String, Object>();
 		Map<String,Object> success = new HashMap<String, Object>();
 		String client_id = (String)map.get("client_id");
+		System.out.println("client_id: "+client_id);
 		result.putAll(secretService.findSecretsByUser(client_id, true));
-		result.putAll(userUtil.userToMapConvertor(userService.findUserById(client_id), client_id));
+		User user = userService.findUserById(client_id);
+		result.putAll(userUtil.userToMapConvertor(user, client_id));
 		result.putAll(CommonMapUtil.baseMsgToMapConvertor());
 		success.put("success", result);
 		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);

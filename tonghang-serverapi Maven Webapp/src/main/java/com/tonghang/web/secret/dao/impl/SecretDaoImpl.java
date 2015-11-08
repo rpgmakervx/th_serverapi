@@ -39,7 +39,7 @@ public class SecretDaoImpl implements SecretDao {
 	public List<Secret> findSecretByUser(String client_id) {
 		// TODO Auto-generated method stub
 		List<Secret> secrets = (List<Secret>) sessionFactory.getCurrentSession().createQuery("from Secret as secret where secret.user.client_id = :client_id")
-				.setParameter("client_id", client_id);
+				.setParameter("client_id", client_id).list();
 		return secrets;
 	}
 

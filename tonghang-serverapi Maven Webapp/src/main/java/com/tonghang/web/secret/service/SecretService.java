@@ -13,6 +13,8 @@ import com.tonghang.web.common.util.JPushUtil;
 import com.tonghang.web.secret.dao.SecretDao;
 import com.tonghang.web.secret.pojo.Secret;
 import com.tonghang.web.secret.util.SecretUtil;
+import com.tonghang.web.user.pojo.User;
+import com.tonghang.web.user.service.UserService;
 
 @Service("secretService")
 @Transactional
@@ -22,6 +24,8 @@ public class SecretService {
 	private SecretDao secretDao;
 	@Resource(name="secretUtil")
 	private SecretUtil secretUtil;
+	@Resource(name="userService")
+	private UserService userService;
 	/**
 	 * 业务功能：为某用户添加一个秘密
 	 * @param secret
@@ -70,23 +74,19 @@ public class SecretService {
 	 * @param mysecret_id		自己秘密的id,
 	 * @param othersecret_id
 	 */
-	public void swapRequest(String mysecret_id,String othersecret_id){
-		Secret my = findSecretById(mysecret_id);
-		Secret his = findSecretById(othersecret_id);
-		String self_id = my.getUser().getClient_id();
-		String his_id = his.getUser().getClient_id();
-		JPushUtil.push(his_id, self_id, mysecret_id, othersecret_id, my.getUser().getUsername(), Constant.REQUESTSECRET, Constant.REQUESTSECRET_MSG);
+	public void swapRequest(String mysecret_id,String othersecret_id,String my_id,String other_id){
+		User my = userService.findUserById(my_id); 
+		User other = userService.findUserById(other_id); 
+		JPushUtil.push(other_id, my_id, mysecret_id, othersecret_id, my.getUsername(), Constant.REQUESTSECRET, Constant.REQUESTSECRET_MSG);
 	}
 	/**
 	 * 业务功能：同意某人交换秘密的请求
 	 * @param mysecret_id
 	 * @param othersecret_id
 	 */
-	public void agreeSwap(String mysecret_id,String othersecret_id){
-		Secret my = findSecretById(mysecret_id);
-		Secret his = findSecretById(othersecret_id);
-		String self_id = my.getUser().getClient_id();
-		String his_id = his.getUser().getClient_id();
-		JPushUtil.push(his_id, self_id, mysecret_id, othersecret_id, my.getUser().getUsername(), Constant.AGREEEXCHANGESECRET, Constant.AGREEEXCHANGESECRET_MSG);
+	public void agreeSwap(String mysecret_id,String othersecret_id,String my_id,String other_id){
+		User my = userService.findUserById(my_id); 
+		User other = userService.findUserById(other_id); 
+		JPushUtil.push(other_id, my_id, mysecret_id, othersecret_id, my.getUsername(), Constant.AGREEEXCHANGESECRET, Constant.AGREEEXCHANGESECRET_MSG);
 	}
 }

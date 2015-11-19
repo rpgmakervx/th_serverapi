@@ -63,4 +63,9 @@ public class TimeUtil {
   		DateTime dt2 = new DateTime(d2);
   		return Days.daysBetween(dt1, dt2).getDays();
 	}
+	
+	public static String timestamp(Date date) {
+		DateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
+		return format.format(date);
+	}
 }

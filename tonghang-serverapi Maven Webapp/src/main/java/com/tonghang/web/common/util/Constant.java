@@ -52,6 +52,11 @@ public class Constant extends HuanXinUtil{
 	public static final String PICTURE_SERVER = "http://114.215.143.83:8080/tonghang-serverapi";
 	public static final String ADV_SERVER = "http://114.215.143.83:8080/tonghang";
 	public static final String SHARE_SDK_URL ="https://web.sms.mob.com/sms/verify";
+	
+	public static final String RONGYUN_TEST_URL = "https://sandboxapp.cloopen.com:8883/2013-12-26";
+	public static final String RONGYUN_URL = "https://app.cloopen.com:8883/2013-12-26";
+	
+	
 	public static final String APP_LINK = "http://114.215.143.83:8080/tonghang/home/app/Peer_umeng_unsign_signed.apk";
 	public static final String NATIVE_ADV_SERVER = "http://192.168.23.1:8080/tonghang";
 	public static final String HUANXIN_URL = "http://a1.easemob.com/tonghang/tonghang/";
@@ -66,6 +71,9 @@ public class Constant extends HuanXinUtil{
 	public static final String CHANGER_ID = "0ba20eab27544eb8867e543b4db8c13e";
 	public static final String SHARE_SDK_APPKEY = "b18fc111a689";
 	public static final String CHUANGLAN_PWD = "Tch147269";
+	public static final String RONGYUN_ACCOUNT = "8a48b55150e162370150f46c6b91014f";
+	public static final String RONGYUN_TOKEN = "52d49e3530104f9da276ea79b49023d8";
+	
 	
 	/** Gap size*/
 	public static final int PAGESIZE = 10;

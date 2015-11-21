@@ -10,7 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-@Component("rongyunUtil")
+@Component("ryUtil")
 public class RongYunUtil {
 
 	/***
@@ -24,9 +24,11 @@ public class RongYunUtil {
 		return account;
 	}
 	
-	
-	
-	
+	/**
+	 * 在容联云创建房间
+	 * @param owner_id
+	 * @return
+	 */
 	public String createChatRoom(String owner_id){
 		//准备基础参数
 		String appid =  Constant.RONGYUN_APPID;

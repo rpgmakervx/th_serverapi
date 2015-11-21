@@ -1,11 +1,13 @@
 package com.tonghang.web.room.service;
 
 import java.util.Date;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
+import com.tonghang.web.common.util.RongYunUtil;
 import com.tonghang.web.room.dao.RoomDao;
 import com.tonghang.web.room.pojo.Room;
 import com.tonghang.web.user.pojo.User;
@@ -18,13 +20,31 @@ public class RoomService {
 	private RoomDao roomDao;
 	@Resource(name="userService")
 	private UserService userService;
+	@Resource(name="ryUtil")
+	private RongYunUtil ryUtil;
 	
+	/**
+	 * 创建一个房间
+	 * @param owner_id
+	 * @param theme
+	 */
 	public void createRoom(String owner_id,String theme){
+		theme = theme==null?"":theme;
 		User user = userService.findUserById(owner_id);
 		Room room = new Room();
 		room.setCreated_at(new Date());
 		room.setUser(user);
 		room.setTheme(theme);
 		room.setLabels(user.getLabellist());
+		room.setRoom_id(ryUtil.createChatRoom(owner_id));
+		roomDao.save(room);
+	}
+	
+	/**
+	 * 获得app参数
+	 * @return
+	 */
+	public Map<String,String> fetchAppParam(){
+		return ryUtil.getAppId();
 	}
 }

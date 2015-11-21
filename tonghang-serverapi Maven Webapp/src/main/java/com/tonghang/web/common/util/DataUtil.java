@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
@@ -18,7 +19,7 @@ public class DataUtil {
 	
 	private final static RestTemplate jsonTemplate = new RestTemplate();
 	static {
-//		jsonTemplate.getMessageConverters().add(new StringHttpMessageConverter());
+		jsonTemplate.getMessageConverters().add(new StringHttpMessageConverter());
 		jsonTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 	}
 	public static RestTemplate getJsonTemplate(){

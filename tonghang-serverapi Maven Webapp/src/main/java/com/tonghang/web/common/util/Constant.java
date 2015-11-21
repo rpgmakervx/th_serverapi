@@ -73,6 +73,8 @@ public class Constant extends HuanXinUtil{
 	public static final String CHUANGLAN_PWD = "Tch147269";
 	public static final String RONGYUN_ACCOUNT = "8a48b55150e162370150f46c6b91014f";
 	public static final String RONGYUN_TOKEN = "52d49e3530104f9da276ea79b49023d8";
+	public static final String RONGYUN_APPID = "8a48b55150f4a7260150f50e19760299";
+	public static final String RONGYUN_APP_TOKEN = "948dc513172f16af851cb010b54224a1";
 	
 	
 	/** Gap size*/
@@ -125,6 +127,8 @@ public class Constant extends HuanXinUtil{
 	public static int NO_VALIDATECODE_ERROR_CODE= 417;
 	
 	
+	public static int ROOM_TYPE= 2;
+	public static int ROOM_PERMISSION = 0;
 	
 	/**JPUSH Type*/
 	/**好友邀请的推送标记*/

@@ -34,7 +34,6 @@ public class UserDaoImpl implements UserDao {
 	@Override
 	public List<User> findUserByLabel(String label_name,int nowpage) {
 		// TODO Auto-generated method stub
-		System.out.println("走数据库方法：findUserByLabel");
 		Query query = sessionFactory.getCurrentSession().createQuery("select distinct user from User as user left join user.labellist as " +
 				"label where lower(label.label_name) like concat('%',lower(:label_name),'%') " +
 				"and (user.birth is not null and user.birth != '') and (user.sex is not null and user.sex != '') order by user.created_at");

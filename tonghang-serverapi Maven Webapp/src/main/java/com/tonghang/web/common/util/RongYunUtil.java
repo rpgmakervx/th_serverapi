@@ -7,21 +7,43 @@ import java.util.Map;
 import org.dom4j.DocumentException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 
+@Component("rongyunUtil")
 public class RongYunUtil {
 
-	public static String createChatRoom(){
-		String accountSid = Constant.RONGYUN_ACCOUNT;
-		String token = Constant.RONGYUN_TOKEN;
-		String nowtime = TimeUtil.timestamp(new Date());
-		String reqxml = "<Appid>"+accountSid+"</Appid><CreateConf action='createconfresult.jsp' maxmember='300'/>";
-		Map<String,Object> reqparam = null;
+	/***
+	 * 客户端获取appid和apptoken用来做自定义帐号免验密登录
+	 * @return
+	 */
+	public Map<String,String> getAppId(){
+		Map<String,String> account = new HashMap<String, String>();
+		account.put("appid", Constant.RONGYUN_APPID);
+		account.put("apptoken", Constant.RONGYUN_APP_TOKEN);
+		return account;
+	}
+	
+	
+	
+	
+	public String createChatRoom(String owner_id){
+		//准备基础参数
+		String appid =  Constant.RONGYUN_APPID;
+		String token = Constant.RONGYUN_APP_TOKEN;
 		String timestamp = TimeUtil.timestamp(new Date());
-		String sig = SecurityUtil.getMD5(Constant.RONGYUN_ACCOUNT+Constant.RONGYUN_TOKEN+timestamp);
+		String sig = SecurityUtil.getMD5(appid+token+timestamp);
+		//配置必要参数
 		HttpHeaders header = new HttpHeaders();
 		Map<String,Object> parts = new HashMap<String, Object>();
+		Map<String,Object> reqparam = null;
+		parts.put("name", owner_id);
+		parts.put("type", Constant.ROOM_TYPE);
+		parts.put("permission", Constant.ROOM_PERMISSION);
+		header.add("Authorization", SecurityUtil.getMD5(appid+":"+timestamp));
 		header.add("Content-Type","application/xml");
-		header.add("Authorization", SecurityUtil.getMD5(Constant.RONGYUN_ACCOUNT+":"+timestamp));
+		//组织请求参数和请求头
+		String reqxml = XmlUtils.map2xmlBody(parts);
 		HttpEntity<Map<String,Object>> requestEntity=
 				new HttpEntity<Map<String,Object>>(parts,header);
 		try {
@@ -30,7 +52,11 @@ public class RongYunUtil {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		DataUtil.postEntity(url, reqparam, Map.class);
-		return ;
+		//获取相应参数
+		ResponseEntity<Map> response = DataUtil.postEntity(Constant.RONGYUN_TEST_URL+"/SubAccounts/"+appid+owner_id+"/Group/CreateGroup", reqparam, Map.class);
+		Map map = response.getBody();
+		String groupId = (String) ((Map)map.get("Response")).get("groupId");
+		
+		return groupId;
 	}
 }

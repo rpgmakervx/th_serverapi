@@ -8,6 +8,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -18,9 +19,11 @@ import org.springframework.web.client.RestTemplate;
 public class DataUtil {
 	
 	private final static RestTemplate jsonTemplate = new RestTemplate();
+	private final static RestTemplate xmlTemplate = new RestTemplate();
 	static {
 		jsonTemplate.getMessageConverters().add(new StringHttpMessageConverter());
 		jsonTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+		xmlTemplate.getMessageConverters().add(new MappingJackson2XmlHttpMessageConverter());
 	}
 	public static RestTemplate getJsonTemplate(){
 		return jsonTemplate;
@@ -29,6 +32,9 @@ public class DataUtil {
 
 	public static <T> ResponseEntity<T> postJson(String url, Object data, Class<T> type,  Object... uriVariables){						
 		return jsonTemplate.postForEntity(url, data, type, uriVariables);
+	}
+	public static <T> ResponseEntity<T> postXml(String url, Object data, Class<T> type,  Object... uriVariables){						
+		return xmlTemplate.postForEntity(url, data, type, uriVariables);
 	}
 	
 	public static void putEntity(String url, Object data,  Object... uriVariables){						
@@ -52,6 +58,9 @@ public class DataUtil {
 	
 	public static <T> ResponseEntity<T> getJson(String url, Class<T> type,  Object... uriVariables){						
 		return jsonTemplate.getForEntity(url, type, uriVariables);
+	}
+	public static <T> ResponseEntity<T> getXml(String url, Class<T> type,  Object... uriVariables){						
+		return xmlTemplate.getForEntity(url, type, uriVariables);
 	}
 	
 	public static <T> ResponseEntity<T> getSimpleEntity(String url, Class<T> type, Object... uriVariables){						

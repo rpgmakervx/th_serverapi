@@ -1,10 +1,11 @@
 package com.tonghang.web.common.util;
 
+import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import sun.misc.BASE64Encoder;
 
 public class SecurityUtil {
 
@@ -96,5 +97,19 @@ public class SecurityUtil {
 		}
 		return buf.toString();
 	}
+    
+    public static String getBase64(String str) {  
+        byte[] b = null;  
+        String s = null;  
+        try {  
+            b = str.getBytes("utf-8");  
+        } catch (UnsupportedEncodingException e) {  
+            e.printStackTrace();  
+        }  
+        if (b != null) {  
+            s = new BASE64Encoder().encode(b);  
+        }  
+        return s;  
+    }  
 
 }

@@ -83,7 +83,7 @@ public class XmlUtils {
 			for (Element element : elements) {
 				String key = element.getName();
 				if (StringUtils.isNotEmpty(key)) {
-					String type = element.attributeValue("type", "java.lang.String");
+					String type = element.attributeValue("action");
 					String text = element.getText().trim();
 					Object value = null;
 					if (java.lang.String.class.getCanonicalName().equals(type)) {

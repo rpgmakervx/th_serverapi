@@ -73,8 +73,8 @@ public class Constant extends HuanXinUtil{
 	public static final String CHUANGLAN_PWD = "Tch147269";
 	public static final String RONGYUN_ACCOUNT = "8a48b55150e162370150f46c6b91014f";
 	public static final String RONGYUN_TOKEN = "52d49e3530104f9da276ea79b49023d8";
-	public static final String RONGYUN_APPID = "8a48b55150f4a7260150f50e19760299";
-	public static final String RONGYUN_APP_TOKEN = "948dc513172f16af851cb010b54224a1";
+	public static final String RONGYUN_APPID = "8a48b55151245988015128d537240c2a";
+	public static final String RONGYUN_APP_TOKEN = "7b026d5155dc977835017337013ebcad";
 	
 	
 	/** Gap size*/

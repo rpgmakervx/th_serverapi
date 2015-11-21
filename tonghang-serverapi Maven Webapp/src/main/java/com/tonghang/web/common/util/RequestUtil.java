@@ -58,6 +58,24 @@ public class RequestUtil {
 			}
 		}
 	}
+	
+	public static void voiceReceiver(HttpServletRequest request,String client_id,String quest_id, CommonsMultipartFile voice){
+		if(voice!=null){
+			String pictureRealPathDir = request.getSession().getServletContext().getRealPath("answer");
+			String fileName =pictureRealPathDir+File.separator+client_id+File.separator+quest_id+File.separator+Constant.IMAGE_NAME;              
+			try {
+				File f = new File(fileName);
+				File folder = new File(pictureRealPathDir+File.separator+client_id+File.separator+quest_id);
+				if(!folder.exists())
+					folder.mkdirs();
+				voice.getFileItem().write(f);
+				LogUtil.printLog(f.getAbsolutePath());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
 //	public static void UserImageReceiver(HttpServletRequest request,String client_id, String picture){
 //		System.out.println("UserImageReceiver:"+ picture);
 //		if(picture!=null){

@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -21,13 +22,16 @@ import com.tonghang.web.user.pojo.User;
 
 @Component("room")
 @Entity
-@Table(name="room")
+@Table(name="rooms")
 public class Room {
 
 	@Id
 	@GenericGenerator(strategy="assigned",name="idGenerator")
 	@GeneratedValue(generator="idGenerator")
 	public String room_id;
+	
+	@Column(name="meeting_id")
+	public String meeting_id;
 	
 	@OneToOne()
 	@JoinColumn(name="client_id",columnDefinition="default null")
@@ -36,7 +40,7 @@ public class Room {
 	@Column(name="theme")
 	public String theme;
 	
-	@ManyToOne()
+	@ManyToMany()
 	@JoinTable(name = "rooms_labels",
 	   joinColumns = @JoinColumn(name = "label_name"),
 	   inverseJoinColumns = @JoinColumn(name = "room_id"))
@@ -51,6 +55,14 @@ public class Room {
 
 	public void setRoom_id(String room_id) {
 		this.room_id = room_id;
+	}
+	
+	public String getMeeting_id() {
+		return meeting_id;
+	}
+
+	public void setMeeting_id(String meeting_id) {
+		this.meeting_id = meeting_id;
 	}
 
 	public User getUser() {

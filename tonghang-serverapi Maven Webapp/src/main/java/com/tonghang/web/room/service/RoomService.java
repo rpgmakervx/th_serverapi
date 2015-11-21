@@ -27,8 +27,9 @@ public class RoomService {
 	 * 创建一个房间
 	 * @param owner_id
 	 * @param theme
+	 * @throws Exception 
 	 */
-	public void createRoom(String owner_id,String theme){
+	public void createRoom(String owner_id,String theme) throws Exception{
 		theme = theme==null?"":theme;
 		User user = userService.findUserById(owner_id);
 		Room room = new Room();
@@ -37,6 +38,7 @@ public class RoomService {
 		room.setTheme(theme);
 		room.setLabels(user.getLabellist());
 		room.setRoom_id(ryUtil.createChatRoom(owner_id));
+		room.setMeeting_id(ryUtil.createMeeting());
 		roomDao.save(room);
 	}
 	

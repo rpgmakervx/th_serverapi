@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 
 import com.tonghang.web.common.pojo.FeedBack;
 import com.tonghang.web.label.pojo.Label;
+import com.tonghang.web.question.pojo.Question;
 import com.tonghang.web.secret.pojo.Secret;
 import com.tonghang.web.statistics.pojo.Channel;
 import com.tonghang.web.topic.pojo.Topic;
@@ -118,6 +119,12 @@ public class User implements Serializable{
 		inverseJoinColumns=@JoinColumn(name="blocker_id"))
 	@LazyCollection(LazyCollectionOption.FALSE)
 	private Set<User> blacklist;
+	
+	@OneToMany(mappedBy="asker")
+	private Set<Question> questions;
+	
+	@OneToMany(mappedBy="anchor")
+	private Set<Question> answerd;
 	
 	@Column(name="salary")
 	private int salary;
@@ -269,6 +276,18 @@ public class User implements Serializable{
 		this.blacklist = blacklist;
 	}
 	
+	public Set<Question> getQuestions() {
+		return questions;
+	}
+	public void setQuestions(Set<Question> questions) {
+		this.questions = questions;
+	}
+	public Set<Question> getAnswerd() {
+		return answerd;
+	}
+	public void setAnswerd(Set<Question> answerd) {
+		this.answerd = answerd;
+	}
 	public int getSalary() {
 		return salary;
 	}

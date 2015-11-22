@@ -1,5 +1,6 @@
 package com.tonghang.web.room.pojo;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
@@ -23,7 +24,7 @@ import com.tonghang.web.user.pojo.User;
 @Component("room")
 @Entity
 @Table(name="rooms")
-public class Room {
+public class Room implements Serializable{
 
 	@Id
 	@GenericGenerator(strategy="assigned",name="idGenerator")
@@ -96,6 +97,13 @@ public class Room {
 
 	public void setCreated_at(Date created_at) {
 		this.created_at = created_at;
+	}
+
+	@Override
+	public String toString() {
+		return "Room [room_id=" + room_id + ", meeting_id=" + meeting_id
+				+ ", user=" + user + ", theme=" + theme + ", labels=" + labels
+				+ ", created_at=" + created_at + "]";
 	}
 	
 }

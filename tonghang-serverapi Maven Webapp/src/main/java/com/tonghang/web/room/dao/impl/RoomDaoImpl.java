@@ -14,14 +14,15 @@ import com.tonghang.web.room.pojo.Room;
 import com.tonghang.web.user.pojo.User;
 
 @Repository("roomDao")
-@Transactional
 public class RoomDaoImpl implements RoomDao{
+	
 	@Resource(name="sessionFactory")
 	private SessionFactory sessionFactory;
 
 	@Override
 	public void save(Room room) {
 		// TODO Auto-generated method stub
+		System.out.println("room saved! "+room);
 		sessionFactory.getCurrentSession().save(room);
 	}
 

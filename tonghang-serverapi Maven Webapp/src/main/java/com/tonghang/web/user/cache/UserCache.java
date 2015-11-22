@@ -170,9 +170,7 @@ public class UserCache {
 		}
 		userDao.saveOrUpdate(user);
 		Map<String,Object> usermap = userUtil.userToMapConvertor(user,client_id);
-		usermap.putAll(CommonMapUtil.baseMsgToMapConvertor());
-		result.put("success", usermap);
-		return result;
+		return usermap;
 	}
 	
 	@CacheEvict(value=

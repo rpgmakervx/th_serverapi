@@ -46,42 +46,48 @@ public class RongYunUtil {
 		header.add("Content-Type","application/xml");
 		//组织请求参数和请求头
 		String reqxml = XmlUtils.map2xmlBody(parts);
-		HttpEntity<Map<String,Object>> requestEntity=
-				new HttpEntity<Map<String,Object>>(parts,header);
-		try {
-			reqparam = XmlUtils.xmlBody2map(reqxml,"Request");
-		} catch (DocumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			reqparam = XmlUtils.xmlBody2map(reqxml,"Request");
+//		} catch (DocumentException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		reqparam.put("name", owner_id);
+//		reqparam.put("type", Constant.ROOM_TYPE);
+//		reqparam.put("permission", Constant.ROOM_PERMISSION);
+		HttpEntity<String> requestEntity=
+				new HttpEntity<String>(reqxml,header);
 		//获取相应参数
-		ResponseEntity<Map> response = DataUtil.postXml(Constant.RONGYUN_TEST_URL+"/SubAccounts/"+appid+owner_id+"/Group/CreateGroup", reqparam, Map.class);
+		ResponseEntity<Map> response = DataUtil.postXml(Constant.RONGYUN_TEST_URL+"/SubAccounts/"+appid+owner_id+"/Group/CreateGroup?sig="+sig, requestEntity, Map.class);
 		Map map = response.getBody();
-		String groupId = (String) ((Map)map.get("Response")).get("groupId");
+		System.out.println("response : "+map);
+		String groupId = (String)map.get("groupId");
 		
 		return groupId;
 	}
 	
-	public String createMeeting() throws Exception{
+	public String createMeeting(String owner_id) throws Exception{
 		//准备基础参数
-		String accoountsid =  Constant.RONGYUN_ACCOUNT;
-		String token = Constant.RONGYUN_TOKEN;
+		String appid =  Constant.RONGYUN_APPID;
+		String accountsid =  Constant.RONGYUN_ACCOUNT;
+		String token = Constant.RONGYUN_APP_TOKEN;
+		String account_token = Constant.RONGYUN_TOKEN;
 		String timestamp = TimeUtil.timestamp(new Date());
-		String sig = SecurityUtil.getMD5(accoountsid+token+timestamp);
+		String sig = SecurityUtil.getMD5(accountsid+account_token+timestamp);
 		//配置必要参数
 		HttpHeaders header = new HttpHeaders();
-		Map<String,Object> parts = new HashMap<String, Object>();
-		Map<String,Object> reqparam = null;
-		header.add("Authorization", SecurityUtil.getBase64(accoountsid+":"+timestamp));
+		header.add("Authorization", SecurityUtil.getBase64(accountsid+":"+timestamp));
 		header.add("Content-Type","application/xml");
-		String reqxml = "<Request><Appid>111222333444555666777888</Appid><CreateConf action='createconfresult.jsp'/></Request>";
-		reqparam = XmlUtils.xmlBody2map(reqxml, "Request");
-		HttpEntity<Map<String,Object>> requestEntity=
-				new HttpEntity<Map<String,Object>>(parts,header);
+		String reqxml = "<?xml version='1.0' encoding='utf-8'?><Request><Appid>"+appid+"</Appid><CreateConf action='createconfresult.jsp' maxmember='300'/></Request>";
+		System.out.println("xml param :　"+reqxml);
+		HttpEntity<String> requestEntity=
+				new HttpEntity<String>(reqxml,header);
 		//获取相应参数
-		ResponseEntity<Map> response = DataUtil.postXml(Constant.RONGYUN_TEST_URL+"/Accounts/"+accoountsid+"/ivr/createconf?maxmember=300", reqparam, Map.class);
+		ResponseEntity<Map> response = DataUtil.postXml(Constant.RONGYUN_TEST_URL+"/Accounts/"+accountsid+"/ivr/createconf?sig="+sig, requestEntity, Map.class);
 		Map map = response.getBody();
-		String meeting_id = (String) ((Map)map.get("Response")).get("confid");
+		System.out.println("meeting response : "+map);
+		String meeting_id = (String)map.get("confid");
+		System.out.println("meeting : "+meeting_id);
 		return meeting_id;
 	}
 }

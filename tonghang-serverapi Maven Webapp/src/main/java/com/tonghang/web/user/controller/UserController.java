@@ -32,6 +32,7 @@ import com.tonghang.web.common.util.CommonMapUtil;
 import com.tonghang.web.common.util.Constant;
 import com.tonghang.web.common.util.HuanXinUtil;
 import com.tonghang.web.common.util.RequestUtil;
+import com.tonghang.web.room.service.RoomService;
 import com.tonghang.web.user.pojo.User;
 import com.tonghang.web.user.service.UserService;
 
@@ -47,7 +48,8 @@ public class UserController extends BaseController{
 	
 	@Resource(name="userService")
 	private UserService userService;
-	
+	@Resource(name="roomService")
+	private RoomService roomService;
 	
 	/**
 	 * 
@@ -289,25 +291,25 @@ public class UserController extends BaseController{
 	 * @return user(Map) [labels(List) email (String) image(String) 
 	 * 				sex(String) phone(String) city(String) username(String)
 	 * 				client_id(String) created_at(Date) birth(Date) is_friend(boolean)]
-	 * @throws JsonParseException
-	 * @throws JsonMappingException
-	 * @throws IOException
-	 * 1.先获得用户上传来的头像，不为空则存放在服务器指定的位置，然后根据参数为用户设置详细信息。
-	 * 2.update方法修改用户信息，如果修改的是用户名则还需要向环信提交请求。用户不存在则返回错误信息。
-	 * 用户存在与否都会返回当前用户信息，并由ResponseEntity包装成JSON返回给前台。
-	 * 3.所有返回用户信息的地方都会返回是否是好友关系
-	 * @throws UpdateUserException 
-	 * @throws NickNameExistException 
+	 * @throws Exception 
 	 */
 	@RequestMapping(value = "/update/{client_id}")
-	public ResponseEntity<Map<String,Object>> update(HttpServletRequest request,@RequestParam(required=false) CommonsMultipartFile image,@RequestParam String mapstr,@PathVariable String client_id) throws JsonParseException, JsonMappingException, IOException, UpdateUserException, NickNameExistException {
+	public ResponseEntity<Map<String,Object>> update(HttpServletRequest request,@RequestParam(required=false) CommonsMultipartFile image,@RequestParam String mapstr,@PathVariable String client_id) throws Exception {
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
+		Map<String, Object> result = new HashMap<String, Object>();
+		Map<String, Object> usermap = new HashMap<String, Object>();
 		boolean img = false;
 		if(image!=null)
 			RequestUtil.UserImageReceiver(request, client_id, image);
 		else img = true;
+		String owner_id = (String) map.get("owner_id");
+		String theme = (String) map.get("theme");
+		roomService.createRoom(owner_id, theme);
 		System.out.println("username:"+(String)map.get("username")+" sex:"+(String)map.get("sex")+" birth:"+(String)map.get("birth")+" city:"+(String)map.get("city"));
-		return new ResponseEntity<Map<String,Object>>(userService.update(client_id,(String)map.get("username"),(String)map.get("sex"),(String)map.get("birth"),(String)map.get("city"),img), HttpStatus.OK);
+		usermap = userService.update(client_id,(String)map.get("username"),(String)map.get("sex"),(String)map.get("birth"),(String)map.get("city"),img);
+		usermap.putAll(CommonMapUtil.baseMsgToMapConvertor());
+		result.put("success", usermap);
+		return new ResponseEntity<Map<String,Object>>(result, HttpStatus.OK);
 	}
 	
 	/**

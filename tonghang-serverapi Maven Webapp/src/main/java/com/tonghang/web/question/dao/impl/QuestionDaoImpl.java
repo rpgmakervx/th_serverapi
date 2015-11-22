@@ -3,6 +3,7 @@ package com.tonghang.web.question.dao.impl;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.transaction.Transactional;
 
 import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
@@ -12,6 +13,7 @@ import com.tonghang.web.question.pojo.Question;
 import com.tonghang.web.room.pojo.Room;
 
 @Repository("questionDao")
+@Transactional
 public class QuestionDaoImpl implements QuestionDao{
 
 	@Resource(name="sessionFactory")

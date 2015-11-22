@@ -34,7 +34,7 @@
 						</list>
 					</property>
 				</bean>
-				<bean class="org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter">
+				<bean class="org.springframework.http.converter.xml.MarshallingHttpMessageConverter">
 					<property name="supportedMediaTypes">
 						<list>
 							<value>application/xml;charset=UTF-8</value>

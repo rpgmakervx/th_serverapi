@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.tonghang.web.common.util.RongYunUtil;
 import com.tonghang.web.room.dao.RoomDao;
@@ -13,7 +14,8 @@ import com.tonghang.web.room.pojo.Room;
 import com.tonghang.web.user.pojo.User;
 import com.tonghang.web.user.service.UserService;
 
-@Service("roomServie")
+@Service("roomService")
+@Transactional
 public class RoomService {
 
 	@Resource(name="roomDao")
@@ -38,8 +40,9 @@ public class RoomService {
 		room.setTheme(theme);
 		room.setLabels(user.getLabellist());
 		room.setRoom_id(ryUtil.createChatRoom(owner_id));
-		room.setMeeting_id(ryUtil.createMeeting());
+		room.setMeeting_id(ryUtil.createMeeting(owner_id));
 		roomDao.save(room);
+		System.out.println("所有的room: "+roomDao.findRoomById(room.getRoom_id()));;
 	}
 	
 	/**

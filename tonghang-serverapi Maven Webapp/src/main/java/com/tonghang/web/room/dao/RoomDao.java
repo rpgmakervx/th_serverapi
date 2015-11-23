@@ -17,4 +17,7 @@ public interface RoomDao {
 	public List<Room> findAllRoom();
 	
 	public List<Room> findRoomByLabel(String label_name);
+	
+	public List<Room> findRoomSortByOpenat();
+	public List<Room> findRoomSortByCreatedat();
 }

@@ -16,6 +16,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.springframework.stereotype.Component;
 
 import com.tonghang.web.label.pojo.Label;
@@ -35,20 +37,17 @@ public class Room implements Serializable{
 	public String meeting_id;
 	
 	@OneToOne()
-	@JoinColumn(name="client_id",columnDefinition="default null")
+	@JoinColumn(name="client_id")
 	public User user;
 	
-	@Column(name="theme")
+	@Column(name="theme",columnDefinition="default null")
 	public String theme;
-	
-	@ManyToMany()
-	@JoinTable(name = "rooms_labels",
-	   joinColumns = @JoinColumn(name = "label_name"),
-	   inverseJoinColumns = @JoinColumn(name = "room_id"))
-	public Set<Label> labels;
 	
 	@Column(name="created_at")
 	public Date created_at;
+	
+	@Column(name="open_at")
+	public Date open_at;
 
 	public String getRoom_id() {
 		return room_id;
@@ -82,15 +81,6 @@ public class Room implements Serializable{
 		this.theme = theme;
 	}
 
-
-	public Set<Label> getLabels() {
-		return labels;
-	}
-
-	public void setLabels(Set<Label> labels) {
-		this.labels = labels;
-	}
-
 	public Date getCreated_at() {
 		return created_at;
 	}
@@ -99,10 +89,18 @@ public class Room implements Serializable{
 		this.created_at = created_at;
 	}
 
+	public Date getOpen_at() {
+		return open_at;
+	}
+
+	public void setOpen_at(Date open_at) {
+		this.open_at = open_at;
+	}
+
 	@Override
 	public String toString() {
 		return "Room [room_id=" + room_id + ", meeting_id=" + meeting_id
-				+ ", user=" + user + ", theme=" + theme + ", labels=" + labels
+				+ ", user=" + user + ", theme=" + theme + ","
 				+ ", created_at=" + created_at + "]";
 	}
 	

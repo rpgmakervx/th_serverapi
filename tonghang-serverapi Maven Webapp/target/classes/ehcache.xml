@@ -39,5 +39,13 @@
 	    timeToIdleSeconds="120"   
 	    timeToLiveSeconds="120"    
 	    memoryStoreEvictionPolicy="LRU" />
+	<cache name="com.tonghang.web.room.cache.RoomCache.getRecommendCache"  
+	    eternal="false"    
+	    maxElementsInMemory="3000"   
+	    overflowToDisk="false"   
+	    diskPersistent="false"    
+	    timeToIdleSeconds="0"   
+	    timeToLiveSeconds="300"    
+	    memoryStoreEvictionPolicy="LRU" />
 </ehcache>
   

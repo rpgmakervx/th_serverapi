@@ -63,4 +63,20 @@ public class RoomDaoImpl implements RoomDao{
 		return null;
 	}
 
+	@Override
+	public List<Room> findRoomSortByOpenat() {
+		// TODO Auto-generated method stub
+		Query query = sessionFactory.getCurrentSession().createQuery("from Room as room order by open_at");
+		List<Room> rooms = query.list();
+		return rooms;
+	}
+
+	@Override
+	public List<Room> findRoomSortByCreatedat() {
+		// TODO Auto-generated method stub
+		Query query = sessionFactory.getCurrentSession().createQuery("from Room as room order by created_at");
+		List<Room> rooms = query.list();
+		return rooms;
+	}
+
 }

@@ -28,8 +28,9 @@ public class AccountUser {
 	@Resource(name="userService")
 	private UserService userService;
 	
-	@After("execution(* com.tonghang.web.user.controller.*.recommend(..))||" +
-			"execution(* com.tonghang.web.user.controller.*.search*(..))") 
+	@After("execution(* com.tonghang.web.room.controller.*.recommend(..))||" +
+			"execution(* com.tonghang.web.user.controller.*.search*(..))||" +
+			"execution(* com.tonghang.web.room.controller.*.openRoom(..))") 
 	public void accountActiveUser(JoinPoint point) throws JsonParseException, JsonMappingException, IOException, ClassNotFoundException{
 		Object[] args = point.getArgs();
 		System.out.println("args : "+Arrays.toString(args));

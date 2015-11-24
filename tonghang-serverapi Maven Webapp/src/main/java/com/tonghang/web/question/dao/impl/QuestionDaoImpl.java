@@ -41,9 +41,17 @@ public class QuestionDaoImpl implements QuestionDao{
 	@Override
 	public List<Question> findQuestionByTime(String anchor_id) {
 		// TODO Auto-generated method stub
-		List<Question> questions = sessionFactory.getCurrentSession().createQuery("from Question as anchor_id where question.anchor.client_id = :client_id")
+		List<Question> questions = sessionFactory.getCurrentSession().createQuery("from Question as question where question.anchor.client_id = :client_id order by created_at desc")
 										.setParameter("client_id", anchor_id).list();
 		return questions;
+	}
+
+	@Override
+	public List<Question> findQuestionByAsker(String asker_id) {
+		// TODO Auto-generated method stub
+		List<Question> questions = sessionFactory.getCurrentSession().createQuery("from Question as question where question.asker.client_id = :client_id order by created_at desc")
+				.setParameter("client_id", asker_id).list();
+return questions;
 	}
 
 }

@@ -41,15 +41,16 @@ public class RoomController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping("create")
+	@RequestMapping("{room_id}/update")
 	@ResponseBody
-	public ResponseEntity<Map<String,Object>> createRoom(@RequestParam String mapstr)throws Exception{
+	public ResponseEntity<Map<String,Object>> createRoom(@PathVariable String room_id,@RequestParam String mapstr)throws Exception{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
 		Map<String,Object> success = new HashMap<String, Object>();	
 		Map<String,Object> result = new HashMap<String, Object>();
-		String owner_id = (String) map.get("owner_id");
 		String theme = (String) map.get("theme");
-		roomService.createRoom(owner_id, theme);
+		Room room = roomService.findRoomById(room_id);
+		room.setTheme(theme);
+		roomService.updateRoom(room);
 		result = CommonMapUtil.baseMsgToMapConvertor();
 		success.put("success", result);
 		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
@@ -66,6 +67,7 @@ public class RoomController {
 		Map<String,Object> result = new HashMap<String, Object>();
 		Room room = roomService.findRoomById(room_id);
 		room.setOpen_at(new Date());
+		room.setOnline(1);
 		roomService.updateRoom(room);
 		result = CommonMapUtil.baseMsgToMapConvertor();
 		success.put("success", result);
@@ -85,7 +87,9 @@ public class RoomController {
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
 		String client_id = (String)map.get("client_id");
 		boolean byDistance = false;
-		int page = (Integer) map.get("pageindex");
+		int page = 1;
+		if(map.get("pageindex")!=null)
+			page = (Integer) map.get("pageindex");
 		if(map.get("byDistance")!=null)
 			byDistance = (Boolean)map.get("byDistance");
 		Map<String,Object> success = roomService.recommendRooms(client_id, byDistance, page);
@@ -108,6 +112,8 @@ public class RoomController {
 		String room_id = (String) map.get("room_id");
 		String client_id = (String) map.get("client_id");
 		Room room = roomService.findRoomById(room_id);
+		room.setOnline(0);
+		roomService.updateRoom(room);
 		User user = userService.findUserById(client_id);
 		Date join_at = (Date)map.get("join_at");
 		Date leave_at = (Date)map.get("leave_at");
@@ -121,4 +127,5 @@ public class RoomController {
 		success.put("success", result);
 		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
 	}
+	
 }

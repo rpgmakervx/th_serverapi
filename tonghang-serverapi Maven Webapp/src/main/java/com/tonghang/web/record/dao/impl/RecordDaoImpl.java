@@ -3,10 +3,12 @@ package com.tonghang.web.record.dao.impl;
 import javax.annotation.Resource;
 
 import org.hibernate.SessionFactory;
+import org.springframework.stereotype.Repository;
 
 import com.tonghang.web.record.dao.RecordDao;
 import com.tonghang.web.record.pojo.Record;
 
+@Repository("recordDao")
 public class RecordDaoImpl implements RecordDao {
 
 	@Resource(name="sessionFactory")

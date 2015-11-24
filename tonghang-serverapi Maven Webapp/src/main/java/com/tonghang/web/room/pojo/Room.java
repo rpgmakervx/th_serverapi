@@ -49,6 +49,9 @@ public class Room implements Serializable{
 	@Column(name="open_at")
 	public Date open_at;
 
+	@Column(name="online")
+	public int online;
+	
 	public String getRoom_id() {
 		return room_id;
 	}
@@ -97,11 +100,21 @@ public class Room implements Serializable{
 		this.open_at = open_at;
 	}
 
+	public int getOnline() {
+		return online;
+	}
+
+	public void setOnline(int online) {
+		this.online = online;
+	}
+
 	@Override
 	public String toString() {
 		return "Room [room_id=" + room_id + ", meeting_id=" + meeting_id
-				+ ", user=" + user + ", theme=" + theme + ","
-				+ ", created_at=" + created_at + "]";
+				+ ", user=" + user + ", theme=" + theme + ", created_at="
+				+ created_at + ", open_at=" + open_at + ", online=" + online
+				+ "]";
 	}
+	
 	
 }

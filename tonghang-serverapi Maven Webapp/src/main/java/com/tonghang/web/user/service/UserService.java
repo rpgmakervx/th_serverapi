@@ -98,21 +98,12 @@ public class UserService {
 				result.put("success", CommonMapUtil.baseMsgToMapConvertor(Constant.LOGIN_FAIL+Constant.USER_ISOLATED, 510));
 				return result;
 			}else{
-				//新需求需要密码MD5加密，此处用来兼容老用户
-				/*if(user.getPassword().equals(SecurityUtil.getMD5(password))){
+				if(user.getPassword().equals(password)){
 					Map<String,Object> usermap = userUtil.userToMapConvertor(user,false,user.getClient_id());
 					usermap.putAll(CommonMapUtil.baseMsgToMapConvertor());
 					result.put("success", usermap);
 					user.setIsonline("1");
-					user.setLast_login_at(new Date());
-					userDao.saveOrUpdate(user);
-				}else */if(user.getPassword().equals(password)){
-					Map<String,Object> usermap = userUtil.userToMapConvertor(user,false,user.getClient_id());
-					usermap.putAll(CommonMapUtil.baseMsgToMapConvertor());
-					result.put("success", usermap);
-					user.setIsonline("1");
-					user.setPassword(/*SecurityUtil.getMD5(password)*/password);
-//					HuanXinUtil.changePassword(password, user.getClient_id());
+					user.setPassword(password);
 					user.setLast_login_at(new Date());
 					userDao.saveOrUpdate(user);
 				}else{
@@ -218,37 +209,6 @@ public class UserService {
 		}
 		return result;
 	}
-//	/**
-//	 *  旧的注册接口，因为注册业务换成三步注册，为了兼容0.8app留下该接口
-//	 * @param user
-//	 * @return
-//	 * @throws EmailExistException
-//	 * @throws NickNameExistException
-//	 */
-//	public Map<String,Object> oldRegistUser(User user) throws EmailExistException, NickNameExistException{
-//		Map<String,Object> result = new HashMap<String, Object>();
-//		//去掉标签部分
-//		Iterator<Label> it = user.getLabellist().iterator();
-//		while(it.hasNext()){
-//			Label label = it.next();
-//			if(labelDao.findLabelById(label.getLabel_name())==null)
-//				labelDao.save(label);
-//		}
-//		if(userDao.findUserByEmail(user.getEmail())!=null){
-//			result.put("success", CommonMapUtil.baseMsgToMapConvertor("注册失败！该邮箱已被注册", 511));
-//			return result;
-//		}else/* if(userDao.findUserByNickName(user.getUsername())!=null){
-//			throw new NickNameExistException("注册失败！该昵称已经被注册");
-//		}else*/{
-//			user.setClient_id(SecurityUtil.getUUID());
-//			userDao.save(user);
-//			HuanXinUtil.registUser(user);
-//			Map<String,Object> usermap = userUtil.userToMapConvertor(user,false,user.getClient_id());
-//			usermap.putAll(CommonMapUtil.baseMsgToMapConvertor());
-//			result.put("success", usermap);
-//		}
-//		return result;
-//	}
 	
 	/**
 	 * 查看用户详细信息

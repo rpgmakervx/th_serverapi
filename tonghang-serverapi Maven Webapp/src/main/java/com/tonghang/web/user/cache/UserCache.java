@@ -1,6 +1,7 @@
 package com.tonghang.web.user.cache;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -9,9 +10,6 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
-import net.sf.ehcache.Element;
-
-import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -139,36 +137,38 @@ public class UserCache {
 		User user = userDao.findUserById(client_id);
 		if(user==null){
 			result.put("success", CommonMapUtil.baseMsgToMapConvertor("更新失败，当前用户不存在", 513));
-		}
-		if(birth!=null&&!birth.equals(user.getBirth()))
-			user.setBirth(birth);
-		//修改省份前先清空省份
-		if(city!=null){
-			user.setProvince(null);
-			user.setCity(null);
-			if(city.contains("-")){
-				String pr = StringUtil.seperate(city, 0);
-				String ci = StringUtil.seperate(city, 1);
-				if(!ci.equals(user.getCity())&&city!=null)
-					user.setCity(ci);
-				if(!pr.equals(user.getProvince())&&pr!=null)
-					user.setProvince(pr);
-			}else{
-				user.setProvince(city);
+		}else{
+			if(birth!=null&&!birth.equals(user.getBirth()))
+				user.setBirth(birth);
+			//修改省份前先清空省份
+			if(city!=null){
+				user.setProvince(null);
+				user.setCity(null);
+				if(city.contains("-")){
+					String pr = StringUtil.seperate(city, 0);
+					String ci = StringUtil.seperate(city, 1);
+					if(!ci.equals(user.getCity())&&city!=null)
+						user.setCity(ci);
+					if(!pr.equals(user.getProvince())&&pr!=null)
+						user.setProvince(pr);
+				}else{
+					user.setProvince(city);
+				}
 			}
-		}
-		if(sex!=null&&!sex.equals(user.getSex()))
-			user.setSex(sex);
-		if(username!=null&&!username.equals(user.getUsername())){
-			 if(userDao.findUserByUsernameUnique(username).size()!=0){
-				result.put("success", CommonMapUtil.baseMsgToMapConvertor("该昵称已经被注册!", 512));
-				return result;
-			}else{
-				user.setUsername(username);
-				HuanXinUtil.changeUsername(user.getUsername(),user.getClient_id());				
+			if(sex!=null&&!sex.equals(user.getSex()))
+				user.setSex(sex);
+			if(username!=null&&!username.equals(user.getUsername())){
+				 if(userDao.findUserByUsernameUnique(username).size()!=0){
+					result.put("success", CommonMapUtil.baseMsgToMapConvertor("该昵称已经被注册!", 512));
+					return result;
+				}else{
+					user.setUsername(username);
+					HuanXinUtil.changeUsername(user.getUsername(),user.getClient_id());				
+				}
 			}
+			user.setImage(new Date().getTime()+"");
+			userDao.saveOrUpdate(user);
 		}
-		userDao.saveOrUpdate(user);
 		Map<String,Object> usermap = userUtil.userToMapConvertor(user,client_id);
 		return usermap;
 	}

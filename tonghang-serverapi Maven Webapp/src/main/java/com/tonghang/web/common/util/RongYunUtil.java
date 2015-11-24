@@ -90,15 +90,18 @@ public class RongYunUtil {
 		String sig = SecurityUtil.getMD5(Constant.RONGYUN_ACCOUNT+Constant.RONGYUN_TOKEN+timestamp);
 		//配置必要参数
 		HttpHeaders header = new HttpHeaders();
+		System.out.println("Author : \n"+SecurityUtil.getBase64(Constant.RONGYUN_ACCOUNT+":"+timestamp));
 		header.add("Authorization", SecurityUtil.getBase64(Constant.RONGYUN_ACCOUNT+":"+timestamp));
 		header.add("Content-Type","application/xml");
-		String reqxml = "<?xml version='1.0' encoding='utf-8'?><Request><Appid>"+Constant.RONGYUN_APPID+"</Appid><QueryConfState confid="+meeting_id+"/></Request>";
+		String reqxml = "<?xml version='1.0' encoding='utf-8'?><Request><Appid>"+Constant.RONGYUN_APPID+"</Appid><QueryConfState  confid='"+meeting_id+"'/></Request>";
 		System.out.println("xml param :　"+reqxml);
 		HttpEntity<String> requestEntity=
 				new HttpEntity<String>(reqxml,header);
 		//获取相应参数
-		ResponseEntity<Map> response = DataUtil.postXml(Constant.RONGYUN_TEST_URL+"/Accounts/"+Constant.RONGYUN_ACCOUNT+"/ivr/conf?sig="+sig, requestEntity, Map.class);
+		System.out.println("path\n "+Constant.RONGYUN_TEST_URL+"/Accounts/"+Constant.RONGYUN_ACCOUNT+"/ivr/conf?sig="+sig+"&confid="+meeting_id);
+		ResponseEntity<Map> response = DataUtil.postXml(Constant.RONGYUN_TEST_URL+"/Accounts/"+Constant.RONGYUN_ACCOUNT+"/ivr/conf?sig="+sig+"&confid="+meeting_id, requestEntity, Map.class);
 		properties = response.getBody();
+		System.out.println("容联云获取房间参数：\n"+properties);
 		return properties;
 	}
 }

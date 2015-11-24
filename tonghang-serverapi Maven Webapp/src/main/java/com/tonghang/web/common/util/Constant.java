@@ -33,6 +33,8 @@ public class Constant extends HuanXinUtil{
 	public static final String AGREE_SALARY_MSG = "同意和您交换 薪资";
 	public static final String REQUESTSECRET_MSG= "请求和您交换 秘密";
 	public static final String AGREEEXCHANGESECRET_MSG= "同意和您交换 秘密";
+	public static final String ASK_QUESTION_MSG = " 向您发问：";
+	public static final String ANSWER_QUESTION_MSG = " 回答了您的问题：";
 	
 	public static final String SM_VALID_MSG = "您的注册验证码是：";
 	public static final String PHONE_NOT_EXISTS = "该手机号没有注册同行";
@@ -48,6 +50,9 @@ public class Constant extends HuanXinUtil{
 	public static final String NO_VALIDCODE = "您还没有获取验证码！";
 	public static final String INVALID_CODE = "验证码错误！";
 	public static final String VALID_CODE_TIMEOUT = "验证码已失效，请重新获取";
+	
+	
+	public static final String THEME = "房主太懒了，什么也没有写";
 	
 	public static final String PICTURE_SERVER = "http://114.215.143.83:8080/tonghang-serverapi";
 	public static final String ADV_SERVER = "http://114.215.143.83:8080/tonghang";
@@ -157,5 +162,9 @@ public class Constant extends HuanXinUtil{
 	public static final String REQUESTSECRET= "11";
 	/**同意交换秘密*/
 	public static final String AGREEEXCHANGESECRET= "12";
+	/**用户提问问题*/
+	public static final String ASK_QUESTION = "13";
+	/**主播回答问题*/
+	public static final String ANSWER_QUESTION = "14";
 	
 }

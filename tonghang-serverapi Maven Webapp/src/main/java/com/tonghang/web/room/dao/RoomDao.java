@@ -11,6 +11,7 @@ public interface RoomDao {
 	public void saveOrUpdate(Room room);
 	
 	public Room findRoomById(String room_id);
+	public Room findRoomByMeeting(String meeting_id);
 	
 	public Room findRoomByOwner(String client_id);
 	

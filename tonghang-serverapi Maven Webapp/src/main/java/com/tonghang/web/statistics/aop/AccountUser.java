@@ -30,7 +30,7 @@ public class AccountUser {
 	
 	@After("execution(* com.tonghang.web.room.controller.*.recommend(..))||" +
 			"execution(* com.tonghang.web.user.controller.*.search*(..))||" +
-			"execution(* com.tonghang.web.room.controller.*.openRoom(..))") 
+			"execution(* com.tonghang.web.room.controller.*.open(..))") 
 	public void accountActiveUser(JoinPoint point) throws JsonParseException, JsonMappingException, IOException, ClassNotFoundException{
 		Object[] args = point.getArgs();
 		System.out.println("args : "+Arrays.toString(args));

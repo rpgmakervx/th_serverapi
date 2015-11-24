@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.tonghang.web.common.util.CommonMapUtil;
 import com.tonghang.web.common.util.Constant;
+import com.tonghang.web.common.util.JPushUtil;
 import com.tonghang.web.common.util.RongYunUtil;
 import com.tonghang.web.label.pojo.Label;
 import com.tonghang.web.room.cache.RoomCache;
@@ -54,15 +55,14 @@ public class RoomService {
 	 * @param theme
 	 * @throws Exception 
 	 */
-	public void createRoom(String owner_id,String theme) throws Exception{
-		theme = theme==null?"":theme;
+	public void createRoom(String owner_id) throws Exception{
 		User user = userService.findUserById(owner_id);
 		Set<Label> labels = user.getLabellist();
 		Room room = new Room();
 		room.setCreated_at(new Date());
 		room.setOpen_at(new Date());
 		room.setUser(user);
-		room.setTheme(theme);
+		room.setTheme(Constant.THEME);
 		room.setRoom_id(ryUtil.createChatRoom(owner_id));
 		room.setMeeting_id(ryUtil.createMeeting(owner_id));
 		roomDao.save(room);
@@ -118,8 +118,8 @@ public class RoomService {
 	 * @return
 	 */
 	public boolean roomExists(String meeting_id){
-		Map<String,Object> room = ryUtil.roomProperties(meeting_id);
-		int state = (Integer) room.get("state");
-		return state==1?true:false;
+		Room room =  roomDao.findRoomByMeeting(meeting_id);
+		return room.getOnline()==1?true:false;
 	}
+	
 }

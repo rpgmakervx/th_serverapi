@@ -66,7 +66,7 @@ public class RoomDaoImpl implements RoomDao{
 	@Override
 	public List<Room> findRoomSortByOpenat() {
 		// TODO Auto-generated method stub
-		Query query = sessionFactory.getCurrentSession().createQuery("from Room as room order by open_at");
+		Query query = sessionFactory.getCurrentSession().createQuery("from Room as room order by open_at desc");
 		List<Room> rooms = query.list();
 		return rooms;
 	}
@@ -74,9 +74,17 @@ public class RoomDaoImpl implements RoomDao{
 	@Override
 	public List<Room> findRoomSortByCreatedat() {
 		// TODO Auto-generated method stub
-		Query query = sessionFactory.getCurrentSession().createQuery("from Room as room order by created_at");
+		Query query = sessionFactory.getCurrentSession().createQuery("from Room as room order by created_at desc");
 		List<Room> rooms = query.list();
 		return rooms;
+	}
+
+	@Override
+	public Room findRoomByMeeting(String meeting_id) {
+		// TODO Auto-generated method stub
+		Room room = (Room) sessionFactory.getCurrentSession().createQuery("from Room as room where room.meeting_id = :meeting_id")
+				.setParameter("meeting_id", meeting_id).uniqueResult();
+return room;
 	}
 
 }

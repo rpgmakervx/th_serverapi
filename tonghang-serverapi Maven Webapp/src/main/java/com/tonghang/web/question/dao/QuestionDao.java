@@ -14,5 +14,7 @@ public interface QuestionDao {
 	
 	public List<Question> findQuestionByTime(String anchor_id);
 	
+	public List<Question> findQuestionByAsker(String asker_id);
+	
 	
 }

@@ -52,7 +52,7 @@ public class UserUtil {
 			msg.put("phone", u.getPhone());
 			msg.put("city", u.getCity());
 			msg.put("client_id", u.getClient_id());
-			msg.put("image", Constant.IMAGE_PATH+u.getClient_id()+"/"+Constant.IMAGE_NAME);
+			msg.put("image", u.getImage());
 			msg.put("created_at", TimeUtil.getFormatString(u.getCreated_at()));
 			msg.put("birth", u.getBirth());
 			usersmsg.add(msg);
@@ -90,7 +90,7 @@ public class UserUtil {
 			msg.put("phone", u.getPhone());
 			msg.put("city", city);
 			msg.put("client_id", u.getClient_id());
-			msg.put("image", Constant.IMAGE_PATH+u.getClient_id()+"/"+Constant.IMAGE_NAME);
+			msg.put("image", u.getImage());
 			msg.put("created_at", u.getCreated_at());
 			msg.put("birth", u.getBirth());
 			msg.put("is_friend", is_friend);
@@ -110,7 +110,6 @@ public class UserUtil {
 		Map<String,Object> msg = new HashMap<String, Object>();
 		Map<String,Object> usermap = new HashMap<String, Object>();
 		boolean is_friend = userService.isFriend(client_id, user.getClient_id());
-		
 		if(user.getLabellist()!=null){
 			for(Label l:user.getLabellist()){
 				labels.add(l.getLabel_name());
@@ -129,7 +128,7 @@ public class UserUtil {
 		msg.put("phone", user.getPhone());
 		msg.put("city", city);
 		msg.put("client_id", user.getClient_id());
-		msg.put("image", Constant.IMAGE_PATH+user.getClient_id()+"/"+Constant.IMAGE_NAME);
+		msg.put("image", user.getImage());
 		msg.put("created_at", user.getCreated_at());
 		msg.put("birth", user.getBirth());
 		msg.put("is_friend", is_friend);
@@ -173,7 +172,7 @@ public class UserUtil {
 			msg.put("phone", u.getPhone());
 			msg.put("city", city);
 			msg.put("client_id", u.getClient_id());
-			msg.put("image", Constant.IMAGE_PATH+u.getClient_id()+"/"+Constant.IMAGE_NAME);
+			msg.put("image", u.getImage());
 			msg.put("created_at", u.getCreated_at());
 			msg.put("birth", u.getBirth());
 			msg.put("is_friend", is_friend);
@@ -217,7 +216,7 @@ public class UserUtil {
 		msg.put("username", user.getUsername());
 		msg.put("phone", user.getPhone());
 		msg.put("client_id", user.getClient_id());
-		msg.put("image", Constant.IMAGE_PATH+user.getClient_id()+"/"+Constant.IMAGE_NAME);
+		msg.put("image", user.getImage());
 		msg.put("created_at", user.getCreated_at());
 		msg.put("city", city);
 		msg.put("birth", user.getBirth());
@@ -260,7 +259,7 @@ public class UserUtil {
 			msg.put("sex", u.getSex());
 			msg.put("phone", u.getPhone());
 			msg.put("client_id", u.getClient_id());
-			msg.put("image", Constant.IMAGE_PATH+u.getClient_id()+"/"+Constant.IMAGE_NAME);
+			msg.put("image", u.getImage());
 			msg.put("created_at", u.getCreated_at());
 			msg.put("birth", u.getBirth());
 			msg.put("is_friend", is_friend);
@@ -320,7 +319,7 @@ public class UserUtil {
 			msg.put("sex", u.getSex());
 			msg.put("phone", u.getPhone());
 			msg.put("client_id", u.getClient_id());
-			msg.put("image", Constant.IMAGE_PATH+u.getClient_id()+"/"+Constant.IMAGE_NAME);
+			msg.put("image", u.getImage());
 			msg.put("created_at", u.getCreated_at());
 			msg.put("birth", u.getBirth());
 			msg.put("is_friend", is_friend);

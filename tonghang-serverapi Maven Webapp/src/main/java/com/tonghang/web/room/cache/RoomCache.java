@@ -25,7 +25,7 @@ public class RoomCache {
 	@Resource(name="roomUtil")
 	private RoomUtil roomUtil;
 	
-	@Cacheable(value="com.tonghang.web.room.cache.RoomCache.getRecommendCache",key="#client_id+#byDistance")
+	@Cacheable(value="com.tonghang.web.room.cache.RoomCache.getRecommendCache",key="#me.client_id+#byDistance")
 	public List<Map<String,Object>> getRecommendCache(User me,boolean byDistance){
 		List<Room> exist_room = new ArrayList<Room>();
 		List<Room> notexist_room = new ArrayList<Room>();
@@ -41,11 +41,7 @@ public class RoomCache {
 		allrooms.addAll(exist_room);
 		allrooms.addAll(notexist_room);
 		List<Map<String,Object>> roomsmap = new ArrayList<Map<String,Object>>();
-		if(byDistance){
-			roomsmap = roomUtil.roomsToMapSortWithDistanceConverter(allrooms, me);
-		}else{
-			roomsmap = roomUtil.roomsToMapConverter(allrooms);
-		}
+		roomsmap = roomUtil.roomsToMapConverter(allrooms,me,byDistance);
 		return roomsmap;
 	}
 }

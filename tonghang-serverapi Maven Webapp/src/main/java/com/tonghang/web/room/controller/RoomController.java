@@ -43,7 +43,7 @@ public class RoomController {
 	 */
 	@RequestMapping("{room_id}/update")
 	@ResponseBody
-	public ResponseEntity<Map<String,Object>> createRoom(@PathVariable String room_id,@RequestParam String mapstr)throws Exception{
+	public ResponseEntity<Map<String,Object>> modifyRoom(@PathVariable String room_id,@RequestParam String mapstr)throws Exception{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
 		Map<String,Object> success = new HashMap<String, Object>();	
 		Map<String,Object> result = new HashMap<String, Object>();
@@ -74,6 +74,18 @@ public class RoomController {
 		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
 	}
 	
+	@RequestMapping("close/{room_id}")
+	@ResponseBody
+	public ResponseEntity<Map<String,Object>> closeRoom(@PathVariable String room_id){
+		Map<String,Object> success = new HashMap<String, Object>();	
+		Map<String,Object> result = new HashMap<String, Object>();
+		Room room = roomService.findRoomById(room_id);
+		room.setOnline(0);
+		roomService.updateRoom(room);
+		result = CommonMapUtil.baseMsgToMapConvertor();
+		success.put("success", result);
+		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
+	}
 	/**
 	 * 创建时间：2015-11-23
 	 * 业务功能：首页推荐房间，先按照房间是否有主播排序，再按照房间的最后一次开播时间排序
@@ -123,6 +135,42 @@ public class RoomController {
 		record.setLeave_at(leave_at);
 		record.setJoin_at(join_at);
 		recordService.recordAction(record);
+		result = CommonMapUtil.baseMsgToMapConvertor();
+		success.put("success", result);
+		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
+	}
+	
+	/***
+	 * 添加时间：2015-11-26
+	 * 业务功能：禁言某用户
+	 * @param member_id		被禁言者client_id
+	 * @param meeting_id		会议室id
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/{meeting_id}/shutup/{member_id}")
+	@ResponseBody
+	public ResponseEntity<Map<String,Object>> shutUpMember(@PathVariable String member_id,@PathVariable String meeting_id)throws Exception{
+		Map<String,Object> success = new HashMap<String, Object>();	
+		Map<String,Object> result = new HashMap<String, Object>();
+		roomService.shutup(meeting_id, member_id);
+		result = CommonMapUtil.baseMsgToMapConvertor();
+		success.put("success", result);
+		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
+	}
+	/**
+	 * 添加时间2015-11-26
+	 * 业务功能：关注直播间
+	 * @param client_id
+	 * @param room_id
+	 * @return
+	 */
+	@RequestMapping("/{client_id}/follow/{room_id}")
+	@ResponseBody
+	public ResponseEntity<Map<String,Object>> followRoom(@PathVariable String client_id,@PathVariable String room_id){
+		Map<String,Object> success = new HashMap<String, Object>();	
+		Map<String,Object> result = new HashMap<String, Object>();
+		roomService.followRoom(room_id, client_id);
 		result = CommonMapUtil.baseMsgToMapConvertor();
 		success.put("success", result);
 		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);

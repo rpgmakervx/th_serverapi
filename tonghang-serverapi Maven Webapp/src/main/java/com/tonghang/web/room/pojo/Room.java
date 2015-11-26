@@ -2,7 +2,7 @@ package com.tonghang.web.room.pojo;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,16 +11,12 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 import org.springframework.stereotype.Component;
 
-import com.tonghang.web.label.pojo.Label;
 import com.tonghang.web.user.pojo.User;
 
 @Component("room")
@@ -51,6 +47,12 @@ public class Room implements Serializable{
 
 	@Column(name="online")
 	public int online;
+	
+	@ManyToMany()
+	@JoinTable(name = "room_followers",
+	   joinColumns = @JoinColumn(name = "room_id"),
+	   inverseJoinColumns = @JoinColumn(name = "client_id"))
+	public List<User> follower;
 	
 	public String getRoom_id() {
 		return room_id;
@@ -107,6 +109,14 @@ public class Room implements Serializable{
 	public void setOnline(int online) {
 		this.online = online;
 	}
+	
+	public List<User> getFollower() {
+		return follower;
+	}
+
+	public void setFollower(List<User> follower) {
+		this.follower = follower;
+	}
 
 	@Override
 	public String toString() {
@@ -114,6 +124,53 @@ public class Room implements Serializable{
 				+ ", user=" + user + ", theme=" + theme + ", created_at="
 				+ created_at + ", open_at=" + open_at + ", online=" + online
 				+ "]";
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((meeting_id == null) ? 0 : meeting_id.hashCode());
+		result = prime * result + online;
+		result = prime * result + ((room_id == null) ? 0 : room_id.hashCode());
+		result = prime * result + ((theme == null) ? 0 : theme.hashCode());
+		result = prime * result + ((user == null) ? 0 : user.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Room other = (Room) obj;
+		if (meeting_id == null) {
+			if (other.meeting_id != null)
+				return false;
+		} else if (!meeting_id.equals(other.meeting_id))
+			return false;
+		if (online != other.online)
+			return false;
+		if (room_id == null) {
+			if (other.room_id != null)
+				return false;
+		} else if (!room_id.equals(other.room_id))
+			return false;
+		if (theme == null) {
+			if (other.theme != null)
+				return false;
+		} else if (!theme.equals(other.theme))
+			return false;
+		if (user == null) {
+			if (other.user != null)
+				return false;
+		} else if (!user.equals(other.user))
+			return false;
+		return true;
 	}
 	
 	

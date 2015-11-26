@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.dom4j.DocumentException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -47,7 +46,7 @@ public class RongYunUtil {
 		HttpEntity<String> requestEntity=
 				new HttpEntity<String>(reqxml,header);
 		//获取相应参数
-		ResponseEntity<Map> response = DataUtil.postXml(Constant.RONGYUN_TEST_URL+"/SubAccounts/"+Constant.RONGYUN_APPID+owner_id+"/Group/CreateGroup?sig="+sig, requestEntity, Map.class);
+		ResponseEntity<Map> response = DataUtil.postXml(Constant.RONGYUN_URL+"/SubAccounts/"+Constant.RONGYUN_APPID+owner_id+"/Group/CreateGroup?sig="+sig, requestEntity, Map.class);
 		Map map = response.getBody();
 		System.out.println("response : "+map);
 		String groupId = (String)map.get("groupId");
@@ -73,8 +72,10 @@ public class RongYunUtil {
 		HttpEntity<String> requestEntity=
 				new HttpEntity<String>(reqxml,header);
 		//获取相应参数
+		System.out.println("meetin url : \n"+Constant.RONGYUN_URL+"/Accounts/"+Constant.RONGYUN_ACCOUNT+"/ivr/createconf?sig="+sig);;
 		ResponseEntity<Map> response = DataUtil.postXml(Constant.RONGYUN_TEST_URL+"/Accounts/"+Constant.RONGYUN_ACCOUNT+"/ivr/createconf?sig="+sig, requestEntity, Map.class);
 		Map map = response.getBody();
+		System.out.println("meeting : "+map);
 		String meeting_id = (String)map.get("confid");
 		return meeting_id;
 	}
@@ -98,10 +99,47 @@ public class RongYunUtil {
 		HttpEntity<String> requestEntity=
 				new HttpEntity<String>(reqxml,header);
 		//获取相应参数
-		System.out.println("path\n "+Constant.RONGYUN_TEST_URL+"/Accounts/"+Constant.RONGYUN_ACCOUNT+"/ivr/conf?sig="+sig+"&confid="+meeting_id);
-		ResponseEntity<Map> response = DataUtil.postXml(Constant.RONGYUN_TEST_URL+"/Accounts/"+Constant.RONGYUN_ACCOUNT+"/ivr/conf?sig="+sig+"&confid="+meeting_id, requestEntity, Map.class);
+		System.out.println("path\n "+Constant.RONGYUN_URL+"/Accounts/"+Constant.RONGYUN_ACCOUNT+"/ivr/conf?sig="+sig+"&confid="+meeting_id);
+		ResponseEntity<Map> response = DataUtil.postXml(Constant.RONGYUN_URL+"/Accounts/"+Constant.RONGYUN_ACCOUNT+"/ivr/conf?sig="+sig+"&confid="+meeting_id, requestEntity, Map.class);
 		properties = response.getBody();
 		System.out.println("容联云获取房间参数：\n"+properties);
 		return properties;
+	}
+	
+	public void findRoom(String owner_id){
+		//准备基础参数
+		String timestamp = TimeUtil.timestamp(new Date());
+		String sig = SecurityUtil.getMD5(Constant.RONGYUN_APPID+Constant.RONGYUN_APP_TOKEN+timestamp);
+		//配置必要参数
+		HttpHeaders header = new HttpHeaders();
+		header.add("Authorization", SecurityUtil.getBase64(Constant.RONGYUN_APPID+":"+timestamp));
+		header.add("Content-Type","application/xml");
+		//组织请求参数和请求头
+		String reqxml = "<Request><groupId>gg8005430136</groupId><name></name></Request>";
+		HttpEntity<String> requestEntity=
+				new HttpEntity<String>(reqxml,header);
+		//获取相应参数
+		ResponseEntity<Map> response = DataUtil.postXml(Constant.RONGYUN_URL+"/SubAccounts/"+Constant.RONGYUN_APPID+owner_id+"/Group/SearchPublicGroups?sig="+sig, requestEntity, Map.class);
+		Map map = response.getBody();
+		System.out.println("response : "+map);
+		Map<String,Object> groups = (Map<String, Object>) map.get("groups");
+		System.out.println("groups content : "+groups);
+	}
+	
+	public void shutup(String meeting_id,String member_id){
+		//准备基础参数
+		String timestamp = TimeUtil.timestamp(new Date());
+		String sig = SecurityUtil.getMD5(Constant.RONGYUN_ACCOUNT+Constant.RONGYUN_TOKEN+timestamp);
+		//配置必要参数
+		HttpHeaders header = new HttpHeaders();
+		header.add("Authorization", SecurityUtil.getBase64(Constant.RONGYUN_ACCOUNT+":"+timestamp));
+		header.add("Content-Type","application/xml");
+		String reqxml = "<?xml version='1.0' encoding='utf-8'?><Request><Appid>"+Constant.RONGYUN_APPID+"</Appid><CreateConf callid ='"+meeting_id+"' confid='"+member_id+"' maxmember='300'/></Request>";
+		System.out.println("xml param :　"+reqxml);
+		HttpEntity<String> requestEntity=
+				new HttpEntity<String>(reqxml,header);
+		//获取相应参数
+		System.out.println("meetin url : \n"+Constant.RONGYUN_URL+"/Accounts/"+Constant.RONGYUN_ACCOUNT+"/ivr/createconf?sig="+sig);;
+		ResponseEntity<Map> response = DataUtil.postXml(Constant.RONGYUN_TEST_URL+"/Accounts/"+Constant.RONGYUN_ACCOUNT+"/ivr/createconf?sig="+sig, requestEntity, Map.class);
 	}
 }

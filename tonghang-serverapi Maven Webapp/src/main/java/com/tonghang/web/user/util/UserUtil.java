@@ -11,13 +11,15 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Component;
 
 import com.tonghang.web.common.util.CommonMapUtil;
-import com.tonghang.web.common.util.Constant;
 import com.tonghang.web.common.util.SortUtil;
 import com.tonghang.web.common.util.TimeUtil;
 import com.tonghang.web.friend.service.FriendService;
 import com.tonghang.web.label.pojo.Label;
 import com.tonghang.web.location.pojo.Location;
 import com.tonghang.web.location.service.LocationService;
+import com.tonghang.web.room.pojo.Room;
+import com.tonghang.web.room.service.RoomService;
+import com.tonghang.web.room.util.RoomUtil;
 import com.tonghang.web.user.pojo.User;
 import com.tonghang.web.user.service.UserService;
 
@@ -30,6 +32,10 @@ public class UserUtil {
 	private FriendService friendService;
 	@Resource(name="locationService")
 	private LocationService locationService;
+	@Resource(name="roomService")
+	private RoomService roomService;
+	@Resource(name="roomUtil")
+	private RoomUtil roomUtil;
 	/**
 	 * 该包装方式目前已废弃
 	 * @param users
@@ -110,6 +116,7 @@ public class UserUtil {
 		Map<String,Object> msg = new HashMap<String, Object>();
 		Map<String,Object> usermap = new HashMap<String, Object>();
 		boolean is_friend = userService.isFriend(client_id, user.getClient_id());
+		Room room = roomService.findRoomByOwner(client_id);
 		if(user.getLabellist()!=null){
 			for(Label l:user.getLabellist()){
 				labels.add(l.getLabel_name());
@@ -131,6 +138,10 @@ public class UserUtil {
 		msg.put("image", user.getImage());
 		msg.put("created_at", user.getCreated_at());
 		msg.put("birth", user.getBirth());
+		msg.put("friend_size", user.getFriends().size());
+		msg.put("room", roomUtil.roomToMapConverterTemplate(room));
+		msg.put("followed", usersToMapConvertor(room.getFollower()));
+		msg.put("follow", roomUtil.roomsToMapConverterTemplate(user.getFollow()));
 		msg.put("is_friend", is_friend);
 		if(!is_friend)
 			msg.put("has_invitation", friendService.isInvited(client_id, user.getClient_id()));

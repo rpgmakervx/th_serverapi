@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
 import com.tonghang.web.common.pojo.FeedBack;
 import com.tonghang.web.label.pojo.Label;
 import com.tonghang.web.question.pojo.Question;
-import com.tonghang.web.secret.pojo.Secret;
+import com.tonghang.web.room.pojo.Room;
 import com.tonghang.web.statistics.pojo.Channel;
 import com.tonghang.web.topic.pojo.Topic;
 
@@ -120,11 +120,15 @@ public class User implements Serializable{
 	@LazyCollection(LazyCollectionOption.FALSE)
 	private Set<User> blacklist;
 	
+	@ManyToMany(mappedBy="follower")
+	private Set<Room> follow;
+	
 	@OneToMany(mappedBy="asker")
 	private Set<Question> questions;
 	
 	@OneToMany(mappedBy="anchor")
 	private Set<Question> answerd;
+	
 	
 	@Column(name="salary")
 	private int salary;
@@ -300,6 +304,14 @@ public class User implements Serializable{
 	}
 	public void setNext_change(Date next_change) {
 		this.next_change = next_change;
+	}
+	
+	
+	public Set<Room> getFollow() {
+		return follow;
+	}
+	public void setFollow(Set<Room> follow) {
+		this.follow = follow;
 	}
 	@Override
 	public int hashCode() {

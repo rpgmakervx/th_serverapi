@@ -8,6 +8,7 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,6 +44,10 @@ public class RoomService {
 		return roomDao.findRoomById(room_id);
 	}
 	
+	public Room findRoomByOwner(String owner_id){
+		return roomDao.findRoomByOwner(owner_id);
+	}
+	
 	public List<Room> findRoomSortByOpenat(){
 		return roomDao.findRoomSortByOpenat();
 	}
@@ -55,18 +60,23 @@ public class RoomService {
 	 * @param theme
 	 * @throws Exception 
 	 */
+	@CacheEvict(value=
+		{"com.tonghang.web.room.cache.RoomCache.getRecommendCache"
+		},allEntries = true)
 	public void createRoom(String owner_id) throws Exception{
 		User user = userService.findUserById(owner_id);
-		Set<Label> labels = user.getLabellist();
-		Room room = new Room();
-		room.setCreated_at(new Date());
-		room.setOpen_at(new Date());
-		room.setUser(user);
-		room.setTheme(Constant.THEME);
-		room.setRoom_id(ryUtil.createChatRoom(owner_id));
-		room.setMeeting_id(ryUtil.createMeeting(owner_id));
-		roomDao.save(room);
-		System.out.println("所有的room: "+roomDao.findRoomById(room.getRoom_id()));;
+		if(roomDao.findRoomByOwner(user.getClient_id())==null){
+			Set<Label> labels = user.getLabellist();
+			Room room = new Room();
+			room.setOnline(1);
+			room.setCreated_at(new Date());
+			room.setOpen_at(new Date());
+			room.setUser(user);
+			room.setTheme(Constant.THEME);
+			room.setRoom_id(ryUtil.createChatRoom(owner_id));
+			room.setMeeting_id(ryUtil.createMeeting(owner_id));
+			roomDao.save(room);
+		}
 	}
 	
 	/**
@@ -81,14 +91,19 @@ public class RoomService {
 	 * 修改房间信息
 	 * @param room
 	 */
+	@CacheEvict(value=
+		{"com.tonghang.web.room.cache.RoomCache.getRecommendCache"
+		},allEntries = true)
 	public void updateRoom(Room room){
-		roomDao.saveOrUpdate(room);
+		if(!room.equals(roomCache.getRoomState(room.getRoom_id())))
+			roomDao.saveOrUpdate(room);
 	}
 	
 	public Map<String,Object> recommendRooms(String client_id,boolean byDistance, int page){
 		Map<String,Object> result = new HashMap<String, Object>();
 		Map<String,Object> success = new HashMap<String, Object>();
 		User me = userService.findUserById(client_id);
+		ryUtil.findRoom(client_id);
 		List<Map<String,Object>> rooms = roomCache.getRecommendCache(me, byDistance);
 		int front = (page-1)*Constant.PAGESIZE;
 		//当前页数的尾索引
@@ -121,5 +136,28 @@ public class RoomService {
 		Room room =  roomDao.findRoomByMeeting(meeting_id);
 		return room.getOnline()==1?true:false;
 	}
+	
+	/**
+	 * 用户禁言
+	 * @param meeting_id	被禁言用户的client_id
+	 * @param member_id	所在房间
+	 */
+	public void shutup(String meeting_id,String member_id){
+		ryUtil.shutup(meeting_id, member_id);
+	}
+	
+	/**
+	 * 关注房间直播室
+	 * @param room_id
+	 */
+	public void followRoom(String room_id,String client_id){
+		Room room = findRoomById(room_id);
+		User user = userService.findUserById(client_id);
+		if(!room.getFollower().contains(user)){
+			room.getFollower().add(user);
+		}
+		roomDao.saveOrUpdate(room);
+	}
+	
 	
 }

@@ -34,6 +34,7 @@ public class RoomUtil {
 	
 	public Map<String,Object> roomToMapConverterTemplate(Room room){
 		Map<String,Object> roommsg = new HashMap<String, Object>();
+		if(room == null) return null;
 		roommsg.put("room_id", room.getRoom_id());
 		roommsg.put("meeting_id", room.getMeeting_id());
 		roommsg.put("created_at", TimeUtil.getFormatString(room.getCreated_at()));
@@ -78,6 +79,7 @@ public class RoomUtil {
 	public List<Map<String,Object>> roomsToMapConverter(Collection<Room> rooms,User me,boolean byDistance){
 		List<Map<String,Object>> roomsmsg = new ArrayList<Map<String,Object>>();
 		Location my_local = locationService.findLocationByUser(me);
+		System.out.println("roomsToMapConverter");
 		for(Room room:rooms){
 			Map<String,Object> roommsg = new HashMap<String, Object>();
 			Location his_local = locationService.findLocationByUser(room.getUser());

@@ -67,13 +67,13 @@ public class RongYunUtil {
 		HttpHeaders header = new HttpHeaders();
 		header.add("Authorization", SecurityUtil.getBase64(Constant.RONGYUN_ACCOUNT+":"+timestamp));
 		header.add("Content-Type","application/xml");
-		String reqxml = "<?xml version='1.0' encoding='utf-8'?><Request><Appid>"+Constant.RONGYUN_APPID+"</Appid><CreateConf action='createconfresult.jsp' shortconf='false' maxmember='300'/></Request>";
+		String reqxml = "<?xml version='1.0' encoding='utf-8'?><Request><Appid>"+Constant.RONGYUN_APPID+"</Appid><CreateConf action='createconfresult.jsp' shortconf='false' passwd='123' maxmember='300'/></Request>";
 		System.out.println("xml param :　"+reqxml);
 		HttpEntity<String> requestEntity=
 				new HttpEntity<String>(reqxml,header);
 		//获取相应参数
 		System.out.println("meetin url : \n"+Constant.RONGYUN_URL+"/Accounts/"+Constant.RONGYUN_ACCOUNT+"/ivr/createconf?sig="+sig);;
-		ResponseEntity<Map> response = DataUtil.postXml(Constant.RONGYUN_TEST_URL+"/Accounts/"+Constant.RONGYUN_ACCOUNT+"/ivr/createconf?sig="+sig, requestEntity, Map.class);
+		ResponseEntity<Map> response = DataUtil.postXml(Constant.RONGYUN_URL+"/Accounts/"+Constant.RONGYUN_ACCOUNT+"/ivr/createconf?sig="+sig, requestEntity, Map.class);
 		Map map = response.getBody();
 		System.out.println("meeting : "+map);
 		String meeting_id = (String)map.get("confid");
@@ -140,6 +140,6 @@ public class RongYunUtil {
 				new HttpEntity<String>(reqxml,header);
 		//获取相应参数
 		System.out.println("meetin url : \n"+Constant.RONGYUN_URL+"/Accounts/"+Constant.RONGYUN_ACCOUNT+"/ivr/createconf?sig="+sig);;
-		ResponseEntity<Map> response = DataUtil.postXml(Constant.RONGYUN_TEST_URL+"/Accounts/"+Constant.RONGYUN_ACCOUNT+"/ivr/createconf?sig="+sig, requestEntity, Map.class);
+		ResponseEntity<Map> response = DataUtil.postXml(Constant.RONGYUN_URL+"/Accounts/"+Constant.RONGYUN_ACCOUNT+"/ivr/createconf?sig="+sig, requestEntity, Map.class);
 	}
 }

@@ -105,6 +105,8 @@ public class RoomService {
 		User me = userService.findUserById(client_id);
 		ryUtil.findRoom(client_id);
 		List<Map<String,Object>> rooms = roomCache.getRecommendCache(me, byDistance);
+		Room room = findRoomById("gg8005430111");
+		System.out.println("人数："+ryUtil.roomProperties(room.getMeeting_id()).get("count"));
 		int front = (page-1)*Constant.PAGESIZE;
 		//当前页数的尾索引
 		int now = page*Constant.PAGESIZE;

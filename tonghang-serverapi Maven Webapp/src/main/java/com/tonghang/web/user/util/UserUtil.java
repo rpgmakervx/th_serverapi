@@ -45,6 +45,9 @@ public class UserUtil {
 		List<Map<String,Object>> usersmsg = new ArrayList<Map<String,Object>>();
 		Map<String,Object> usermap = CommonMapUtil.baseMsgToMapConvertor();
 		Map<String,Object> result = new HashMap<String, Object>();
+		if(users==null){
+			users = new ArrayList<User>();
+		}
 		for(User u:users){
 			List<String> labels = new ArrayList<String>();
 			Map<String,Object> msg = new HashMap<String, Object>();

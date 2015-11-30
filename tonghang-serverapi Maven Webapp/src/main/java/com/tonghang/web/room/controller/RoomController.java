@@ -34,6 +34,18 @@ public class RoomController {
 	@Resource(name="recordService")
 	private RecordService recordService;
 	
+	@RequestMapping("{client_id}/create")
+	@ResponseBody
+	public ResponseEntity<Map<String,Object>> createRoom(@PathVariable String client_id,@RequestParam String mapstr)throws Exception{
+		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
+		Map<String,Object> success = new HashMap<String, Object>();	
+		Map<String,Object> result = new HashMap<String, Object>();
+		String theme = (String) map.get("meeting_id");
+		result = CommonMapUtil.baseMsgToMapConvertor();
+		success.put("success", result);
+		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
+	}
+	
 	/**
 	 * 添加时间：2015-11-21
 	 * 业务功能：用户创建房间

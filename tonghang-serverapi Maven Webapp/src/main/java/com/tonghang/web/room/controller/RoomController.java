@@ -39,9 +39,8 @@ public class RoomController {
 	public ResponseEntity<Map<String,Object>> createRoom(@PathVariable String client_id,@RequestParam String mapstr)throws Exception{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
 		Map<String,Object> success = new HashMap<String, Object>();	
-		Map<String,Object> result = new HashMap<String, Object>();
-		String theme = (String) map.get("meeting_id");
-		result = CommonMapUtil.baseMsgToMapConvertor();
+		roomService.createRoom(client_id, (String) map.get("meeting_id"));
+		Map<String,Object> result = CommonMapUtil.baseMsgToMapConvertor();
 		success.put("success", result);
 		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
 	}
@@ -116,6 +115,7 @@ public class RoomController {
 			page = (Integer) map.get("pageindex");
 		if(map.get("byDistance")!=null)
 			byDistance = (Boolean)map.get("byDistance");
+		System.out.println("recommend param "+(Integer) map.get("pageindex"));
 		Map<String,Object> success = roomService.recommendRooms(client_id, byDistance, page);
 		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
 	}

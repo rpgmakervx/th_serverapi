@@ -39,7 +39,7 @@ public class RoomUtil {
 		roommsg.put("meeting_id", room.getMeeting_id());
 		roommsg.put("created_at", TimeUtil.getFormatString(room.getCreated_at()));
 		roommsg.put("theme", room.getTheme());
-		roommsg.put("listener", ryUtil.roomProperties(room.getMeeting_id()).get("count"));
+//		roommsg.put("listener", ryUtil.roomProperties(room.getMeeting_id()).get("count"));
 		roommsg.put("online", room.getOnline()==1?true:false);
 		return roommsg;
 	}
@@ -52,7 +52,7 @@ public class RoomUtil {
 			roommsg.put("meeting_id", room.getMeeting_id());
 			roommsg.put("created_at", TimeUtil.getFormatString(room.getCreated_at()));
 			roommsg.put("theme", room.getTheme());
-			roommsg.put("listener", ryUtil.roomProperties(room.getMeeting_id()).get("count"));
+//			roommsg.put("listener", ryUtil.roomProperties(room.getMeeting_id()).get("count"));
 			roommsg.put("online", room.getOnline()==1?true:false);
 			roomsmsg.add(roommsg);
 		}
@@ -71,7 +71,7 @@ public class RoomUtil {
 		roommsg.put("created_at", TimeUtil.getFormatString(room.getCreated_at()));
 		roommsg.put("owner", userUtil.userToMapConvertor(room.getUser(), true, room.getUser().getClient_id()).get("user"));
 		roommsg.put("theme", room.getTheme());
-		roommsg.put("listener", ryUtil.roomProperties(room.getMeeting_id()).get("count"));
+//		roommsg.put("listener", ryUtil.roomProperties(room.getMeeting_id()).get("count"));
 		roommsg.put("online", room.getOnline()==1?true:false);
 		return roommsg;
 	}
@@ -79,7 +79,6 @@ public class RoomUtil {
 	public List<Map<String,Object>> roomsToMapConverter(Collection<Room> rooms,User me,boolean byDistance){
 		List<Map<String,Object>> roomsmsg = new ArrayList<Map<String,Object>>();
 		Location my_local = locationService.findLocationByUser(me);
-		System.out.println("roomsToMapConverter");
 		for(Room room:rooms){
 			Map<String,Object> roommsg = new HashMap<String, Object>();
 			Location his_local = locationService.findLocationByUser(room.getUser());
@@ -91,7 +90,6 @@ public class RoomUtil {
 			roommsg.put("created_at", TimeUtil.getFormatString(room.getCreated_at()));
 			roommsg.put("owner", userUtil.userToMapConvertor(room.getUser(), true, room.getUser().getClient_id()).get("user"));
 			roommsg.put("theme", room.getTheme());
-			roommsg.put("listener", ryUtil.roomProperties(room.getMeeting_id()).get("count"));
 			roommsg.put("online", room.getOnline()==1?true:false);
 			roommsg.put("distance", distance);
 			roomsmsg.add(roommsg);

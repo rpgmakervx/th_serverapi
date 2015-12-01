@@ -273,7 +273,7 @@ public class UserController extends BaseController{
 			RequestUtil.UserImageReceiver(request, client_id, image);
 		else img = true;
 		//此处新建room
-		roomService.createRoom(client_id);
+		roomService.createRoom(client_id,(String)map.get("meeting_id"));
 		System.out.println("username:"+(String)map.get("username")+" sex:"+(String)map.get("sex")+" birth:"+(String)map.get("birth")+" city:"+(String)map.get("city"));
 		usermap = userService.update(client_id,(String)map.get("username"),(String)map.get("sex"),(String)map.get("birth"),(String)map.get("city"),img);
 		usermap.putAll(CommonMapUtil.baseMsgToMapConvertor());

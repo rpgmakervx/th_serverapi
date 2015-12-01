@@ -63,8 +63,9 @@ public class RoomService {
 	@CacheEvict(value=
 		{"com.tonghang.web.room.cache.RoomCache.getRecommendCache"
 		},allEntries = true)
-	public void createRoom(String owner_id) throws Exception{
+	public void createRoom(String owner_id,String meeting_id) throws Exception{
 		User user = userService.findUserById(owner_id);
+		System.out.println(owner_id+" user room : "+user);
 		if(roomDao.findRoomByOwner(user.getClient_id())==null){
 			Set<Label> labels = user.getLabellist();
 			Room room = new Room();
@@ -74,7 +75,7 @@ public class RoomService {
 			room.setUser(user);
 			room.setTheme(Constant.THEME);
 			room.setRoom_id(ryUtil.createChatRoom(owner_id));
-			room.setMeeting_id(ryUtil.createMeeting(owner_id));
+			room.setMeeting_id(meeting_id);
 			roomDao.save(room);
 		}
 	}
@@ -102,11 +103,10 @@ public class RoomService {
 	public Map<String,Object> recommendRooms(String client_id,boolean byDistance, int page){
 		Map<String,Object> result = new HashMap<String, Object>();
 		Map<String,Object> success = new HashMap<String, Object>();
+		System.out.println("recommendRooms Service");
 		User me = userService.findUserById(client_id);
-		ryUtil.findRoom(client_id);
 		List<Map<String,Object>> rooms = roomCache.getRecommendCache(me, byDistance);
-		Room room = findRoomById("gg8005430111");
-		System.out.println("人数："+ryUtil.roomProperties(room.getMeeting_id()).get("count"));
+		System.out.println("首页推荐的房间数量："+rooms);
 		int front = (page-1)*Constant.PAGESIZE;
 		//当前页数的尾索引
 		int now = page*Constant.PAGESIZE;

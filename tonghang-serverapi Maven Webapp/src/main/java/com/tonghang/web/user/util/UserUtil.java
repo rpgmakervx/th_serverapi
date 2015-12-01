@@ -120,6 +120,7 @@ public class UserUtil {
 		Map<String,Object> usermap = new HashMap<String, Object>();
 		boolean is_friend = userService.isFriend(client_id, user.getClient_id());
 		Room room = roomService.findRoomByOwner(client_id);
+		room = room==null?new Room():room;
 		if(user.getLabellist()!=null){
 			for(Label l:user.getLabellist()){
 				labels.add(l.getLabel_name());

@@ -31,6 +31,7 @@ public class QuestionService {
 	 */
 	public void sendQuestionRequest(String asker_id,String anchor_id){
 		User asker = userService.findUserById(asker_id);
+		System.out.println("发问者："+asker.getUsername());
 		JPushUtil.push(anchor_id, asker_id, asker.getUsername(), Constant.ASK_QUESTION, Constant.ASK_QUESTION_MSG);
 	}
 	

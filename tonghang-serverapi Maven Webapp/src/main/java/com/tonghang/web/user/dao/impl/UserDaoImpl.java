@@ -165,4 +165,12 @@ public class UserDaoImpl implements UserDao {
 		return user;
 	}
 
+	@Override
+	public User findUserByRYID(String ry_id) {
+		// TODO Auto-generated method stub
+		User user = (User) sessionFactory.getCurrentSession().createQuery("from User as user where user.ry_id = :ry_id")
+				.setParameter("ry_id", ry_id).uniqueResult();
+		return user;
+	}
+
 }

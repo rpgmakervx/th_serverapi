@@ -81,14 +81,6 @@ public class RoomService {
 	}
 	
 	/**
-	 * 获得app参数
-	 * @return
-	 */
-	public Map<String,String> fetchAppParam(){
-		return ryUtil.getAppId();
-	}
-	
-	/**
 	 * 修改房间信息
 	 * @param room
 	 */
@@ -137,15 +129,6 @@ public class RoomService {
 	public boolean roomExists(String meeting_id){
 		Room room =  roomDao.findRoomByMeeting(meeting_id);
 		return room.getOnline()==1?true:false;
-	}
-	
-	/**
-	 * 用户禁言
-	 * @param meeting_id	被禁言用户的client_id
-	 * @param member_id	所在房间
-	 */
-	public void shutup(String meeting_id,String member_id){
-		ryUtil.shutup(meeting_id, member_id);
 	}
 	
 	/**

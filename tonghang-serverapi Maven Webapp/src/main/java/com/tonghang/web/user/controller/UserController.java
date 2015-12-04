@@ -73,17 +73,6 @@ public class UserController extends BaseController{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
 		return new ResponseEntity<Map<String,Object>>(userService.login((String)map.get("number"),(String)map.get("password"),(String)map.get("what")), HttpStatus.OK);
 	}
-//	/**
-//	 * 业务功能：兼容旧版本APP登录功能
-//	 * @param mapstr
-//	 * @return
-//	 * @throws Exception
-//	 */
-//	@RequestMapping(value = "/login")
-//	public ResponseEntity<Map<String,Object>> oldLogin(@RequestParam String mapstr) throws Exception {		
-//		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
-//		return new ResponseEntity<Map<String,Object>>(userService.oldLogin((String)map.get("email"),(String)map.get("password")), HttpStatus.OK);
-//	}
 	
 	/**
 	 * 业务功能：忘记密码(调试通过)

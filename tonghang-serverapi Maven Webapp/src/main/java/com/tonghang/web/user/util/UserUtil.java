@@ -60,7 +60,8 @@ public class UserUtil {
 			msg.put("sex", u.getSex());
 			msg.put("phone", u.getPhone());
 			msg.put("city", u.getCity());
-			msg.put("client_id", u.getClient_id());
+			msg.put("client_id", u.getClient_id());	
+			msg.put("ry_id", u.getRy_id());
 			msg.put("image", u.getImage());
 			msg.put("created_at", TimeUtil.getFormatString(u.getCreated_at()));
 			msg.put("birth", u.getBirth());
@@ -99,6 +100,7 @@ public class UserUtil {
 			msg.put("phone", u.getPhone());
 			msg.put("city", city);
 			msg.put("client_id", u.getClient_id());
+			msg.put("ry_id", u.getRy_id());
 			msg.put("image", u.getImage());
 			msg.put("created_at", u.getCreated_at());
 			msg.put("birth", u.getBirth());
@@ -139,6 +141,7 @@ public class UserUtil {
 		msg.put("phone", user.getPhone());
 		msg.put("city", city);
 		msg.put("client_id", user.getClient_id());
+		msg.put("ry_id", user.getRy_id());
 		msg.put("image", user.getImage());
 		msg.put("created_at", user.getCreated_at());
 		msg.put("birth", user.getBirth());
@@ -187,6 +190,7 @@ public class UserUtil {
 			msg.put("phone", u.getPhone());
 			msg.put("city", city);
 			msg.put("client_id", u.getClient_id());
+			msg.put("ry_id", u.getRy_id());
 			msg.put("image", u.getImage());
 			msg.put("created_at", u.getCreated_at());
 			msg.put("birth", u.getBirth());
@@ -214,6 +218,8 @@ public class UserUtil {
 		List<String> labels = new ArrayList<String>();
 		Map<String,Object> msg = new HashMap<String, Object>();
 		Map<String,Object> usermap = new HashMap<String, Object>();
+		Room room = roomService.findRoomByOwner(client_id);
+		room = room==null?new Room():room;
 		if(user.getLabellist()!=null){
 			for(Label l:user.getLabellist()){
 				labels.add(l.getLabel_name());
@@ -231,7 +237,8 @@ public class UserUtil {
 		msg.put("username", user.getUsername());
 		msg.put("phone", user.getPhone());
 		msg.put("client_id", user.getClient_id());
-		msg.put("image", user.getImage());
+		msg.put("ry_id", user.getRy_id());
+		msg.put("room", roomUtil.roomToMapConverterTemplate(room));
 		msg.put("created_at", user.getCreated_at());
 		msg.put("city", city);
 		msg.put("birth", user.getBirth());
@@ -274,6 +281,7 @@ public class UserUtil {
 			msg.put("sex", u.getSex());
 			msg.put("phone", u.getPhone());
 			msg.put("client_id", u.getClient_id());
+			msg.put("ry_id", u.getRy_id());
 			msg.put("image", u.getImage());
 			msg.put("created_at", u.getCreated_at());
 			msg.put("birth", u.getBirth());
@@ -334,6 +342,7 @@ public class UserUtil {
 			msg.put("sex", u.getSex());
 			msg.put("phone", u.getPhone());
 			msg.put("client_id", u.getClient_id());
+			msg.put("ry_id", u.getRy_id());
 			msg.put("image", u.getImage());
 			msg.put("created_at", u.getCreated_at());
 			msg.put("birth", u.getBirth());
@@ -404,6 +413,7 @@ public class UserUtil {
 			nextdate = 0;
 		}
 		msg.put("client_id", user.getClient_id());
+		msg.put("ry_id", user.getRy_id());
 		msg.put("username", user.getUsername());
 		msg.put("salary", user.getSalary()+"");
 		msg.put("date_gap", nextdate);

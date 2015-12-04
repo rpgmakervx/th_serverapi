@@ -15,6 +15,7 @@ public interface UserDao {
 	public User findUserByNickName(String nickname);
 	public User findUserByPhone(String phone);
 	public User findUserById(String client_id);
+	public User findUserByRYID(String ry_id);
 	
 	
 	public List<User> findAllUser();

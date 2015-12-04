@@ -3,6 +3,10 @@ package com.tonghang.web.common.util;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import sun.misc.BASE64Encoder;
@@ -14,10 +18,44 @@ public class SecurityUtil {
 	 * @return
 	 */
 	public static String getUUID(){
-		UUID uuid = UUID.randomUUID();
-		return uuid.toString().replaceAll("-", "");
+		return UUID.randomUUID().toString().replaceAll("-", "");
 	}
 	
+	public static String getRYID(String client_id){
+		List<Character> result = combineChar(client_id);
+		Collections.shuffle(result);
+		return listToString(result);
+	}
+	
+	private static String listToString(List<Character> chlist){
+		String result = "";
+		for(char ch:chlist){
+			result += ch;
+		}
+		return result;
+	}
+	private static List<Character> combineChar(String client_id){
+		return getMixedCharList(client_id);
+	}
+	
+	private static String getCharUUID(String client_id){
+		StringBuffer buffer = new StringBuffer();
+		for(byte ch:client_id.getBytes()){
+			buffer.append(ch);
+		}
+		return buffer.toString();
+	}
+	
+	private static List<Character> getMixedCharList(String client_id){
+		List<Character> chlist = new ArrayList<Character>();
+		String timestamp = TimeUtil.timestamp(new Date());
+		for(char ch:(getCharUUID(client_id)+timestamp).toCharArray()){
+			if(chlist.size()>19)
+				break;
+			chlist.add(ch);
+		}
+		return chlist;
+	}	
 //	 /**
 //     * 生成md5
 //     * @param message

@@ -48,9 +48,12 @@ public class User implements Serializable{
 
 	@Column(name="username")
 	private String username;
-	
+	//容联云要求的id必须是20位以内的数字字符串
+	@Column(name="ry_id")
+	private String ry_id;
 	@Column(name="password")
 	private String password;
+	//时间戳
 	@Column(name="image")
 	private String image;
 	@Column(name="email")
@@ -306,7 +309,12 @@ public class User implements Serializable{
 		this.next_change = next_change;
 	}
 	
-	
+	public String getRy_id() {
+		return ry_id;
+	}
+	public void setRy_id(String ry_id) {
+		this.ry_id = ry_id;
+	}
 	public Set<Room> getFollow() {
 		return follow;
 	}

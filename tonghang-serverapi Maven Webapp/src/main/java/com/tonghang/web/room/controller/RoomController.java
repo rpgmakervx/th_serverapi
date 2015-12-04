@@ -109,14 +109,10 @@ public class RoomController {
 	public ResponseEntity<Map<String,Object>> recommend(@RequestParam String mapstr)throws Exception{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
 		String client_id = (String)map.get("client_id");
-		boolean byDistance = false;
-		int page = 1;
-		if(map.get("pageindex")!=null)
-			page = (Integer) map.get("pageindex");
-		if(map.get("byDistance")!=null)
-			byDistance = (Boolean)map.get("byDistance");
 		System.out.println("recommend param "+(Integer) map.get("pageindex"));
-		Map<String,Object> success = roomService.recommendRooms(client_id, byDistance, page);
+		Map<String,Object> success = roomService.recommendRooms(client_id, 
+						(Boolean)map.get("byDistance")==null?false:(Boolean)map.get("byDistance"), 
+						(Integer) map.get("pageindex")==null?1:(Integer) map.get("pageindex"));
 		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
 	}
 	
@@ -152,24 +148,6 @@ public class RoomController {
 		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
 	}
 	
-	/***
-	 * 添加时间：2015-11-26
-	 * 业务功能：禁言某用户
-	 * @param member_id		被禁言者client_id
-	 * @param meeting_id		会议室id
-	 * @return
-	 * @throws Exception
-	 */
-	@RequestMapping("/{meeting_id}/shutup/{member_id}")
-	@ResponseBody
-	public ResponseEntity<Map<String,Object>> shutUpMember(@PathVariable String member_id,@PathVariable String meeting_id)throws Exception{
-		Map<String,Object> success = new HashMap<String, Object>();	
-		Map<String,Object> result = new HashMap<String, Object>();
-		roomService.shutup(meeting_id, member_id);
-		result = CommonMapUtil.baseMsgToMapConvertor();
-		success.put("success", result);
-		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
-	}
 	/**
 	 * 添加时间2015-11-26
 	 * 业务功能：关注直播间

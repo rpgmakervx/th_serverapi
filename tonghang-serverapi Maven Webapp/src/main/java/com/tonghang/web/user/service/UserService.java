@@ -79,11 +79,8 @@ public class UserService {
 		System.out.println("登录时的密码MD5加密后："+SecurityUtil.getMD5(password));
 		User user = null;
 		if(what.equals(Constant.EMAIL_LOGIN)){
-			System.out.println("邮箱登录");
-			System.out.println("邮箱号："+number);
 			user = userDao.findUserByEmail(number);
 		}else{
-			System.out.println("手机登录");
 			user = userDao.findUserByPhone(number); 
 		}
 		if(user==null){
@@ -94,6 +91,10 @@ public class UserService {
 				result.put("success", CommonMapUtil.baseMsgToMapConvertor(Constant.LOGIN_FAIL+Constant.PHONE_NOT_EXISTS, 510));
 			return result;
 		}else{
+			//把没有容联云id的人设置上RYID
+			if("".equals(user.getRy_id())||user.getRy_id()==null){
+				user.setRy_id(SecurityUtil.getRYID(user.getClient_id()));
+			}
 			if(user.getStatus().equals("0")){
 				result.put("success", CommonMapUtil.baseMsgToMapConvertor(Constant.LOGIN_FAIL+Constant.USER_ISOLATED, 510));
 				return result;
@@ -114,39 +115,6 @@ public class UserService {
 		}
 		return result;
 	}
-//	/**
-//	 * 业务功能:旧版本0.8的APP登录通道
-//	 * @param email
-//	 * @param password
-//	 * @return
-//	 * @throws BaseException
-//	 */
-//	public Map<String,Object> oldLogin(String email,String password) throws BaseException{
-//		Map<String,Object> result = new HashMap<String, Object>();
-//		User user = userDao.findUserByEmail(email);
-//		if(user==null){
-//			result.put("success", CommonMapUtil.baseMsgToMapConvertor("登录失败，该邮箱不存在！", 510));
-//			return result;
-//		}else{
-//			if(user.getStatus().equals(0)){
-//				result.put("success", CommonMapUtil.baseMsgToMapConvertor("登录失败，用户被封号！", 510));
-//				return result;
-//			}else{
-//				if(user.getPassword().equals(password)){
-//					Map<String,Object> usermap = userUtil.userToMapConvertor(user,false,user.getClient_id());
-//					usermap.putAll(CommonMapUtil.baseMsgToMapConvertor());
-//					result.put("success", usermap);
-//					user.setIsonline("1");
-//					userDao.saveOrUpdate(user);
-//				}else{
-//					result.put("success", CommonMapUtil.baseMsgToMapConvertor("登录失败，用户名或密码错误！", 510));
-//					return result;
-//				}
-//			}
-//		}
-//		return result;
-//	}
-	
 	/**
 	 * 业务功能：邮箱找回密码
 	 * @param 
@@ -201,6 +169,7 @@ public class UserService {
 			return result;
 		}else {
 			user.setClient_id(SecurityUtil.getUUID());
+			user.setRy_id(SecurityUtil.getRYID(user.getClient_id()));
 			userDao.save(user);
 			HuanXinUtil.registUser(user);
 			Map<String,Object> usermap = userUtil.userToMapConvertor(user,false,user.getClient_id());
@@ -362,15 +331,21 @@ public class UserService {
 	}
 
 	/**
+	 * 更改时间：2015-12-03
 	 * 按照id获取某个用户的所有信息
 	 * @param obj_id
 	 * @param client_id
 	 * @return
+	 * notice:obj_id可以是client_id或者ry_id.
 	 */
 	public Map<String, Object> userMessage(String obj_id,String client_id) {
 		// TODO Auto-generated method stub
 		Map<String,Object> result = new HashMap<String, Object>();
-		User user = userDao.findUserById(obj_id);
+		User user = null;
+		user = userDao.findUserByRYID(obj_id);
+		if(user==null){
+			user = userDao.findUserById(obj_id);
+		}
 		Map<String,Object> usermap = new HashMap<String, Object>();
 		if(user!=null){
 			usermap = userUtil.userToMapConvertor(user,client_id);

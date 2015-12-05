@@ -46,9 +46,11 @@ public class QuestionController {
 	 */
 	@RequestMapping("{asker_id}/ask/{anchor_id}")
 	@ResponseBody
-	public ResponseEntity<Map<String,Object>> askQuestion(@PathVariable String asker_id,@PathVariable String anchor_id)throws Exception{
+	public ResponseEntity<Map<String,Object>> askQuestion(@PathVariable String asker_id,@PathVariable String anchor_id,@RequestParam String mapstr)throws Exception{
+		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
 		Map<String,Object> success = new HashMap<String, Object>();	
 		Map<String,Object> result = new HashMap<String, Object>();
+		String content = (String)map.get("content");
 		questionService.sendQuestionRequest(asker_id, anchor_id);
 		result = CommonMapUtil.baseMsgToMapConvertor();
 		success.put("success", result);

@@ -41,8 +41,8 @@ public class QuestionService {
 	 * @param anchor_id
 	 */
 	public void sendAnswerRequest(Question question,String asker_id,String anchor_id){
-		User asker = userService.findUserById(asker_id);
-		JPushUtil.push(anchor_id, asker_id, asker.getUsername(), Constant.ASK_QUESTION, Constant.ASK_QUESTION_MSG);
+		User anchor = userService.findUserById(asker_id);
+		JPushUtil.push(anchor_id, asker_id, anchor.getUsername(), Constant.ANSWER_QUESTION, Constant.ANSWER_QUESTION_MSG);
 		questionDao.save(question);
 	}
 	

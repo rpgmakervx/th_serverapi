@@ -76,7 +76,6 @@ public class UserService {
 	 */
 	public Map<String,Object> login(String number,String password,String what) throws BaseException{
 		Map<String,Object> result = new HashMap<String, Object>();
-		System.out.println("登录时的密码MD5加密后："+SecurityUtil.getMD5(password));
 		User user = null;
 		if(what.equals(Constant.EMAIL_LOGIN)){
 			user = userDao.findUserByEmail(number);
@@ -163,7 +162,6 @@ public class UserService {
 		},allEntries = true)
 	public Map<String,Object> registUser(User user) throws EmailExistException, NickNameExistException{
 		Map<String,Object> result = new HashMap<String, Object>();
-		
 		if(userDao.findUserByNickName(user.getUsername())!=null){
 			result.put("success", CommonMapUtil.baseMsgToMapConvertor("注册失败！该昵称已经被注册", 512));
 			return result;
@@ -301,35 +299,45 @@ public class UserService {
 	 */
 	public Map<String, Object> searchNick(String client_id,String username,boolean byDistance, int page){
 		// TODO Auto-generated method stub
+		List<Map<String,Object>> users = cache.getSearchNickNameCache(client_id, username, byDistance, page);
+		int cache_page = (users.size()/Constant.PAGESIZE)+1;
+		return getRecommendResult(users, page, cache_page);
+	}
+	/**
+	 * 从缓存中获取用户数据
+	 * @param users
+	 * @param page
+	 * @param cache_page
+	 * @return
+	 */
+	private Map<String,Object> getRecommendResult(List<Map<String,Object>> users,int page,int cache_page){
 		Map<String,Object> result = new HashMap<String, Object>();
 		Map<String,Object> success = new HashMap<String, Object>();
-		List<Map<String,Object>> users = cache.getSearchNickNameCache(client_id, username, byDistance, page);
-		int front = (page-1)*Constant.PAGESIZE;
-		//当前页数的尾索引
-		int now = page*Constant.PAGESIZE;
-		//缓存中数据页数
-		System.out.println("当前页数："+page);
-		int cache_page = (users.size()/Constant.PAGESIZE)+1;
-		System.out.println("缓存总页数："+cache_page);
-		System.out.println("缓存方法中取出的数据："+users);
 		if((users==null||users.size()==0)&&page==1){
 			result.put("success", CommonMapUtil.baseMsgToMapConvertor("首页推荐没有结果", 520));
 		}else if(users==null&&page!=1||page>cache_page){
 			result.put("success", CommonMapUtil.baseMsgToMapConvertor("搜索不到更多了", 520));
 		}else{
 			if(page==cache_page){
-				success.put("users", users.subList(front, users.size()));
+				success.put("users", users.subList(frontPage(page), users.size()));
 				success.putAll(CommonMapUtil.baseMsgToMapConvertor());
 				result.put("success", success);
 			}else if(page<cache_page){
-				success.put("users", users.subList(front, now));
+				success.put("users", users.subList(frontPage(page), nowPage(page)));
 				success.putAll(CommonMapUtil.baseMsgToMapConvertor());
 				result.put("success", success);
 			}
 		}
 		return result;
 	}
-
+	//当前页数的尾索引
+	private int frontPage(int page){
+		return (page-1)*Constant.PAGESIZE;
+	}
+	//缓存中数据页数
+	private int nowPage(int page){
+		return page*Constant.PAGESIZE;
+	}
 	/**
 	 * 更改时间：2015-12-03
 	 * 按照id获取某个用户的所有信息
@@ -370,6 +378,11 @@ public class UserService {
 	 * notice:修改信息变成一个一个信息进行修改，所以这里逐个判断每个信息是不是空
 	 * 2015-09-17：修改信息放到删除缓存的步骤中。
 	 */
+	@CacheEvict(value=
+		{"com.tonghang.web.user.cache.UserCache.getSearchLabelCache",
+		 "com.tonghang.web.user.cache.UserCache.getRecommendCache",
+		 "com.tonghang.web.user.cache.UserCache.getSearchNickNameCache"
+		},allEntries = true)
 	public Map<String, Object> update(String client_id, String username,
 			String sex, String birth, String city,boolean img){
 		// TODO Auto-generated method stub
@@ -411,6 +424,11 @@ public class UserService {
 	 * @return
 	 * 2015-09-17：修改用户标签放到删除缓存的步骤中。
 	 */
+	@CacheEvict(value=
+		{"com.tonghang.web.user.cache.UserCache.getSearchLabelCache",
+		 "com.tonghang.web.user.cache.UserCache.getRecommendCache",
+		 "com.tonghang.web.user.cache.UserCache.getSearchNickNameCache"
+		},allEntries = true)
 	public Map<String, Object> updateLabel(String client_id, List<String> list) {
 		// TODO Auto-generated method stub
 		return cache.evictUpdateLabelCache(client_id, list);
@@ -424,10 +442,9 @@ public class UserService {
 	public Map<String,Object> getUsersListByIds(List<String> client_ids,String client_id){
 		List<User> users = new ArrayList<User>();
 		for(String id:client_ids){
-			users.add(findUserById(id));
+			users.add(findUserByRyId(id));
 		}
-		Map<String,Object> usermap = userUtil.usersToMapConvertor(users,client_id);
-		return usermap;
+		return userUtil.usersToMapConvertor(users,client_id);
 	}
 	
 	/***
@@ -454,6 +471,10 @@ public class UserService {
 	 */
 	public User findUserById(String client_id){
 		return userDao.findUserById(client_id);
+	}
+	
+	public User findUserByRyId(String ry_id){
+		return userDao.findUserByRYID(ry_id);
 	}
 	
 	public User findUserByPhone(String phone){

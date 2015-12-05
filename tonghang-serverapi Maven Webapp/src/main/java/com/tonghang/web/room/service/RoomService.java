@@ -135,6 +135,9 @@ public class RoomService {
 	 * 关注房间直播室
 	 * @param room_id
 	 */
+	@CacheEvict(value=
+		{"com.tonghang.web.room.cache.RoomCache.getRecommendCache"
+		},key="#client_id")
 	public void followRoom(String room_id,String client_id){
 		Room room = findRoomById(room_id);
 		User user = userService.findUserById(client_id);

@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.tonghang.web.common.util.CommonMapUtil;
 import com.tonghang.web.common.util.HuanXinUtil;
 import com.tonghang.web.common.util.StringUtil;
+import com.tonghang.web.common.util.TimeUtil;
 import com.tonghang.web.label.dao.LabelDao;
 import com.tonghang.web.label.pojo.Label;
 import com.tonghang.web.user.dao.UserDao;
@@ -165,6 +166,9 @@ public class UserCache {
 					user.setUsername(username);
 					HuanXinUtil.changeUsername(user.getUsername(),user.getClient_id());				
 				}
+			}
+			if(img){
+				user.setImage(TimeUtil.timestamp(new Date()));
 			}
 			user.setImage(new Date().getTime()+"");
 			userDao.saveOrUpdate(user);

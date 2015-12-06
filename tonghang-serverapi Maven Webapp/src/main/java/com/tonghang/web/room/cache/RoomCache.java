@@ -45,9 +45,9 @@ public class RoomCache {
 		roomsmap = roomUtil.roomsToMapConverter(allrooms,me,byDistance);
 		return roomsmap;
 	}
-	
-	@Cacheable(value="com.tonghang.web.room.cache.RoomCache.getRoomState",key="#room_id")
-	public Room getRoomState(String room_id){
-		return roomService.findRoomById(room_id);
-	}
+//	
+//	@Cacheable(value="com.tonghang.web.room.cache.RoomCache.getRoomState",key="#room_id")
+//	public Room getRoomState(String room_id){
+//		return roomService.findRoomById(room_id);
+//	}
 }

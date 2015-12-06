@@ -84,7 +84,7 @@ public class RoomDaoImpl implements RoomDao{
 		// TODO Auto-generated method stub
 		Room room = (Room) sessionFactory.getCurrentSession().createQuery("from Room as room where room.meeting_id = :meeting_id")
 				.setParameter("meeting_id", meeting_id).uniqueResult();
-return room;
+		return room;
 	}
 
 }

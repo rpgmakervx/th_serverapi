@@ -29,10 +29,10 @@ public class QuestionService {
 	 * @param asker_id
 	 * @param anchor_id
 	 */
-	public void sendQuestionRequest(String asker_id,String anchor_id){
+	public void sendQuestionRequest(String asker_id,String anchor_id,String content){
 		User asker = userService.findUserById(asker_id);
 		System.out.println("发问者："+asker.getUsername());
-		JPushUtil.push(anchor_id, asker_id, asker.getUsername(), Constant.ASK_QUESTION, Constant.ASK_QUESTION_MSG);
+		JPushUtil.push(anchor_id, asker_id, asker.getUsername(),content, Constant.ASK_QUESTION, asker.getUsername()+Constant.ASK_QUESTION_MSG+content);
 	}
 	
 	/**
@@ -42,7 +42,7 @@ public class QuestionService {
 	 */
 	public void sendAnswerRequest(Question question,String asker_id,String anchor_id){
 		User anchor = userService.findUserById(asker_id);
-		JPushUtil.push(anchor_id, asker_id, anchor.getUsername(), Constant.ANSWER_QUESTION, Constant.ANSWER_QUESTION_MSG);
+		JPushUtil.push(anchor_id, asker_id, anchor.getUsername(),question.getContent(), Constant.ANSWER_QUESTION, anchor.getUsername()+Constant.ANSWER_QUESTION_MSG+question.getContent());
 		questionDao.save(question);
 	}
 	

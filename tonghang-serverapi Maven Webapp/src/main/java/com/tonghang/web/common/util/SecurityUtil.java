@@ -37,7 +37,7 @@ public class SecurityUtil {
 	private static List<Character> combineChar(String client_id){
 		return getMixedCharList(client_id);
 	}
-	
+	//UUID变成asc码后返回
 	private static String getCharUUID(String client_id){
 		StringBuffer buffer = new StringBuffer();
 		for(byte ch:client_id.getBytes()){
@@ -45,12 +45,12 @@ public class SecurityUtil {
 		}
 		return buffer.toString();
 	}
-	
+	//混淆拼接好的ry_id
 	private static List<Character> getMixedCharList(String client_id){
 		List<Character> chlist = new ArrayList<Character>();
 		String timestamp = TimeUtil.timestamp(new Date());
 		for(char ch:(getCharUUID(client_id)+timestamp).toCharArray()){
-			if(chlist.size()>19)
+			if(chlist.size()>11)
 				break;
 			chlist.add(ch);
 		}

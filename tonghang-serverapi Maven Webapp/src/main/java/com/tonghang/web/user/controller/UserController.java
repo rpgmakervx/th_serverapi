@@ -482,6 +482,8 @@ public class UserController extends BaseController{
 	 * @throws JsonMappingException
 	 * @throws IOException
 	 * notice: 2015-10-25 校验手机号后是否要保存该手机,并判断是否要返回client_id
+	 * 			needId 表示客户端是否需要返回的client_id
+	 * 			update表示 该请求是 仅仅验证手机号（false），还是验证完后一并存入数据库（true）
 	 */
 	@RequestMapping(value="phone/validate",method=RequestMethod.POST)
 	public ResponseEntity<Map<String,Object>> validatePhone(@RequestParam String mapstr) throws Exception{
@@ -493,14 +495,16 @@ public class UserController extends BaseController{
 		String client_id = (String)map.get("client_id");
 		boolean update = (Boolean)map.get("update");
 		boolean needId = (Boolean)map.get("needId");
-		Map<String,Object> result = userService.validePhone(phone,zone,code);
 		User u = userService.findUserByPhone(phone);
+		Map<String,Object> result = userService.validePhone(phone,zone,code);
 		if(update){
 			User user = userService.findUserById(client_id);
 			user.setPhone(phone);
 			userService.updateUser(user);
 		}else if(needId){
-			result.put("client_id", u.getClient_id());
+			if(u==null)
+				result = CommonMapUtil.baseMsgToMapConvertor(Constant.PHONE_NOT_EXISTS,Constant.PHONE_NOT_EXISTS_CODE);
+			else result.put("client_id", u.getClient_id());
 		}else if(u!=null){
 			result = CommonMapUtil.baseMsgToMapConvertor(Constant.PHONE_ALREADY_EXISTS,Constant.PHONE_ALREADY_EXISTS_CODE);
 		}
@@ -513,6 +517,7 @@ public class UserController extends BaseController{
 	 * @param mapstr
 	 * @return
 	 * @throws Exception
+	 * notice: client_id是为了校验找回密码的人是不是用手机发送的请求，用浏览器发请求的人很难准确的给出client_id.
 	 */
 	@RequestMapping(value="phone/forget_password",method=RequestMethod.POST)
 	public ResponseEntity<Map<String,Object>> forgetPasswordByPhone(@RequestParam String mapstr) throws Exception{

@@ -1,5 +1,6 @@
 package com.tonghang.web.room.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -70,11 +71,12 @@ public class RoomService {
 			Set<Label> labels = user.getLabellist();
 			Room room = new Room();
 			room.setOnline(1);
+			room.setRy_id(user.getRy_id());
 			room.setCreated_at(new Date());
 			room.setOpen_at(new Date());
 			room.setUser(user);
 			room.setTheme(Constant.THEME);
-			room.setRoom_id(ryUtil.createChatRoom(owner_id));
+			room.setRoom_id(ryUtil.createChatRoom(user.getRy_id()));
 			room.setMeeting_id(meeting_id);
 			roomDao.save(room);
 		}
@@ -83,13 +85,14 @@ public class RoomService {
 	/**
 	 * 修改房间信息
 	 * @param room
+	 * 
 	 */
 	@CacheEvict(value=
 		{"com.tonghang.web.room.cache.RoomCache.getRecommendCache"
 		},allEntries = true)
 	public void updateRoom(Room room){
-		if(!room.equals(roomCache.getRoomState(room.getRoom_id())))
-			roomDao.saveOrUpdate(room);
+//		if(!room.equals(roomCache.getRoomState(room.getRoom_id())))
+		roomDao.saveOrUpdate(room);
 	}
 	
 	public Map<String,Object> recommendRooms(String client_id,boolean byDistance, int page){
@@ -137,8 +140,8 @@ public class RoomService {
 	 */
 	@CacheEvict(value=
 		{"com.tonghang.web.room.cache.RoomCache.getRecommendCache"
-		},key="#client_id")
-	public void followRoom(String room_id,String client_id){
+		},key="#client_id+#byDistance")
+	public void followRoom(String room_id,String client_id,boolean byDistance){
 		Room room = findRoomById(room_id);
 		User user = userService.findUserById(client_id);
 		if(!room.getFollower().contains(user)){
@@ -147,5 +150,26 @@ public class RoomService {
 		roomDao.saveOrUpdate(room);
 	}
 	
+	/**
+	 * 业务功能：修改当前房间中的人数
+	 * @param room_id
+	 * @param number
+	 */
+	@CacheEvict(value=
+		{"com.tonghang.web.room.cache.RoomCache.getRecommendCache"
+		},key="#client_id+#byDistance")
+	public void changeRoomsMember(String room_id,int number,boolean byDistance){
+		Room room = findRoomById(room_id);
+		room.setMember_num(number);
+		roomDao.saveOrUpdate(room);
+	}
 	
+
+	public void notifyFollower(Room room){
+		List<String> ids = new ArrayList<String>();
+		for(User user:room.getFollower()){
+			ids.add(user.getClient_id());
+		}
+		JPushUtil.pushList(ids, room.getUser().getClient_id(), room.getUser().getUsername(), Constant.ANCHOR_ONLINE, Constant.ANCHOR_ONLINE_MSG1+room.getUser().getUsername()+Constant.ANCHOR_ONLINE_MSG2);
+	}
 }

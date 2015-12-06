@@ -13,7 +13,7 @@ public interface RoomDao {
 	public Room findRoomById(String room_id);
 	public Room findRoomByMeeting(String meeting_id);
 	
-	public Room findRoomByOwner(String client_id);
+	public Room findRoomByOwner(String ry_id);
 	
 	public List<Room> findAllRoom();
 	
@@ -21,4 +21,5 @@ public interface RoomDao {
 	
 	public List<Room> findRoomSortByOpenat();
 	public List<Room> findRoomSortByCreatedat();
+	
 }

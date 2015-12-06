@@ -51,7 +51,7 @@ public class QuestionController {
 		Map<String,Object> success = new HashMap<String, Object>();	
 		Map<String,Object> result = new HashMap<String, Object>();
 		String content = (String)map.get("content");
-		questionService.sendQuestionRequest(asker_id, anchor_id);
+		questionService.sendQuestionRequest(asker_id, anchor_id,content);
 		result = CommonMapUtil.baseMsgToMapConvertor();
 		success.put("success", result);
 		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);

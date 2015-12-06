@@ -349,8 +349,7 @@ public class UserService {
 	public Map<String, Object> userMessage(String obj_id,String client_id) {
 		// TODO Auto-generated method stub
 		Map<String,Object> result = new HashMap<String, Object>();
-		User user = null;
-		user = userDao.findUserByRYID(obj_id);
+		User user = userDao.findUserByRYID(obj_id);
 		if(user==null){
 			user = userDao.findUserById(obj_id);
 		}

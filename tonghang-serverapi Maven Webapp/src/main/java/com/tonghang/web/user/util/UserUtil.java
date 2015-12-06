@@ -36,12 +36,51 @@ public class UserUtil {
 	private RoomService roomService;
 	@Resource(name="roomUtil")
 	private RoomUtil roomUtil;
+	
 	/**
-	 * 该包装方式目前已废弃
+	 * User 对象 最基本的封装模板
+	 * @param user
+	 * @param client_id
+	 * @return
+	 */
+	public Map<String,Object> userToMapConvertorTemplate(User user,String client_id){
+		List<String> labels = new ArrayList<String>();
+		Map<String,Object> msg = new HashMap<String, Object>();
+		Map<String,Object> usermap = new HashMap<String, Object>();
+		if(user.getLabellist()!=null){
+			for(Label l:user.getLabellist()){
+				labels.add(l.getLabel_name());
+			}
+			msg.put("labels", labels);			
+		}else{
+			msg.put("labels", null);	
+		}
+		String city = "";
+		if(user.getProvince()==null||"".equals(user.getProvince()))
+			city = "未知";
+		else city = user.getCity()==null||"".equals(user.getCity())?user.getProvince():user.getProvince()+"-"+user.getCity();
+		boolean is_friend = userService.isFriend(user.getClient_id(), client_id);
+		msg.put("email", user.getEmail());
+		msg.put("sex", user.getSex());
+		msg.put("username", user.getUsername());
+		msg.put("phone", user.getPhone());
+		msg.put("client_id", user.getClient_id());
+		msg.put("ry_id", user.getRy_id());
+		msg.put("created_at", user.getCreated_at());
+		msg.put("city", city);
+		msg.put("image", user.getImage());
+		msg.put("birth", user.getBirth());
+		msg.put("is_friend", is_friend);
+		msg.put("has_invitation",friendService.isInvited(client_id, user.getClient_id()));
+		usermap.put("user", msg);
+		return usermap;
+	}
+	/**
+	 * List<User> 对象 最基本的封装模板
 	 * @param users
 	 * @return
 	 */
-	public Map<String,Object> usersToMapConvertor(List<User> users){
+	public Map<String,Object> usersToMapConvertorTemplate(List<User> users){
 		List<Map<String,Object>> usersmsg = new ArrayList<Map<String,Object>>();
 		Map<String,Object> usermap = CommonMapUtil.baseMsgToMapConvertor();
 		Map<String,Object> result = new HashMap<String, Object>();
@@ -115,14 +154,18 @@ public class UserUtil {
 		result.put("success", usermap);
 		return result;
 	}
-	
+	/**
+	 * 获取用户详细信息
+	 * @param user
+	 * @param client_id
+	 * @return
+	 */
 	public Map<String,Object> userToMapConvertor(User user,String client_id){
 		List<String> labels = new ArrayList<String>();
 		Map<String,Object> msg = new HashMap<String, Object>();
 		Map<String,Object> usermap = new HashMap<String, Object>();
 		boolean is_friend = userService.isFriend(client_id, user.getClient_id());
 		Room room = roomService.findRoomByOwner(client_id);
-		room = room==null?new Room():room;
 		if(user.getLabellist()!=null){
 			for(Label l:user.getLabellist()){
 				labels.add(l.getLabel_name());
@@ -145,10 +188,9 @@ public class UserUtil {
 		msg.put("image", user.getImage());
 		msg.put("created_at", user.getCreated_at());
 		msg.put("birth", user.getBirth());
-		msg.put("friend_size", user.getFriends().size());
 		msg.put("room", roomUtil.roomToMapConverterTemplate(room));
-		msg.put("followed", usersToMapConvertor(room.getFollower()));
-		msg.put("follow", roomUtil.roomsToMapConverterTemplate(user.getFollow()));
+		msg.put("followed", usersToMapConvertorTemplate(room==null?null:room.getFollower()));
+		msg.put("follow", roomUtil.roomsToMapConverterForFollower(user.getFollow()));
 		msg.put("is_friend", is_friend);
 		if(!is_friend)
 			msg.put("has_invitation", friendService.isInvited(client_id, user.getClient_id()));
@@ -156,6 +198,7 @@ public class UserUtil {
 		usermap.put("user", msg);
 		return usermap;
 	}
+	
 	/**
 	 * 和usersToMapConvertor方法功能一样，多一个按照距离排序的功能
 	 * @param user
@@ -219,7 +262,6 @@ public class UserUtil {
 		Map<String,Object> msg = new HashMap<String, Object>();
 		Map<String,Object> usermap = new HashMap<String, Object>();
 		Room room = roomService.findRoomByOwner(client_id);
-		room = room==null?new Room():room;
 		if(user.getLabellist()!=null){
 			for(Label l:user.getLabellist()){
 				labels.add(l.getLabel_name());
@@ -241,6 +283,7 @@ public class UserUtil {
 		msg.put("room", roomUtil.roomToMapConverterTemplate(room));
 		msg.put("created_at", user.getCreated_at());
 		msg.put("city", city);
+		msg.put("image", user.getImage());
 		msg.put("birth", user.getBirth());
 		msg.put("is_friend", ignore);
 		if(!ignore)
@@ -420,4 +463,6 @@ public class UserUtil {
 		usermap.put("user", msg);
 		return usermap;
 	}
+	
+	
 }

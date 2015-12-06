@@ -34,13 +34,21 @@ public class RoomUtil {
 	
 	public Map<String,Object> roomToMapConverterTemplate(Room room){
 		Map<String,Object> roommsg = new HashMap<String, Object>();
-		if(room == null) return null;
-		roommsg.put("room_id", room.getRoom_id());
-		roommsg.put("meeting_id", room.getMeeting_id());
-		roommsg.put("created_at", TimeUtil.getFormatString(room.getCreated_at()));
-		roommsg.put("theme", room.getTheme());
-//		roommsg.put("listener", ryUtil.roomProperties(room.getMeeting_id()).get("count"));
-		roommsg.put("online", room.getOnline()==1?true:false);
+		if(room!=null){
+			roommsg.put("room_id", room.getRoom_id());
+			roommsg.put("meeting_id", room.getMeeting_id());
+			roommsg.put("created_at", TimeUtil.getFormatString(room.getCreated_at()));
+			roommsg.put("theme", room.getTheme());
+//			roommsg.put("listener", ryUtil.roomProperties(room.getMeeting_id()).get("count"));
+			roommsg.put("online", room.getOnline()==1?true:false);
+		}else{
+			roommsg.put("room_id", "");
+			roommsg.put("meeting_id", "");
+			roommsg.put("created_at", "");
+			roommsg.put("theme", "");
+//			roommsg.put("listener", ryUtil.roomProperties(room.getMeeting_id()).get("count"));
+			roommsg.put("online", false);
+		}
 		return roommsg;
 	}
 	
@@ -66,13 +74,22 @@ public class RoomUtil {
 	 */
 	public Map<String,Object> roomToMapConverter(Room room){
 		Map<String,Object> roommsg = new HashMap<String, Object>();
-		roommsg.put("room_id", room.getRoom_id());
-		roommsg.put("meeting_id", room.getMeeting_id());
-		roommsg.put("created_at", TimeUtil.getFormatString(room.getCreated_at()));
-		roommsg.put("owner", userUtil.userToMapConvertor(room.getUser(), true, room.getUser().getClient_id()).get("user"));
-		roommsg.put("theme", room.getTheme());
-//		roommsg.put("listener", ryUtil.roomProperties(room.getMeeting_id()).get("count"));
-		roommsg.put("online", room.getOnline()==1?true:false);
+		if(room!=null){
+			roommsg.put("room_id", room.getRoom_id());
+			roommsg.put("meeting_id", room.getMeeting_id());
+			roommsg.put("created_at", TimeUtil.getFormatString(room.getCreated_at()));
+			roommsg.put("owner", userUtil.userToMapConvertor(room.getUser(), true, room.getUser().getClient_id()).get("user"));
+			roommsg.put("theme", room.getTheme());
+//			roommsg.put("listener", ryUtil.roomProperties(room.getMeeting_id()).get("count"));
+			roommsg.put("online", room.getOnline()==1?true:false);
+		}else{
+			roommsg.put("room_id", room.getRoom_id());
+			roommsg.put("meeting_id", room.getMeeting_id());
+			roommsg.put("created_at", TimeUtil.getFormatString(room.getCreated_at()));
+			roommsg.put("theme", room.getTheme());
+//			roommsg.put("listener", ryUtil.roomProperties(room.getMeeting_id()).get("count"));
+			roommsg.put("online", room.getOnline()==1?true:false);
+		}
 		return roommsg;
 	}
 	
@@ -90,12 +107,34 @@ public class RoomUtil {
 			roommsg.put("created_at", TimeUtil.getFormatString(room.getCreated_at()));
 			roommsg.put("owner", userUtil.userToMapConvertor(room.getUser(), true, room.getUser().getClient_id()).get("user"));
 			roommsg.put("theme", room.getTheme());
+			roommsg.put("member_num", room.getMember_num());
 			roommsg.put("online", room.getOnline()==1?true:false);
 			roommsg.put("distance", distance);
 			roomsmsg.add(roommsg);
 		}
 		if(byDistance)
-			return roomsmsg;
+			return SortUtil.sortByDistance(roomsmsg);
+		return roomsmsg;
+	}
+	
+	/**
+	 * 单独用来封装关注者的方法
+	 * @param rooms
+	 * @return
+	 */
+	public List<Map<String,Object>> roomsToMapConverterForFollower(Collection<Room> rooms){
+		List<Map<String,Object>> roomsmsg = new ArrayList<Map<String,Object>>();
+		for(Room room:rooms){
+			Map<String,Object> roommsg = new HashMap<String, Object>();
+			roommsg.put("room_id", room.getRoom_id());
+			roommsg.put("meeting_id", room.getMeeting_id());
+			roommsg.put("created_at", TimeUtil.getFormatString(room.getCreated_at()));
+			roommsg.put("owner", userUtil.userToMapConvertorTemplate(room.getUser(),room.getUser().getClient_id()).get("user"));
+			roommsg.put("theme", room.getTheme());
+			roommsg.put("member_num", room.getMember_num());
+			roommsg.put("online", room.getOnline()==1?true:false);
+			roomsmsg.add(roommsg);
+		}
 		return roomsmsg;
 	}
 	

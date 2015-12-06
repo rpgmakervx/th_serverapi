@@ -28,7 +28,7 @@ public class RongYunUtil {
 	 * @param owner_id
 	 * @return
 	 */
-	public String createChatRoom(String owner_id){
+	public String createChatRoom(String ry_id){
 		//准备基础参数
 		String timestamp = TimeUtil.timestamp(new Date());
 		String sig = SecurityUtil.getMD5(Constant.RONGYUN_APPID+Constant.RONGYUN_APP_TOKEN+timestamp);
@@ -36,7 +36,7 @@ public class RongYunUtil {
 		HttpHeaders header = new HttpHeaders();
 		Map<String,Object> parts = new HashMap<String, Object>();
 		Map<String,Object> reqparam = null;
-		parts.put("name", owner_id);
+		parts.put("name", ry_id);
 		parts.put("type", Constant.ROOM_TYPE);
 		parts.put("permission", Constant.ROOM_PERMISSION);
 		header.add("Authorization", SecurityUtil.getBase64(Constant.RONGYUN_APPID+":"+timestamp));
@@ -46,7 +46,7 @@ public class RongYunUtil {
 		HttpEntity<String> requestEntity=
 				new HttpEntity<String>(reqxml,header);
 		//获取相应参数
-		ResponseEntity<Map> response = DataUtil.postXml(Constant.RONGYUN_URL+"/SubAccounts/"+Constant.RONGYUN_APPID+owner_id+"/Group/CreateGroup?sig="+sig, requestEntity, Map.class);
+		ResponseEntity<Map> response = DataUtil.postXml(Constant.RONGYUN_URL+"/SubAccounts/"+Constant.RONGYUN_APPID+ry_id+"/Group/CreateGroup?sig="+sig, requestEntity, Map.class);
 		Map map = response.getBody();
 		System.out.println("response : "+map);
 		String groupId = (String)map.get("groupId");

@@ -247,6 +247,7 @@ public class UserService {
 		return result;
 	}
 	/**
+	 * 更改时间：2015-12-08 该接口废弃，和searchNickname整合
 	 * 按标签搜索用户
 	 * @param client_id
 	 * @param label_name
@@ -255,6 +256,7 @@ public class UserService {
 	 * @throws SearchNoResultException
 	 * 标签搜索是模糊搜索，当搜索不到时，提示前台搜索不到更多，但是第一次搜索不到则提示没有搜索结果。
 	 */
+	@Deprecated
 	public Map<String, Object> searchLabel(String client_id,String label_name, boolean byDistance,int page){
 		// TODO Auto-generated method stub
 		Map<String,Object> result = new HashMap<String, Object>();
@@ -289,6 +291,7 @@ public class UserService {
 	}
 	
 	/**
+	 * 更改时间：2015-12-08 该接口废弃，和searchLabel整合
 	 * 按昵称搜索用户
 	 * @param client_id
 	 * @param username
@@ -297,11 +300,26 @@ public class UserService {
 	 * @throws SearchNoResultException
 	 * 昵称模糊搜索，当搜索不到时，提示前台搜索不到更多，但是第一次搜索不到则提示没有搜索结果。
 	 */
+	@Deprecated
 	public Map<String, Object> searchNick(String client_id,String username,boolean byDistance, int page){
 		// TODO Auto-generated method stub
 		List<Map<String,Object>> users = cache.getSearchNickNameCache(client_id, username, byDistance, page);
 		int cache_page = (users.size()/Constant.PAGESIZE)+1;
-		return getRecommendResult(users, page, cache_page);
+		return getFindResult(users, page, cache_page);
+	}
+	/**
+	 * 添加时间2015-12-08
+	 * 业务功能：整合了按标签搜索和按昵称搜索的功能
+	 * @param client_id
+	 * @param content	搜索框输入的内容（标签或昵称）
+	 * @param byDistance
+	 * @param page
+	 * @return
+	 */
+	public Map<String, Object> searchUser(String client_id,String content,boolean byDistance, int page){
+		List<Map<String,Object>> users = cache.getSearchUserCache(client_id, content, byDistance, page);
+		int cache_page = (users.size()/Constant.PAGESIZE)+1;
+		return getFindResult(users, page, cache_page);
 	}
 	/**
 	 * 从缓存中获取用户数据
@@ -310,7 +328,7 @@ public class UserService {
 	 * @param cache_page
 	 * @return
 	 */
-	private Map<String,Object> getRecommendResult(List<Map<String,Object>> users,int page,int cache_page){
+	private Map<String,Object> getFindResult(List<Map<String,Object>> users,int page,int cache_page){
 		Map<String,Object> result = new HashMap<String, Object>();
 		Map<String,Object> success = new HashMap<String, Object>();
 		if((users==null||users.size()==0)&&page==1){
@@ -378,14 +396,13 @@ public class UserService {
 	 * 2015-09-17：修改信息放到删除缓存的步骤中。
 	 */
 	@CacheEvict(value=
-		{"com.tonghang.web.user.cache.UserCache.getSearchLabelCache",
-		 "com.tonghang.web.user.cache.UserCache.getRecommendCache",
-		 "com.tonghang.web.user.cache.UserCache.getSearchNickNameCache"
+		{
+		 "com.tonghang.web.user.cache.UserCache.getSearchUserCache"
 		},allEntries = true)
 	public Map<String, Object> update(String client_id, String username,
-			String sex, String birth, String city,boolean img){
+			String sex, String birth, String city,String img_name){
 		// TODO Auto-generated method stub
-		return cache.evictUpdateCache(birth, city, sex, username, client_id, img);
+		return cache.evictUpdateCache(birth, city, sex, username, client_id, img_name);
 	}
 	/**
 	 * 修改密码

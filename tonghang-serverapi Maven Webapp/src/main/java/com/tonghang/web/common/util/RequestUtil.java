@@ -2,23 +2,30 @@ package com.tonghang.web.common.util;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Date;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
+import com.tonghang.web.user.pojo.User;
+import com.tonghang.web.user.service.UserService;
 
+@Component("requestUtil")
 public class RequestUtil {
 
+	@Resource(name="userService")
+	private UserService userService;
 	/**
 	 * 请求流中读取JSON字符串（目前暂时废弃）
 	 * @param request
 	 * @return
 	 */
 	@Deprecated
-	public static String readRequest(HttpServletRequest request){
+	public String readRequest(HttpServletRequest request){
 		StringBuilder sb = new StringBuilder();
 		try {
 			BufferedReader bufi = request.getReader();
@@ -41,25 +48,27 @@ public class RequestUtil {
 	 * @param picture(图片对象)
 	 * 图片如果存在就覆盖掉，所有图片都叫sign.jpg
 	 */
-	public static void UserImageReceiver(HttpServletRequest request,String client_id, CommonsMultipartFile picture){
+	public String UserImageReceiver(HttpServletRequest request,String client_id, CommonsMultipartFile picture){
+		Date timestamp = new Date();
 		if(picture!=null){
 			String pictureRealPathDir = request.getSession().getServletContext().getRealPath("images");
-			String fileName =pictureRealPathDir+File.separator+client_id+File.separator+Constant.IMAGE_NAME;              
+			User user = userService.findUserById(client_id);
+			deleteFile(pictureRealPathDir+File.separator+client_id+File.separator+user.getImage()+Constant.IMAGE_NAME);
+			String fileName =pictureRealPathDir+File.separator+client_id+File.separator+TimeUtil.timestamp(timestamp)+Constant.IMAGE_NAME;              
 			try {
-				File f = new File(fileName);
 				File folder = new File(pictureRealPathDir+File.separator+client_id);
 				if(!folder.exists())
 					folder.mkdirs();
-				picture.getFileItem().write(f);
-				LogUtil.printLog(f.getAbsolutePath());
+				picture.getFileItem().write(new File(fileName));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
+		return TimeUtil.timestamp(timestamp);
 	}
 	
-	public static void voiceReceiver(HttpServletRequest request,String client_id,String quest_id, CommonsMultipartFile voice){
+	public void voiceReceiver(HttpServletRequest request,String client_id,String quest_id, CommonsMultipartFile voice){
 		if(voice!=null){
 			String pictureRealPathDir = request.getSession().getServletContext().getRealPath("answer");
 			String fileName =pictureRealPathDir+File.separator+client_id+File.separator+quest_id+File.separator+Constant.IMAGE_NAME;              
@@ -97,4 +106,8 @@ public class RequestUtil {
 //			}
 //		}
 //	}
+	
+	private void deleteFile(String path){
+		new File(path).delete();
+	}
 }

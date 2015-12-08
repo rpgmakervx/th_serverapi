@@ -118,6 +118,28 @@ public class UserCache {
 		List<Map<String,Object>> us = (List<Map<String, Object>>) success.get("users");
 		return us;
 	}
+	
+	@Cacheable(value="com.tonghang.web.user.cache.UserCache.getSearchUserCache",key="#client_id+#byDistance+#username")
+	public List<Map<String,Object>> getSearchUserCache(String client_id,String content,boolean byDistance, int page){
+		//步骤一：查询出姓名模糊匹配的用户
+		List<User> users1 = userDao.findUserByUsername(content, page);
+		//步骤二：查询出标签模糊匹配的用户
+		List<Label> labels = labelDao.findLabelByName(content);
+		//临时存放按标签查出来的人
+		Set<User> userss = new HashSet<User>(); 
+		List<User> users2 = new ArrayList<User>();
+		for(Label label : labels){
+			List<User> us = userDao.findUserByLabel(label.getLabel_name(), 0);
+			userss.addAll(us);
+		}
+		//整合两个步骤查询出的结果，用set去重
+		userss.addAll(users1);
+		users2.addAll(userss);
+		Map<String,Object> result = byDistance?userUtil.usersToMapSortByDistanceConvertor(users2, client_id):userUtil.usersToMapConvertor(users2,client_id);
+		Map<String,Object> success = (Map<String, Object>) result.get("success");
+		List<Map<String,Object>> us = (List<Map<String, Object>>) success.get("users");
+		return us;
+	}
 	/**
 	 * 业务功能：抽取出来的修改用户信息功能，修改信息时将搜索和首页推荐的缓存数据清空
 	 * @param birth
@@ -129,11 +151,11 @@ public class UserCache {
 	 * notice:allEntries表示删除这个缓存的所有键对应的值（即清空缓存）
 	 */
 	@CacheEvict(value=
-		{"com.tonghang.web.user.cache.UserCache.getSearchLabelCache",
-		 "com.tonghang.web.user.cache.UserCache.getRecommendCache",
-		 "com.tonghang.web.user.cache.UserCache.getSearchNickNameCache"
+		{
+		 "com.tonghang.web.user.cache.UserCache.getSearchUserCache",
+		 "com.tonghang.web.room.cache.RoomCache.getRecommendCache"
 		},allEntries = true)
-	public Map<String,Object> evictUpdateCache(String birth,String city,String sex,String username,String client_id,boolean img){
+	public Map<String,Object> evictUpdateCache(String birth,String city,String sex,String username,String client_id,String img_name){
 		Map<String,Object> result = new HashMap<String, Object>();
 		User user = userDao.findUserById(client_id);
 		if(user==null){
@@ -167,10 +189,9 @@ public class UserCache {
 					HuanXinUtil.changeUsername(user.getUsername(),user.getClient_id());				
 				}
 			}
-			if(img){
-				user.setImage(TimeUtil.timestamp(new Date()));
+			if(img_name!=null){
+				user.setImage(img_name);
 			}
-			user.setImage(new Date().getTime()+"");
 			userDao.saveOrUpdate(user);
 		}
 		Map<String,Object> usermap = userUtil.userToMapConvertor(user,client_id);
@@ -178,9 +199,8 @@ public class UserCache {
 	}
 	
 	@CacheEvict(value=
-		{"com.tonghang.web.user.cache.UserCache.getSearchLabelCache",
-		 "com.tonghang.web.user.cache.UserCache.getRecommendCache",
-		 "com.tonghang.web.user.cache.UserCache.getSearchNickNameCache"
+		{"com.tonghang.web.user.cache.UserCache.getSearchUserCache",
+		 "com.tonghang.web.room.cache.RoomCache.getRecommendCache"
 		},allEntries = true)
 	public Map<String,Object> evictUpdateLabelCache(String client_id, List<String> list){
 		Map<String,Object> result = new HashMap<String, Object>();

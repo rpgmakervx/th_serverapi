@@ -1,6 +1,7 @@
 package com.tonghang.web.user.controller;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,7 @@ import com.tonghang.web.common.util.CommonMapUtil;
 import com.tonghang.web.common.util.Constant;
 import com.tonghang.web.common.util.HuanXinUtil;
 import com.tonghang.web.common.util.RequestUtil;
+import com.tonghang.web.common.util.TimeUtil;
 import com.tonghang.web.room.service.RoomService;
 import com.tonghang.web.user.pojo.User;
 import com.tonghang.web.user.service.UserService;
@@ -50,6 +52,8 @@ public class UserController extends BaseController{
 	private UserService userService;
 	@Resource(name="roomService")
 	private RoomService roomService;
+	@Resource(name="requestUtil")
+	private RequestUtil requestUtil;
 	
 	/**
 	 * 
@@ -161,8 +165,25 @@ public class UserController extends BaseController{
 	}
 
 	/**
+	 *添加时间：2015-12-08
+	 *业务功能：整合了按标签搜索和按昵称搜索 ，原来的接口废弃
+	 * @param mapstr
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/search")
+	public ResponseEntity<Map<String,Object>> searchUser(@RequestParam String mapstr) throws Exception {
+		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
+		String client_id = (String)map.get("client_id");
+		boolean byDistance = false;
+		if(map.get("byDistance")!=null)
+			byDistance = (Boolean)map.get("byDistance");
+		return new ResponseEntity<Map<String,Object>>(userService.searchUser(client_id,(String)map.get("content"),byDistance,(Integer)map.get("pageindex")), HttpStatus.OK);
+	}
+	
+	/**
 	 * 2015-08-28新增按距离推荐,新增字段 byDistance,是否需要按照距离排序
-	 * 
+	 * 修改时间：2015-12-08 该接口废弃，与 /search/nick 合并
 	 * 业务功能: 通过标签查询用户(调试通过)
 	 * @param mapstr 前端的JSON数据，全部包括在mapstr中
 	 * @return user(List<Map>)[ labels(List) email (String) image(String) 
@@ -174,6 +195,7 @@ public class UserController extends BaseController{
 	 * 然后包装成一个大的List,并由ResponseEntity包装成JSON返回给前台
 	 * 2.返回值为列表的请求全部需要分页，客户端需要传一个pageindex表示当前页数
 	 */
+	@Deprecated
 	@RequestMapping(value = "/search/label")
 	public ResponseEntity<Map<String,Object>> searchLabel(@RequestParam String mapstr) throws Exception {
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
@@ -186,7 +208,7 @@ public class UserController extends BaseController{
 	
 	/**
 	 * 2015-08-28新增按距离推荐,新增字段 byDistance,是否需要按照距离排序
-	 * 
+	 * 修改时间：2015-12-08 该接口废弃，与 /search/label 合并
 	 * 业务功能：通过昵称查询用户(调试通过)
 	 * @param mapstr 前端的JSON数据，全部包括在mapstr中(client_id,username)
 	 * @return user(List<Map>)[ labels(List) email (String) image(String) 
@@ -202,6 +224,7 @@ public class UserController extends BaseController{
 	 * 4.所有返回用户信息的地方都会返回是否是好友关系
 	 * @throws SearchNoResultException 
 	 */
+	@Deprecated
 	@RequestMapping(value = "search/nick")
 	public ResponseEntity<Map<String,Object>> searchNick(@RequestParam String mapstr) throws JsonParseException, JsonMappingException, IOException, SearchNoResultException {
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
@@ -257,14 +280,14 @@ public class UserController extends BaseController{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
 		Map<String, Object> result = new HashMap<String, Object>();
 		Map<String, Object> usermap = new HashMap<String, Object>();
-		boolean img = false;
-		if(image!=null)
-			RequestUtil.UserImageReceiver(request, client_id, image);
-		else img = true;
+		String img_name = null;
+		if(image!=null){
+			img_name = requestUtil.UserImageReceiver(request, client_id, image);
+		}
 		//此处新建room
 		roomService.createRoom(client_id,(String)map.get("meeting_id"));
 		System.out.println("username:"+(String)map.get("username")+" sex:"+(String)map.get("sex")+" birth:"+(String)map.get("birth")+" city:"+(String)map.get("city"));
-		usermap = userService.update(client_id,(String)map.get("username"),(String)map.get("sex"),(String)map.get("birth"),(String)map.get("city"),img);
+		usermap = userService.update(client_id,(String)map.get("username"),(String)map.get("sex"),(String)map.get("birth"),(String)map.get("city"),img_name);
 		usermap.putAll(CommonMapUtil.baseMsgToMapConvertor());
 		result.put("success", usermap);
 		return new ResponseEntity<Map<String,Object>>(result, HttpStatus.OK);

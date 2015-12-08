@@ -11,6 +11,7 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Component;
 
 import com.tonghang.web.common.util.CommonMapUtil;
+import com.tonghang.web.common.util.Constant;
 import com.tonghang.web.common.util.SortUtil;
 import com.tonghang.web.common.util.TimeUtil;
 import com.tonghang.web.friend.service.FriendService;
@@ -88,23 +89,7 @@ public class UserUtil {
 			users = new ArrayList<User>();
 		}
 		for(User u:users){
-			List<String> labels = new ArrayList<String>();
-			Map<String,Object> msg = new HashMap<String, Object>();
-			for(Label l:u.getLabellist()){
-				labels.add(l.getLabel_name());
-			}
-			msg.put("labels", labels);
-			msg.put("email", u.getEmail());
-			msg.put("username", u.getUsername());
-			msg.put("sex", u.getSex());
-			msg.put("phone", u.getPhone());
-			msg.put("city", u.getCity());
-			msg.put("client_id", u.getClient_id());	
-			msg.put("ry_id", u.getRy_id());
-			msg.put("image", u.getImage());
-			msg.put("created_at", TimeUtil.getFormatString(u.getCreated_at()));
-			msg.put("birth", u.getBirth());
-			usersmsg.add(msg);
+			usermap.put("user", makeUserMap(u));
 		}
 		usermap.put("users", usersmsg);
 		return usermap;
@@ -122,33 +107,38 @@ public class UserUtil {
 		Map<String,Object> usermap = CommonMapUtil.baseMsgToMapConvertor();
 		Map<String,Object> result = new HashMap<String, Object>();
 		for(User u:users){
-			List<String> labels = new ArrayList<String>();
-			Map<String,Object> msg = new HashMap<String, Object>();
-			for(Label l:u.getLabellist()){
-				labels.add(l.getLabel_name());
-			}
-			String city = "";
-			if(u.getProvince()==null||"".equals(u.getProvince()))
-				city = "未知";
-			else city = u.getCity()==null||"".equals(u.getCity())?u.getProvince():u.getProvince()+"-"+u.getCity();
-			boolean is_friend = userService.isFriend(client_id, u.getClient_id());
-			msg.put("labels", labels);
-			msg.put("email", u.getEmail());
-			msg.put("username", u.getUsername());
-			msg.put("sex", u.getSex());
-			msg.put("phone", u.getPhone());
-			msg.put("city", city);
-			msg.put("client_id", u.getClient_id());
-			msg.put("ry_id", u.getRy_id());
-			msg.put("image", u.getImage());
-			msg.put("created_at", u.getCreated_at());
-			msg.put("birth", u.getBirth());
-			msg.put("is_friend", is_friend);
-			boolean has_invited = friendService.isInvited(client_id, u.getClient_id());
-			if(!is_friend)
-				msg.put("has_invitation", has_invited);
-			else msg.put("has_invitation",!is_friend);
-			usersmsg.add(msg);
+			usermap.put("user", makeUserMap(u, client_id));
+//			List<String> labels = new ArrayList<String>();
+//			Room room = roomService.findRoomByOwner(client_id);
+//			Map<String,Object> msg = new HashMap<String, Object>();
+//			for(Label l:u.getLabellist()){
+//				labels.add(l.getLabel_name());
+//			}
+//			String city = "";
+//			if(u.getProvince()==null||"".equals(u.getProvince()))
+//				city = "未知";
+//			else city = u.getCity()==null||"".equals(u.getCity())?u.getProvince():u.getProvince()+"-"+u.getCity();
+//			boolean is_friend = userService.isFriend(client_id, u.getClient_id());
+//			msg.put("labels", labels);
+//			msg.put("email", u.getEmail());
+//			msg.put("username", u.getUsername());
+//			msg.put("sex", u.getSex());
+//			msg.put("phone", u.getPhone());
+//			msg.put("city", city);
+//			msg.put("client_id", u.getClient_id());
+//			msg.put("ry_id", u.getRy_id());
+//			msg.put("room", roomUtil.roomToMapConverterTemplate(room));
+//			msg.put("followed", usersToMapConvertorTemplate(room==null?null:room.getFollower()));
+//			msg.put("follow", roomUtil.roomsToMapConverterForFollower(u.getFollow()));
+//			msg.put("image", u.getImage());
+//			msg.put("created_at", u.getCreated_at());
+//			msg.put("birth", u.getBirth());
+//			msg.put("is_friend", is_friend);
+//			boolean has_invited = friendService.isInvited(client_id, u.getClient_id());
+//			if(!is_friend)
+//				msg.put("has_invitation", has_invited);
+//			else msg.put("has_invitation",!is_friend);
+//			usersmsg.add(msg);
 		}
 		usermap.put("users", usersmsg);
 		result.put("success", usermap);
@@ -161,41 +151,8 @@ public class UserUtil {
 	 * @return
 	 */
 	public Map<String,Object> userToMapConvertor(User user,String client_id){
-		List<String> labels = new ArrayList<String>();
-		Map<String,Object> msg = new HashMap<String, Object>();
 		Map<String,Object> usermap = new HashMap<String, Object>();
-		boolean is_friend = userService.isFriend(client_id, user.getClient_id());
-		Room room = roomService.findRoomByOwner(client_id);
-		if(user.getLabellist()!=null){
-			for(Label l:user.getLabellist()){
-				labels.add(l.getLabel_name());
-			}
-			msg.put("labels", labels);			
-		}else{
-			msg.put("labels", null);	
-		}
-		String city = "";
-		if(user.getProvince()==null||"".equals(user.getProvince()))
-			city = "未知";
-		else city = user.getCity()==null||"".equals(user.getCity())?user.getProvince():user.getProvince()+"-"+user.getCity();
-		msg.put("email", user.getEmail());
-		msg.put("sex", user.getSex());
-		msg.put("username", user.getUsername());
-		msg.put("phone", user.getPhone());
-		msg.put("city", city);
-		msg.put("client_id", user.getClient_id());
-		msg.put("ry_id", user.getRy_id());
-		msg.put("image", user.getImage());
-		msg.put("created_at", user.getCreated_at());
-		msg.put("birth", user.getBirth());
-		msg.put("room", roomUtil.roomToMapConverterTemplate(room));
-		msg.put("followed", usersToMapConvertorTemplate(room==null?null:room.getFollower()));
-		msg.put("follow", roomUtil.roomsToMapConverterForFollower(user.getFollow()));
-		msg.put("is_friend", is_friend);
-		if(!is_friend)
-			msg.put("has_invitation", friendService.isInvited(client_id, user.getClient_id()));
-		else msg.put("has_invitation",!is_friend);
-		usermap.put("user", msg);
+		usermap.put("user", makeUserMap(user, client_id));
 		return usermap;
 	}
 	
@@ -211,12 +168,11 @@ public class UserUtil {
 		Map<String,Object> result = new HashMap<String, Object>();
 		Location my_local = locationService.findLocationByUser(userService.findUserById(client_id));
 		for(User u:users){
+			Room room = roomService.findRoomByOwner(u.getClient_id());
 			List<String> labels = new ArrayList<String>();
 			Map<String,Object> msg = new HashMap<String, Object>();
-			
 			Location his_local = locationService.findLocationByUser(u);
 			double distance = locationService.getDistanceByLocation(my_local, his_local);
-			
 			for(Label l:u.getLabellist()){
 				labels.add(l.getLabel_name());
 			}
@@ -234,7 +190,10 @@ public class UserUtil {
 			msg.put("city", city);
 			msg.put("client_id", u.getClient_id());
 			msg.put("ry_id", u.getRy_id());
-			msg.put("image", u.getImage());
+			msg.put("room", roomUtil.roomToMapConverterTemplate(room));
+			msg.put("followed", usersToMapConvertorTemplate(room==null?null:room.getFollower()));
+			msg.put("follow", roomUtil.roomsToMapConverterForFollower(u.getFollow()));
+			msg.put("image", Constant.IMAGE_PATH+u.getClient_id()+u.getImage()+Constant.IMAGE_NAME);
 			msg.put("created_at", u.getCreated_at());
 			msg.put("birth", u.getBirth());
 			msg.put("is_friend", is_friend);
@@ -283,7 +242,7 @@ public class UserUtil {
 		msg.put("room", roomUtil.roomToMapConverterTemplate(room));
 		msg.put("created_at", user.getCreated_at());
 		msg.put("city", city);
-		msg.put("image", user.getImage());
+		msg.put("image", Constant.IMAGE_PATH+user.getClient_id()+user.getImage()+Constant.IMAGE_NAME);
 		msg.put("birth", user.getBirth());
 		msg.put("is_friend", ignore);
 		if(!ignore)
@@ -325,7 +284,7 @@ public class UserUtil {
 			msg.put("phone", u.getPhone());
 			msg.put("client_id", u.getClient_id());
 			msg.put("ry_id", u.getRy_id());
-			msg.put("image", u.getImage());
+			msg.put("image", Constant.IMAGE_PATH+u.getClient_id()+u.getImage()+Constant.IMAGE_NAME);
 			msg.put("created_at", u.getCreated_at());
 			msg.put("birth", u.getBirth());
 			msg.put("is_friend", is_friend);
@@ -364,6 +323,7 @@ public class UserUtil {
 			label_names.add(l.getLabel_name());
 		}
 		for(User u:users){
+			Room room = roomService.findRoomByOwner(u.getClient_id());
 			List<String> labels = new ArrayList<String>();
 			Location his_local = locationService.findLocationByUser(u);
 			double distance = 0.0;
@@ -386,7 +346,7 @@ public class UserUtil {
 			msg.put("phone", u.getPhone());
 			msg.put("client_id", u.getClient_id());
 			msg.put("ry_id", u.getRy_id());
-			msg.put("image", u.getImage());
+			msg.put("image", Constant.IMAGE_PATH+u.getClient_id()+u.getImage()+Constant.IMAGE_NAME);
 			msg.put("created_at", u.getCreated_at());
 			msg.put("birth", u.getBirth());
 			msg.put("is_friend", is_friend);
@@ -464,5 +424,58 @@ public class UserUtil {
 		return usermap;
 	}
 	
+	private List<String> getLabelnames(User user){
+		List<String> labels = new ArrayList<String>();
+		if(user.getLabellist()!=null){
+			for(Label l:user.getLabellist()){
+				labels.add(l.getLabel_name());
+			}
+			return labels;			
+		}else{
+			return null;
+		}
+	}
+	
+	private String getCityValue(User user){
+		String city = "";
+		if(user.getProvince()==null||"".equals(user.getProvince()))
+			return "未知";
+		else return user.getCity()==null||"".equals(user.getCity())?user.getProvince():user.getProvince()+"-"+user.getCity();
+	}
+	
+	/**
+	 * 通用封装用户数据的方法,
+	 * 该方法中的client_id 这个可变参数的有无 决定了这个方法是否要确定使用者和要封装的用户的关系。
+	 * @param user		要封装的用户
+	 * @param client_id	当前的使用者,客户端只填写一个id,多个id则只取第一个id
+	 * @return
+	 */
+	private Map<String,Object> makeUserMap(User user,String...client_id){
+		Map<String,Object> msg = new HashMap<String, Object>();
+		Room room = roomService.findRoomByOwner(user.getClient_id());
+		if(client_id!=null&&client_id.length!=0){
+			boolean is_friend = userService.isFriend(client_id[0], user.getClient_id());
+			msg.put("is_friend", is_friend);
+			if(!is_friend)
+				msg.put("has_invitation", friendService.isInvited(client_id[0], user.getClient_id()));
+			else msg.put("has_invitation",!is_friend);
+		}
+		msg.put("labels",getLabelnames(user));
+		msg.put("email", user.getEmail());
+		msg.put("sex", user.getSex());
+		msg.put("username", user.getUsername());
+		msg.put("phone", user.getPhone());
+		msg.put("city", getCityValue(user));
+		msg.put("client_id", user.getClient_id());
+		msg.put("ry_id", user.getRy_id());
+		msg.put("image", Constant.IMAGE_PATH+user.getClient_id()+user.getImage()+Constant.IMAGE_NAME);
+		msg.put("created_at", user.getCreated_at());
+		msg.put("birth", user.getBirth());
+		msg.put("room", roomUtil.roomToMapConverterTemplate(room));
+		msg.put("followed", usersToMapConvertorTemplate(room==null?null:room.getFollower()));
+		msg.put("follow", roomUtil.roomsToMapConverterForFollower(user.getFollow()));
+		
+		return msg;
+	}
 	
 }

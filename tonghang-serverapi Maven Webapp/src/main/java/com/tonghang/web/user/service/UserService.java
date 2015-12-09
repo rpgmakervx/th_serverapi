@@ -362,7 +362,7 @@ public class UserService {
 	 * @param obj_id
 	 * @param client_id
 	 * @return
-	 * notice:obj_id可以是client_id或者ry_id.
+	 * notice:obj_id可以是client_id或者ry_id. 由于使用ry_id较多所以先查询ry_id
 	 */
 	public Map<String, Object> userMessage(String obj_id,String client_id) {
 		// TODO Auto-generated method stub

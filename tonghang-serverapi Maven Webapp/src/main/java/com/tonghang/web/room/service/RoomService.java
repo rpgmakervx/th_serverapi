@@ -151,6 +151,24 @@ public class RoomService {
 	}
 	
 	/**
+	 * 取消关注
+	 * @param room_id
+	 * @param client_id
+	 * @param byDistance
+	 */
+	@CacheEvict(value=
+		{"com.tonghang.web.room.cache.RoomCache.getRecommendCache"
+		},key="#client_id+#byDistance")
+	public void unFollowRoom(String room_id,String client_id,boolean byDistance){
+		Room room = findRoomById(room_id);
+		User user = userService.findUserById(client_id);
+		if(room.getFollower().contains(user)){
+			room.getFollower().remove(user);
+		}
+		roomDao.saveOrUpdate(room);
+	}
+	
+	/**
 	 * 业务功能：修改当前房间中的人数
 	 * @param room_id
 	 * @param number
@@ -164,7 +182,10 @@ public class RoomService {
 		roomDao.saveOrUpdate(room);
 	}
 	
-
+	/**
+	 * 主播上线推送给关注他的人
+	 * @param room
+	 */
 	public void notifyFollower(Room room){
 		List<String> ids = new ArrayList<String>();
 		for(User user:room.getFollower()){

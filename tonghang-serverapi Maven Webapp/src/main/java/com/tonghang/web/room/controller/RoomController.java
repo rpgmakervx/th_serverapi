@@ -1,6 +1,5 @@
 package com.tonghang.web.room.controller;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -190,6 +189,28 @@ public class RoomController {
 		Map<String,Object> success = new HashMap<String, Object>();	
 		Map<String,Object> result = new HashMap<String, Object>();
 		roomService.followRoom(room_id, client_id,(Boolean)map.get("byDistance"));
+		result = CommonMapUtil.baseMsgToMapConvertor();
+		success.put("success", result);
+		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
+	}
+	
+	/**
+	 * 添加时间：2015-12-10
+	 * 业务功能：取消关注该房间
+	 * @param mapstr
+	 * @param client_id
+	 * @param room_id
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/{client_id}/unfollow/{room_id}")
+	@ResponseBody
+	public ResponseEntity<Map<String,Object>> unFollowRoom(@RequestParam String mapstr,
+													@PathVariable String client_id,@PathVariable String room_id) throws Exception{
+		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
+		Map<String,Object> success = new HashMap<String, Object>();	
+		Map<String,Object> result = new HashMap<String, Object>();
+		roomService.unFollowRoom(room_id, client_id,(Boolean)map.get("byDistance"));
 		result = CommonMapUtil.baseMsgToMapConvertor();
 		success.put("success", result);
 		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);

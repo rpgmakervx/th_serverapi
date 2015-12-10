@@ -40,4 +40,14 @@ public class LocationService {
 	public Location findLocationByUser(User user){
 		return locationDao.findLocationByUser(user);
 	}
+	/**
+	 * 添加时间：2015-12-10
+	 * 业务功能：计算两个人之间的距离
+	 * @param him
+	 * @param my_local
+	 * @return
+	 */
+	public double computeDistance(User him,Location my_local){
+		return getDistanceByLocation(my_local, findLocationByUser(him));
+	}
 }

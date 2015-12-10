@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.codec.binary.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,13 +15,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.tonghang.web.common.util.CommonMapUtil;
+import com.tonghang.web.common.util.RequestUtil;
 import com.tonghang.web.common.util.SecurityUtil;
-import com.tonghang.web.common.util.StringUtil;
 import com.tonghang.web.question.pojo.Question;
 import com.tonghang.web.question.service.QuestionService;
-import com.tonghang.web.room.service.RoomService;
 import com.tonghang.web.user.pojo.User;
 import com.tonghang.web.user.service.UserService;
 
@@ -29,12 +29,12 @@ import com.tonghang.web.user.service.UserService;
 @RequestMapping("question")
 public class QuestionController {
 
-	@Resource(name="roomService")
-	private RoomService roomService;
 	@Resource(name="questionService")
 	private QuestionService questionService;
 	@Resource(name="userService")
 	private UserService userService;
+	@Resource(name="requestUtil")
+	private RequestUtil requestUtil;
 	
 	/**
 	 * 创建时间：2015-11-24
@@ -68,7 +68,8 @@ public class QuestionController {
 	 */
 	@RequestMapping("{anchor_id}/answer/{asker_id}")
 	@ResponseBody
-	public ResponseEntity<Map<String,Object>> answerQuestion(@PathVariable String asker_id,@PathVariable String anchor_id,@RequestParam String mapstr)throws Exception{
+	public ResponseEntity<Map<String,Object>> answerQuestion(HttpServletRequest request,@PathVariable String asker_id,@PathVariable String anchor_id,
+												@RequestParam CommonsMultipartFile voice ,@RequestParam String mapstr)throws Exception{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
 		Map<String,Object> success = new HashMap<String, Object>();	
 		Map<String,Object> result = new HashMap<String, Object>();
@@ -82,6 +83,7 @@ public class QuestionController {
 		question.setContent(content);
 		question.setQuestion_id(SecurityUtil.getMD5(asker_id+content+new Date().getTime()));
 		questionService.sendAnswerRequest(question, asker_id, anchor_id);
+		requestUtil.voiceReceiver(request, anchor_id, question.getQuestion_id(), voice);
 		result = CommonMapUtil.baseMsgToMapConvertor();
 		success.put("success", result);
 		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);

@@ -71,7 +71,7 @@ public class RequestUtil {
 	public void voiceReceiver(HttpServletRequest request,String client_id,String quest_id, CommonsMultipartFile voice){
 		if(voice!=null){
 			String pictureRealPathDir = request.getSession().getServletContext().getRealPath("answer");
-			String fileName =pictureRealPathDir+File.separator+client_id+File.separator+quest_id+File.separator+Constant.IMAGE_NAME;              
+			String fileName =pictureRealPathDir+File.separator+client_id+File.separator+quest_id+File.separator+voice.getOriginalFilename();              
 			try {
 				File f = new File(fileName);
 				File folder = new File(pictureRealPathDir+File.separator+client_id+File.separator+quest_id);

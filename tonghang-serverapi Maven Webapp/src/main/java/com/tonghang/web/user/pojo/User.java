@@ -1,7 +1,9 @@
 package com.tonghang.web.user.pojo;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -320,6 +322,24 @@ public class User implements Serializable{
 	}
 	public void setFollow(Set<Room> follow) {
 		this.follow = follow;
+	}
+	//获得所在城市信息（二级城市列表），城市信息不存在则设置为 未知
+	public String getCityValue(){
+		if(this.getProvince()==null||"".equals(this.getProvince()))
+			return "未知";
+		else return this.getCity()==null||"".equals(this.getCity())?this.getProvince():this.getProvince()+"-"+this.getCity();
+	}
+	//获取某用户的标签名
+	public List<String> getLabelnames(){
+		List<String> labels = new ArrayList<String>();
+		if(this.getLabellist()!=null){
+			for(Label l:this.getLabellist()){
+				labels.add(l.getLabel_name());
+			}
+			return labels;			
+		}else{
+			return null;
+		}
 	}
 	@Override
 	public int hashCode() {

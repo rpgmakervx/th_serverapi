@@ -245,10 +245,14 @@ public class UserController extends BaseController{
 	 * 1.userMessage()方法通过client_id精确查找到一个User,并将这个User的详细信息包装成Map,并由ResponseEntity包装成JSON返回给前台
 	 * 2.返回值为列表的请求全部需要分页，客户端需要传一个pageindex表示当前页数
 	 * 3.所有返回用户信息的地方都会返回是否是好友关系
+	 * @throws Exception 
+	 * @throws JsonMappingException 
+	 * @throws JsonParseException 
 	 */
 	@RequestMapping(value = "/{obj_id}")
-	public ResponseEntity<Map<String,Object>> userMessage(@PathVariable String obj_id,@RequestParam String client_id) {
-		return new ResponseEntity<Map<String,Object>>(userService.userMessage(obj_id,client_id), HttpStatus.OK);
+	public ResponseEntity<Map<String,Object>> userMessage(@PathVariable String obj_id,@RequestParam String mapstr) throws Exception {
+		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
+		return new ResponseEntity<Map<String,Object>>(userService.userMessage(obj_id,(String)map.get("client_id")), HttpStatus.OK);
 	}
 	/**
 	 * 添加时间2015-10-26

@@ -1,7 +1,6 @@
 package com.tonghang.web.user.cache;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -10,7 +9,6 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
-import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
@@ -19,9 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.tonghang.web.common.util.CommonMapUtil;
 import com.tonghang.web.common.util.HuanXinUtil;
 import com.tonghang.web.common.util.StringUtil;
-import com.tonghang.web.common.util.TimeUtil;
-import com.tonghang.web.label.dao.LabelDao;
 import com.tonghang.web.label.pojo.Label;
+import com.tonghang.web.label.service.LabelService;
 import com.tonghang.web.user.dao.UserDao;
 import com.tonghang.web.user.pojo.User;
 import com.tonghang.web.user.service.UserService;
@@ -35,12 +32,10 @@ public class UserCache {
 	private UserUtil userUtil;
 	@Resource(name="userDao")
 	private UserDao userDao;
-	@Resource(name="labelDao")
-	private LabelDao labelDao;
+	@Resource(name="labelService")
+	private LabelService labelService;
 	@Resource(name="userService")
 	private UserService userService;
-	@Resource(name="ehcacheManager")
-	private CacheManager cacheManager;
 	
 	/**
 	 * 业务功能：缓存UserService类中 getRecommendCache 方法的值，全部缓存。外部通过分页截取部分缓存结果
@@ -94,9 +89,10 @@ public class UserCache {
 	 * @param byDistance
 	 * @return
 	 */
+	@Deprecated
 	@Cacheable(value="com.tonghang.web.user.cache.UserCache.getSearchLabelCache",key="#client_id+#byDistance+#label_name")
 	public List<Map<String,Object>> getSearchLabelCache(String client_id,String label_name,boolean  byDistance){
-		List<Label> labels = labelDao.findLabelByName(label_name);
+		List<Label> labels = labelService.findLabelByName(label_name);
 		Set<User> userss = new HashSet<User>(); 
 		List<User> users = new ArrayList<User>();
 		for(Label label : labels){
@@ -112,7 +108,7 @@ public class UserCache {
 	
 	@Cacheable(value="com.tonghang.web.user.cache.UserCache.getSearchNickNameCache",key="#client_id+#byDistance+#username")
 	public List<Map<String,Object>> getSearchNickNameCache(String client_id,String username,boolean byDistance, int page){
-		List<User> users = userDao.findUserByUsername(username, page);
+		List<User> users = userDao.findUserByUsername(username);
 		Map<String,Object> result = byDistance?userUtil.usersToMapSortByDistanceConvertor(users, client_id):userUtil.usersToMapConvertor(users,client_id);
 		Map<String,Object> success = (Map<String, Object>) result.get("success");
 		List<Map<String,Object>> us = (List<Map<String, Object>>) success.get("users");
@@ -120,11 +116,11 @@ public class UserCache {
 	}
 	
 	@Cacheable(value="com.tonghang.web.user.cache.UserCache.getSearchUserCache",key="#client_id+#byDistance+#username")
-	public List<Map<String,Object>> getSearchUserCache(String client_id,String content,boolean byDistance, int page){
+	public List<Map<String,Object>> getSearchUserCache(String client_id,String content,boolean byDistance){
 		//步骤一：查询出姓名模糊匹配的用户
-		List<User> users1 = userDao.findUserByUsername(content, page);
+		List<User> users1 = userDao.findUserByUsername(content);
 		//步骤二：查询出标签模糊匹配的用户
-		List<Label> labels = labelDao.findLabelByName(content);
+		List<Label> labels = labelService.findLabelByName(content);
 		//临时存放按标签查出来的人
 		Set<User> userss = new HashSet<User>(); 
 		List<User> users2 = new ArrayList<User>();
@@ -158,44 +154,51 @@ public class UserCache {
 	public Map<String,Object> evictUpdateCache(String birth,String city,String sex,String username,String client_id,String img_name){
 		Map<String,Object> result = new HashMap<String, Object>();
 		User user = userDao.findUserById(client_id);
+		User newuser = new User().new UserBuilder().
+							setBirth(birth).setCity(city).
+							setSex(sex).setUsername(username).
+							setImage(img_name).build();
 		if(user==null){
-			result.put("success", CommonMapUtil.baseMsgToMapConvertor("更新失败，当前用户不存在", 513));
+			CommonMapUtil.generateResult(null, CommonMapUtil.baseMsgToMapConvertor("更新失败，当前用户不存在", 513), result);
+//			result.put("success", CommonMapUtil.baseMsgToMapConvertor("更新失败，当前用户不存在", 513));
 		}else{
-			if(birth!=null&&!birth.equals(user.getBirth()))
-				user.setBirth(birth);
-			//修改省份前先清空省份
-			if(city!=null){
-				user.setProvince(null);
-				user.setCity(null);
-				if(city.contains("-")){
-					String pr = StringUtil.seperate(city, 0);
-					String ci = StringUtil.seperate(city, 1);
-					if(!ci.equals(user.getCity())&&city!=null)
-						user.setCity(ci);
-					if(!pr.equals(user.getProvince())&&pr!=null)
-						user.setProvince(pr);
-				}else{
-					user.setProvince(city);
-				}
-			}
-			if(sex!=null&&!sex.equals(user.getSex()))
-				user.setSex(sex);
-			if(username!=null&&!username.equals(user.getUsername())){
-				 if(userDao.findUserByUsernameUnique(username).size()!=0){
-					result.put("success", CommonMapUtil.baseMsgToMapConvertor("该昵称已经被注册!", 512));
-					return result;
-				}else{
-					user.setUsername(username);
-					HuanXinUtil.changeUsername(user.getUsername(),user.getClient_id());				
-				}
-			}
-			if(img_name!=null){
-				user.setImage(img_name);
-			}
-			userDao.saveOrUpdate(user);
+			updateUserMessage(user, newuser, result);
+//			User.UserBuilder builder = user.new UserBuilder();
+//			builder.setBirth(birth).setCity(city).setSex(sex).setImage(img_name);
+//			if(username!=null&&!username.equals(user.getUsername())){
+//				if(userDao.findUserByUsernameUnique(username).size()!=0){
+//					CommonMapUtil.generateResult(null, CommonMapUtil.baseMsgToMapConvertor("该昵称已经被注册!", 512),result);
+//				}else{
+//					user.setUsername(username);
+//					HuanXinUtil.changeUsername(user.getUsername(),user.getClient_id());				
+//					CommonMapUtil.generateResult(userUtil.userToMapConvertor(user,client_id), CommonMapUtil.baseMsgToMapConvertor(),result);
+//				}
+//			}
+//			userDao.saveOrUpdate(user);
+//			if(img_name!=null){
+//				user.setImage(img_name);
+//			}
+//			if(birth!=null&&!birth.equals(user.getBirth()))
+//				user.setBirth(birth);
+//			//修改省份前先清空省份
+//			if(city!=null){
+//				user.setProvince(null);
+//				user.setCity(null);
+//				if(city.contains("-")){
+//					String pr = StringUtil.seperate(city, 0);
+//					String ci = StringUtil.seperate(city, 1);
+//					if(!ci.equals(user.getCity())&&city!=null)
+//						user.setCity(ci);
+//					if(!pr.equals(user.getProvince())&&pr!=null)
+//						user.setProvince(pr);
+//				}else{
+//					user.setProvince(city);
+//				}
+//			}
+//			if(sex!=null&&!sex.equals(user.getSex()))
+//				user.setSex(sex);
 		}
-		Map<String,Object> usermap = userUtil.userToMapConvertor(user,client_id);
-		return usermap;
+		return result;
 	}
 	
 	@CacheEvict(value=
@@ -207,22 +210,23 @@ public class UserCache {
 		User user = userDao.findUserById(client_id);
 		List<Label> labels = new ArrayList<Label>();
 		userDao.deleteAllLabel(client_id);
-		for(String label_name : list){
-			Label label = labelDao.findLabelById(label_name);
-			if(label==null){
-				label = new Label();
-				label.setLabel_name(label_name);
-				labelDao.save(label);				
-			}
-			labels.add(label);
-		}
-		Set<Label> labellist = new HashSet<Label>();
-		labellist.addAll(labels);
-		user.setLabellist(labellist);
+//		for(String label_name : list){
+//			Label label = labelDao.findLabelById(label_name);
+//			if(label==null){
+//				label = new Label();
+//				label.setLabel_name(label_name);
+//				labelDao.save(label);				
+//			}
+//			labels.add(label);
+//		}
+//		Set<Label> labellist = new HashSet<Label>();
+//		labellist.addAll(labels);
+		user.setLabellist(labelService.makeLabelByLabelnames(list));
 		userDao.saveOrUpdate(user);
-		Map<String,Object> usermap = userUtil.userToMapConvertor(user,client_id);
-		usermap.putAll(CommonMapUtil.baseMsgToMapConvertor());
-		result.put("success", usermap);
+//		Map<String,Object> usermap = userUtil.userToMapConvertor(user,client_id);
+//		usermap.putAll(CommonMapUtil.baseMsgToMapConvertor());
+//		result.put("success", usermap);
+		CommonMapUtil.generateResult(userUtil.userToMapConvertor(user,client_id), CommonMapUtil.baseMsgToMapConvertor(), result);
 		return result;
 	}
 	/**
@@ -239,5 +243,29 @@ public class UserCache {
 	@CacheEvict(value={"com.tonghang.web.user.cache.UserCache.generateValidateCode"}
 	 	,key = "#client_id+#email")
 	public void evictValidateCode(String client_id,String email){ System.out.println("验证码缓存销毁");}
+
+//重构部分
 	
+	/**
+	 * 
+	 * @param user
+	 * @param newuser
+	 * @param result
+	 * 替换位置：
+	 * 			method: evictUpdateCache    line number: 156
+	 */
+	private void updateUserMessage(User user,User newuser,Map<String,Object> result){
+		User.UserBuilder builder = user.new UserBuilder();
+		builder.setBirth(newuser.getBirth()).setCity(newuser.getCity()).setSex(newuser.getSex()).setImage(newuser.getImage());
+		if(newuser.getUsername()!=null&&!newuser.getUsername().equals(user.getUsername())){
+			if(userDao.findUserByUsernameUnique(newuser.getUsername()).size()!=0){
+				CommonMapUtil.generateResult(null, CommonMapUtil.baseMsgToMapConvertor("该昵称已经被注册!", 512),result);
+			}else{
+				user.setUsername(newuser.getUsername());
+				HuanXinUtil.changeUsername(user.getUsername(),user.getClient_id());				
+				CommonMapUtil.generateResult(userUtil.userToMapConvertor(user,user.getClient_id()), CommonMapUtil.baseMsgToMapConvertor(),result);
+			}
+		}
+		userDao.saveOrUpdate(user);
+	}
 }

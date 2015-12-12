@@ -14,7 +14,11 @@ import com.tonghang.web.common.util.SortUtil;
 import com.tonghang.web.common.util.TimeUtil;
 import com.tonghang.web.location.pojo.Location;
 import com.tonghang.web.location.service.LocationService;
+import com.tonghang.web.question.pojo.Question;
+import com.tonghang.web.question.service.QuestionService;
+import com.tonghang.web.question.util.QuestionUtil;
 import com.tonghang.web.room.pojo.Room;
+import com.tonghang.web.room.service.RoomService;
 import com.tonghang.web.user.pojo.User;
 import com.tonghang.web.user.service.UserService;
 import com.tonghang.web.user.util.UserUtil;
@@ -28,17 +32,23 @@ public class RoomUtil {
 	private LocationService locationService;
 	@Resource(name="userUtil")
 	private UserUtil userUtil;
+	@Resource(name="questionService")
+	private QuestionService questionService;
+	@Resource(name="questionUtil")
+	private QuestionUtil questionUtil;
+	@Resource(name="roomService")
+	private RoomService roomService;
 	
 	public Map<String,Object> roomToMapConverterTemplate(Room room){
 		Map<String,Object> result = new HashMap<String, Object>();
-		result.put("room", roomMapBuilder(room, false));
+		result.put("room", roomMapBuilder(room,null, conditionGenetator()));
 		return result;
 	}
 	
 	public List<Map<String,Object>> roomsToMapConverterTemplate(Collection<Room> rooms){
 		List<Map<String,Object>> roomsmsg = new ArrayList<Map<String,Object>>();
 		for(Room room:rooms){
-			roomsmsg.add(roomMapBuilder(room, false));
+			roomsmsg.add(roomMapBuilder(room,room.getUser().getClient_id(), conditionGenetator()));
 		}
 		return roomsmsg;
 	}
@@ -48,9 +58,9 @@ public class RoomUtil {
 	 * @param room
 	 * @return
 	 */
-	public Map<String,Object> roomToMapConverter(Room room){
+	public Map<String,Object> roomToMapConverter(Room room,String client_id){
 		Map<String,Object> result = new HashMap<String, Object>();
-		result.put("room", roomMapBuilder(room, true));
+		result.put("room", roomMapBuilder(room,room.getUser().getClient_id(), conditionGenetator("hasOwner","hasDistance","hasFollow")));
 		return result;
 	}
 	/**
@@ -63,7 +73,7 @@ public class RoomUtil {
 	public List<Map<String,Object>> roomsToMapConverter(Collection<Room> rooms,User me,boolean byDistance){
 		List<Map<String,Object>> roomsmsg = new ArrayList<Map<String,Object>>();
 		for(Room room:rooms){
-			roomsmsg.add(roomMapBuilder(room, true,me.getClient_id()));
+			roomsmsg.add(roomMapBuilder(room,me.getClient_id(), conditionGenetator("hasOwner","hasDistance")));
 		}
 		if(byDistance)
 			return SortUtil.sortByDistance(roomsmsg);
@@ -78,7 +88,7 @@ public class RoomUtil {
 	public List<Map<String,Object>> roomsToMapConverterForFollower(Collection<Room> rooms){
 		List<Map<String,Object>> roomsmsg = new ArrayList<Map<String,Object>>();
 		for(Room room:rooms){
-			roomsmsg.add(roomMapBuilder(room, true));
+			roomsmsg.add(roomMapBuilder(room,room.getUser().getClient_id(), conditionGenetator("hasOwner")));
 		}
 		return roomsmsg;
 	}
@@ -88,15 +98,17 @@ public class RoomUtil {
 	 * @param room
 	 * @return
 	 */
-	private Map<String,Object> roomMapBuilder(Room room,boolean owner,String... my_id){
+	private Map<String,Object> roomMapBuilder(Room room,String my_id,Map<String,String> condition){
 		Map<String,Object> roommsg = new HashMap<String, Object>();
 		if(room!=null){
-			if(owner){
+			if(condition.get("hasOwner")!=null)//hasOwner
 				userRoomMap(roommsg, room);
-			}
-			if(my_id!=null&&my_id.length!=0){
-				distanceUserMap(room.getUser(), my_id[0], roommsg);
-			}
+			if(condition.get("hasDistance")!=null)//hasDistance
+				distanceUserMap(room.getUser(), my_id, roommsg);
+			if(condition.get("hasFollow")!=null)//hasFollow
+				followRoomMap(roommsg, room, my_id);
+			if(condition.get("hasQuestion")!=null)//hasQuestion
+				questionRoomMap(roommsg, room);
 			baseRoomMap(roommsg, room);
 		}else{
 			nullRoomMap(roommsg, room);
@@ -128,11 +140,29 @@ public class RoomUtil {
 	private void userRoomMap(Map<String,Object> roommsg,Room room){
 		roommsg.put("owner", userUtil.userToMapConvertorTemplate(room.getUser(),room.getUser().getClient_id()).get("user"));
 	}
+	//封装房间中的所有问题列表的方法
+	private void questionRoomMap(Map<String,Object> roommsg,Room room){
+		List<Question> qs = questionService.findQuestionByAnchor(room.getUser().getClient_id());
+		roommsg.putAll(questionUtil.questionsToMapConterter(qs));
+	}
 	
 	//封装用户间的距离信息
 	private void distanceUserMap(User other,String my_id,Map<String,Object> msg){
 		Location my_local = locationService.findLocationByUser(userService.findUserById(my_id));
 		msg.put("distance", locationService.computeDistance(other, my_local));
+	}
+	//封装关注消息的方法
+	private void followRoomMap(Map<String,Object> roommsg,Room room,String client_id){
+		roommsg.put("follow_status", roomService.isFollowed(room, userService.findUserById(client_id)));
+		roommsg.put("followed", userUtil.usersToMapConvertorTemplate(room==null?null:room.getFollower()));
+	}
+	//根据参数个数生成判断条件，索引所在的参数存在，则按照参数设置，不存在默认为false
+	private Map<String,String> conditionGenetator(String... condition){
+		Map<String,String> result = new HashMap<String, String>();
+		for(String str:condition){
+			result.put(str, str);
+		}
+		return result;
 	}
 	
 }

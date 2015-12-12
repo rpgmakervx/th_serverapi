@@ -2,29 +2,26 @@ package com.tonghang.web.label.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.tonghang.web.label.dao.LabelDao;
 import com.tonghang.web.label.pojo.Label;
 import com.tonghang.web.user.pojo.User;
 
 @Service("labelService")
+@Transactional
 public class LabelService {
 
-	private LabelDao labelDao;
-
-	public LabelDao getLabelDao() {
-		return labelDao;
-	}
 	@Resource(name="labelDao")
-	public void setLabelDao(LabelDao labelDao) {
-		this.labelDao = labelDao;
-	}
+	private LabelDao labelDao;
 	
 //	public List<Map<String,List<Map<String,Object>>>> findLabelByUser(User user){
 //		List<Label> labels = labelDao.findLabelByUser(user);
@@ -35,5 +32,36 @@ public class LabelService {
 //			Map<String,Object> msg = new HashMap<String, Object>();
 //		}
 //	}
+	/**
+	 * 添加时间：2015-12-12
+	 * 根据标签名 模糊查找标签
+	 * @param label_name
+	 * @return
+	 */
+	public List<Label> findLabelByName(String label_name){
+		return labelDao.findLabelByName(label_name);
+	}
+	
+	/**
+	 * 添加时间：2015-12-12
+	 * 根据标签名构建标签对象，数据库中不存在的标签则保存下来
+	 * @param list
+	 * @return
+	 */
+	public Set<Label> makeLabelByLabelnames(List<String> list){
+		List<Label> labels = new ArrayList<Label>();
+		Set<Label> labellist = new HashSet<Label>();
+		for(String label_name : list){
+			Label label = labelDao.findLabelById(label_name);
+			if(label==null){
+				label = new Label();
+				label.setLabel_name(label_name);
+				labelDao.save(label);				
+			}
+			labels.add(label);
+		}
+		labellist.addAll(labels);
+		return labellist;
+	}
 	
 }

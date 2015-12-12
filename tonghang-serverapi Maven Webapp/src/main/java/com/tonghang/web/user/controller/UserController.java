@@ -119,17 +119,19 @@ public class UserController extends BaseController{
 	 *			2015-10-25 注册用户密码取消服务端MD5计算，同时注册手机号
 	 */
 	@RequestMapping(value = "/regist")
-	public ResponseEntity<Map<String,Object>> registUser(@RequestParam String mapstr) throws JsonParseException, JsonMappingException, IOException, EmailExistException, NickNameExistException {
-		System.out.println("开始注册");
+	public ResponseEntity<Map<String,Object>> registUser(@RequestParam String mapstr) throws Exception {
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
-		User user = new User();
-		String username = (String)map.get("username");
-		String phone = (String)map.get("phone");
-		user.setPhone(phone);
-		user.setUsername(username);
-		user.setPassword((String)map.get("password"));
-		user.setIsonline("0");
-		user.setStatus("1");
+		User user = new User().new UserBuilder().setUsername((String)map.get("username")).
+				setPhone((String)map.get("phone")).setPassword((String)map.get("password")).
+				setIsonline("0").setStatus("1").build();
+//		User user = new User();
+//		String username = (String)map.get("username");
+//		String phone = (String)map.get("phone");
+//		user.setPhone(phone);
+//		user.setUsername(username);
+//		user.setPassword((String)map.get("password"));
+//		user.setIsonline("0");
+//		user.setStatus("1");
 		return new ResponseEntity<Map<String,Object>>(userService.registUser(user), HttpStatus.OK);
 	}
 
@@ -181,59 +183,59 @@ public class UserController extends BaseController{
 		return new ResponseEntity<Map<String,Object>>(userService.searchUser(client_id,(String)map.get("content"),byDistance,(Integer)map.get("pageindex")), HttpStatus.OK);
 	}
 	
-	/**
-	 * 2015-08-28新增按距离推荐,新增字段 byDistance,是否需要按照距离排序
-	 * 修改时间：2015-12-08 该接口废弃，与 /search/nick 合并
-	 * 业务功能: 通过标签查询用户(调试通过)
-	 * @param mapstr 前端的JSON数据，全部包括在mapstr中
-	 * @return user(List<Map>)[ labels(List) email (String) image(String) 
-	 * 				sex(String) phone(String) city(String) username(String)
-	 * 				client_id(String) created_at(Date) birth(Date) is_friend(boolean)]
-	 * @throws Exception
-	 * 1.jackson类库ObjectMapper类  readVlaue()方法 参数一为json格式的字符串，转换结果的类型
-	 * searchLabel()方法按标签名 模糊匹配 得到的标签对象，再按照这些标签名模糊查找对应的用户，用户信息包装成map,
-	 * 然后包装成一个大的List,并由ResponseEntity包装成JSON返回给前台
-	 * 2.返回值为列表的请求全部需要分页，客户端需要传一个pageindex表示当前页数
-	 */
-	@Deprecated
-	@RequestMapping(value = "/search/label")
-	public ResponseEntity<Map<String,Object>> searchLabel(@RequestParam String mapstr) throws Exception {
-		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
-		String client_id = (String)map.get("client_id");
-		boolean byDistance = false;
-		if(map.get("byDistance")!=null)
-			byDistance = (Boolean)map.get("byDistance");
-		return new ResponseEntity<Map<String,Object>>(userService.searchLabel(client_id,(String)map.get("label_name"),byDistance,(Integer)map.get("pageindex")), HttpStatus.OK);
-	}
-	
-	/**
-	 * 2015-08-28新增按距离推荐,新增字段 byDistance,是否需要按照距离排序
-	 * 修改时间：2015-12-08 该接口废弃，与 /search/label 合并
-	 * 业务功能：通过昵称查询用户(调试通过)
-	 * @param mapstr 前端的JSON数据，全部包括在mapstr中(client_id,username)
-	 * @return user(List<Map>)[ labels(List) email (String) image(String) 
-	 * 				sex(String) phone(String) city(String) username(String)
-	 * 				client_id(String) created_at(Date) birth(Date) is_friend(boolean)]
-	 * @throws JsonParseException
-	 * @throws JsonMappingException
-	 * @throws IOException
-	 * 1.jackson类库ObjectMapper类  readVlaue()方法 参数一为json格式的字符串，转换结果的类型
-	 * 2.searchNick()方法按照用户名模糊匹配用户信息，将得到的用户结果封装成Map,然后包装成一个大的List,
-	 * 并由ResponseEntity包装成JSON返回给前台
-	 * 3.返回值为列表的请求全部需要分页，客户端需要传一个pageindex表示当前页数
-	 * 4.所有返回用户信息的地方都会返回是否是好友关系
-	 * @throws SearchNoResultException 
-	 */
-	@Deprecated
-	@RequestMapping(value = "search/nick")
-	public ResponseEntity<Map<String,Object>> searchNick(@RequestParam String mapstr) throws JsonParseException, JsonMappingException, IOException, SearchNoResultException {
-		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
-		String client_id = (String)map.get("client_id");
-		boolean byDistance = false;
-		if(map.get("byDistance")!=null)
-			byDistance = (Boolean)map.get("byDistance");
-		return new ResponseEntity<Map<String,Object>>(userService.searchNick(client_id,(String)map.get("username"),byDistance,(Integer)map.get("pageindex")), HttpStatus.OK);
-	}
+//	/**
+//	 * 2015-08-28新增按距离推荐,新增字段 byDistance,是否需要按照距离排序
+//	 * 修改时间：2015-12-08 该接口废弃，与 /search/nick 合并
+//	 * 业务功能: 通过标签查询用户(调试通过)
+//	 * @param mapstr 前端的JSON数据，全部包括在mapstr中
+//	 * @return user(List<Map>)[ labels(List) email (String) image(String) 
+//	 * 				sex(String) phone(String) city(String) username(String)
+//	 * 				client_id(String) created_at(Date) birth(Date) is_friend(boolean)]
+//	 * @throws Exception
+//	 * 1.jackson类库ObjectMapper类  readVlaue()方法 参数一为json格式的字符串，转换结果的类型
+//	 * searchLabel()方法按标签名 模糊匹配 得到的标签对象，再按照这些标签名模糊查找对应的用户，用户信息包装成map,
+//	 * 然后包装成一个大的List,并由ResponseEntity包装成JSON返回给前台
+//	 * 2.返回值为列表的请求全部需要分页，客户端需要传一个pageindex表示当前页数
+//	 */
+//	@Deprecated
+//	@RequestMapping(value = "/search/label")
+//	public ResponseEntity<Map<String,Object>> searchLabel(@RequestParam String mapstr) throws Exception {
+//		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
+//		String client_id = (String)map.get("client_id");
+//		boolean byDistance = false;
+//		if(map.get("byDistance")!=null)
+//			byDistance = (Boolean)map.get("byDistance");
+//		return new ResponseEntity<Map<String,Object>>(userService.searchLabel(client_id,(String)map.get("label_name"),byDistance,(Integer)map.get("pageindex")), HttpStatus.OK);
+//	}
+//	
+//	/**
+//	 * 2015-08-28新增按距离推荐,新增字段 byDistance,是否需要按照距离排序
+//	 * 修改时间：2015-12-08 该接口废弃，与 /search/label 合并
+//	 * 业务功能：通过昵称查询用户(调试通过)
+//	 * @param mapstr 前端的JSON数据，全部包括在mapstr中(client_id,username)
+//	 * @return user(List<Map>)[ labels(List) email (String) image(String) 
+//	 * 				sex(String) phone(String) city(String) username(String)
+//	 * 				client_id(String) created_at(Date) birth(Date) is_friend(boolean)]
+//	 * @throws JsonParseException
+//	 * @throws JsonMappingException
+//	 * @throws IOException
+//	 * 1.jackson类库ObjectMapper类  readVlaue()方法 参数一为json格式的字符串，转换结果的类型
+//	 * 2.searchNick()方法按照用户名模糊匹配用户信息，将得到的用户结果封装成Map,然后包装成一个大的List,
+//	 * 并由ResponseEntity包装成JSON返回给前台
+//	 * 3.返回值为列表的请求全部需要分页，客户端需要传一个pageindex表示当前页数
+//	 * 4.所有返回用户信息的地方都会返回是否是好友关系
+//	 * @throws SearchNoResultException 
+//	 */
+//	@Deprecated
+//	@RequestMapping(value = "search/nick")
+//	public ResponseEntity<Map<String,Object>> searchNick(@RequestParam String mapstr) throws JsonParseException, JsonMappingException, IOException, SearchNoResultException {
+//		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
+//		String client_id = (String)map.get("client_id");
+//		boolean byDistance = false;
+//		if(map.get("byDistance")!=null)
+//			byDistance = (Boolean)map.get("byDistance");
+//		return new ResponseEntity<Map<String,Object>>(userService.searchNick(client_id,(String)map.get("username"),byDistance,(Integer)map.get("pageindex")), HttpStatus.OK);
+//	}
 	
 	/**
 	 * 业务功能：查看用户信息（该请求暂时没找到对应的业务）

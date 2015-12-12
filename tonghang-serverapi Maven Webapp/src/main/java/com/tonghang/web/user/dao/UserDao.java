@@ -20,7 +20,7 @@ public interface UserDao {
 	
 	public List<User> findAllUser();
 	public List<User> findUserByUsernameUnique(String username);
-	public List<User> findUserByUsername(String username,int page);
+	public List<User> findUserByUsername(String username);
 	public List<User> findUserByLabel(String label_name,int nowpage);
 	//按注册时间 从最新的用户中抽取1个用户，用户指定区间
 	public List<User> findOneUserByCreatedAtDesc(int begin,int end);

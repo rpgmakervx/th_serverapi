@@ -40,8 +40,14 @@ import com.tonghang.web.topic.util.TopicUtil;
 import com.tonghang.web.user.cache.UserCache;
 import com.tonghang.web.user.dao.UserDao;
 import com.tonghang.web.user.pojo.User;
+import com.tonghang.web.user.pojo.User.UserBuilder;
 import com.tonghang.web.user.util.UserUtil;
-
+/**
+ * 
+ * @author Administrator
+ *重构前：710行
+ *重构后：
+ */
 @Service("userService")
 @Transactional
 public class UserService {
@@ -75,45 +81,41 @@ public class UserService {
 	 * 修改时间：2015-10-25  取消所有MD5，添加手机登录
 	 */
 	public Map<String,Object> login(String number,String password,String what) throws BaseException{
-		Map<String,Object> result = new HashMap<String, Object>();
-		User user = null;
-		if(what.equals(Constant.EMAIL_LOGIN)){
-			user = userDao.findUserByEmail(number);
-		}else{
-			user = userDao.findUserByPhone(number); 
-		}
-		if(user==null){
-			result.put("success", CommonMapUtil.baseMsgToMapConvertor(Constant.LOGIN_FAIL+Constant.EMAIL_NOT_EXISTS, 510));
-			if(what.equals(Constant.EMAIL_LOGIN))
-				result.put("success", CommonMapUtil.baseMsgToMapConvertor(Constant.LOGIN_FAIL+Constant.EMAIL_NOT_EXISTS, 510));
-			else
-				result.put("success", CommonMapUtil.baseMsgToMapConvertor(Constant.LOGIN_FAIL+Constant.PHONE_NOT_EXISTS, 510));
-			return result;
-		}else{
-			//把没有容联云id的人设置上RYID
-			if("".equals(user.getRy_id())||user.getRy_id()==null){
-				user.setRy_id(SecurityUtil.getRYID(user.getClient_id()));
-			}
-			if(user.getStatus().equals("0")){
-				result.put("success", CommonMapUtil.baseMsgToMapConvertor(Constant.LOGIN_FAIL+Constant.USER_ISOLATED, 510));
-				return result;
-			}else{
-				if(user.getPassword().equals(password)){
-					Map<String,Object> usermap = userUtil.userToMapConvertor(user,false,user.getClient_id());
-					usermap.putAll(CommonMapUtil.baseMsgToMapConvertor());
-					result.put("success", usermap);
-					user.setIsonline("1");
-					user.setPassword(password);
-					user.setLast_login_at(new Date());
-					userDao.saveOrUpdate(user);
-				}else{
-					result.put("success", CommonMapUtil.baseMsgToMapConvertor(Constant.LOGIN_FAIL+Constant.PASSWORD_INVALID, 510));
-					return result;
-				}
-			}
-		}
-		return result;
+		//重构函数 accoutNumberExist(number, what); 参数1：账号 参数2：账号类型
+		User user = accoutNumberExist(number, what);
+		return canLogin(user, password);
+//		if(user==null){
+//			if(what.equals(Constant.EMAIL_LOGIN))
+//				result.put("success", CommonMapUtil.baseMsgToMapConvertor(Constant.LOGIN_FAIL+Constant.EMAIL_NOT_EXISTS, 510));
+//			else
+//				result.put("success", CommonMapUtil.baseMsgToMapConvertor(Constant.LOGIN_FAIL+Constant.PHONE_NOT_EXISTS, 510));
+//			return result;
+//		}else{
+//			//把没有容联云id的人设置上RYID
+//			if("".equals(user.getRy_id())||user.getRy_id()==null){
+//				user.setRy_id(SecurityUtil.getRYID(user.getClient_id()));
+//			}
+//			if(user.getStatus().equals("0")){
+//				result.put("success", CommonMapUtil.baseMsgToMapConvertor(Constant.LOGIN_FAIL+Constant.USER_ISOLATED, 510));
+//				return result;
+//			}else{
+//				if(user.getPassword().equals(password)){
+//					Map<String,Object> usermap = userUtil.userToMapConvertor(user,user.getClient_id());
+//					usermap.putAll(CommonMapUtil.baseMsgToMapConvertor());
+//					result.put("success", usermap);
+//					user.setIsonline("1");
+//					user.setPassword(password);
+//					user.setLast_login_at(new Date());
+//					userDao.saveOrUpdate(user);
+//				}else{
+//					result.put("success", CommonMapUtil.baseMsgToMapConvertor(Constant.LOGIN_FAIL+Constant.PASSWORD_INVALID, 510));
+//					return result;
+//				}
+//			}
+//		}
+//		return result;
 	}
+	
 	/**
 	 * 业务功能：邮箱找回密码
 	 * @param 
@@ -123,7 +125,10 @@ public class UserService {
 	 * 
 	 * 修改时间: 2015-08-28 忘记密码的随机密码进行了MD5加密
 	 * 
+	 * 修改时间：2015-12-11	该方法已被废弃，目前不需要邮箱找回密码
+	 * 
 	 */
+	@Deprecated
 	public Map<String,Object> forgetPassword_Email(String email) throws LoginException{
 		Map<String,Object> result = new HashMap<String, Object>();
 		User user = userDao.findUserByEmail(email);
@@ -156,23 +161,23 @@ public class UserService {
 	 * 2015-9-17：删除UserCache中的
 	 */
 	@CacheEvict(value=
-		{"com.tonghang.web.user.cache.UserCache.getSearchLabelCache",
-		 "com.tonghang.web.user.cache.UserCache.getRecommendCache",
-		 "com.tonghang.web.user.cache.UserCache.getSearchNickNameCache"
+		{"com.tonghang.web.user.cache.UserCache.getSearchUserCache"
 		},allEntries = true)
-	public Map<String,Object> registUser(User user) throws EmailExistException, NickNameExistException{
+	public Map<String,Object> registUser(User user){
 		Map<String,Object> result = new HashMap<String, Object>();
 		if(userDao.findUserByNickName(user.getUsername())!=null){
-			result.put("success", CommonMapUtil.baseMsgToMapConvertor("注册失败！该昵称已经被注册", 512));
-			return result;
+			CommonMapUtil.generateResult(null, CommonMapUtil.baseMsgToMapConvertor("注册失败！该昵称已经被注册", 512),result);
+//			return result;
 		}else {
-			user.setClient_id(SecurityUtil.getUUID());
-			user.setRy_id(SecurityUtil.getRYID(user.getClient_id()));
+			user.new UserBuilder().setClient_id(SecurityUtil.getUUID()).setRy_id(SecurityUtil.getRYID(user.getClient_id()));
+//			user.setClient_id(SecurityUtil.getUUID());
+//			user.setRy_id(SecurityUtil.getRYID(user.getClient_id()));
 			userDao.save(user);
 			HuanXinUtil.registUser(user);
-			Map<String,Object> usermap = userUtil.userToMapConvertor(user,false,user.getClient_id());
-			usermap.putAll(CommonMapUtil.baseMsgToMapConvertor());
-			result.put("success", usermap);
+//			Map<String,Object> usermap = userUtil.userToMapConvertor(user,user.getClient_id());
+//			usermap.putAll(CommonMapUtil.baseMsgToMapConvertor());
+//			result.put("success", usermap);
+			CommonMapUtil.generateResult(userUtil.userToMapConvertor(user,user.getClient_id()), CommonMapUtil.baseMsgToMapConvertor(), result);
 		}
 		return result;
 	}
@@ -183,16 +188,17 @@ public class UserService {
 	 * @return
 	 * @throws SearchNoResultException 
 	 */
-	public Map<String,Object> checkUserMessage(String client_id) throws SearchNoResultException{
+	public Map<String,Object> checkUserMessage(String client_id){
 		Map<String,Object> result = new HashMap<String, Object>();
 		User user =userDao.findUserById(client_id);
 		if(user==null){
-			result.put("success", CommonMapUtil.baseMsgToMapConvertor("未搜索到您想搜索的内容", 520));
-			return result;
-		}
-		Map<String,Object> usermap = userUtil.userToMapConvertor(user,client_id);
-		usermap.putAll(CommonMapUtil.baseMsgToMapConvertor());
-		result.put("success", usermap);
+			CommonMapUtil.generateResult(null, CommonMapUtil.baseMsgToMapConvertor("未搜索到您想搜索的内容", 520),result);
+//			return result;
+		}else
+			CommonMapUtil.generateResult(userUtil.userToMapConvertor(user,client_id), CommonMapUtil.baseMsgToMapConvertor(), result);
+//		Map<String,Object> usermap = userUtil.userToMapConvertor(user,client_id);
+//		usermap.putAll(CommonMapUtil.baseMsgToMapConvertor());
+//		result.put("success", usermap);
 		return result;
 	}
 
@@ -219,94 +225,96 @@ public class UserService {
 	 * 2015-9-16 新增缓存功能。将所有查询结果缓存，在缓存结果中进行分页
 	 */
 	public Map<String, Object> recommend(String client_id,boolean byDistance, int page){
-		long begin = System.currentTimeMillis(); 
-		Map<String,Object> result = new HashMap<String, Object>();
-		//用来覆盖缓存方法中 succss键对应的users列表
-		Map<String,Object> success = new HashMap<String, Object>();
+//		long begin = System.currentTimeMillis(); 
+//		Map<String,Object> result = new HashMap<String, Object>();
+//		//用来覆盖缓存方法中 succss键对应的users列表
+//		Map<String,Object> success = new HashMap<String, Object>();
 		List<Map<String,Object>> users = cache.getRecommendCache(client_id, byDistance);		
-		int front = (page-1)*Constant.PAGESIZE;
-		//当前页数的尾索引
-		int now = page*Constant.PAGESIZE;
-		//缓存中数据页数
-		int cache_page = (users.size()/Constant.PAGESIZE)+1;
-		if((users==null||users.size()==0)&&page==1){
-			result.put("success", CommonMapUtil.baseMsgToMapConvertor("首页推荐没有结果", 520));
-		}else if(users==null&&page!=1||page>cache_page){
-			result.put("success", CommonMapUtil.baseMsgToMapConvertor("搜索不到更多了", 520));
-		}else{
-			if(page==cache_page){
-				success.put("users", users.subList(front, users.size()));
-				success.putAll(CommonMapUtil.baseMsgToMapConvertor());
-				result.put("success", success);
-			}else if(page<cache_page){
-				success.put("users", users.subList(front, now));
-				success.putAll(CommonMapUtil.baseMsgToMapConvertor());
-				result.put("success", success);
-			}
-		}
-		return result;
-	}
-	/**
-	 * 更改时间：2015-12-08 该接口废弃，和searchNickname整合
-	 * 按标签搜索用户
-	 * @param client_id
-	 * @param label_name
-	 * @param page
-	 * @return
-	 * @throws SearchNoResultException
-	 * 标签搜索是模糊搜索，当搜索不到时，提示前台搜索不到更多，但是第一次搜索不到则提示没有搜索结果。
-	 */
-	@Deprecated
-	public Map<String, Object> searchLabel(String client_id,String label_name, boolean byDistance,int page){
-		// TODO Auto-generated method stub
-		Map<String,Object> result = new HashMap<String, Object>();
-		Map<String,Object> success = new HashMap<String, Object>();
-		List<Map<String,Object>> users = cache.getSearchLabelCache(client_id, label_name, byDistance);
-		//当page=1时userss.size()为0说明用户一开始就搜不到数据，
-		//page>1时userss.size()为0说明用户刷新了数据，但是没有结果了
-		int front = (page-1)*Constant.PAGESIZE;
-		//当前页数的尾索引
-		int now = page*Constant.PAGESIZE;
-		//缓存中数据页数
-		System.out.println("当前页数："+page);
-		int cache_page = (users.size()/Constant.PAGESIZE)+1;
-		System.out.println("缓存总页数："+cache_page);
-		System.out.println("缓存方法中取出的数据："+users);
-		if((users==null||users.size()==0)&&page==1){
-			result.put("success", CommonMapUtil.baseMsgToMapConvertor("首页推荐没有结果", 520));
-		}else if(users==null&&page!=1||page>cache_page){
-			result.put("success", CommonMapUtil.baseMsgToMapConvertor("搜索不到更多了", 520));
-		}else{
-			if(page==cache_page){
-				success.put("users", users.subList(front, users.size()));
-				success.putAll(CommonMapUtil.baseMsgToMapConvertor());
-				result.put("success", success);
-			}else if(page<cache_page){
-				success.put("users", users.subList(front, now));
-				success.putAll(CommonMapUtil.baseMsgToMapConvertor());
-				result.put("success", success);
-			}
-		}
-		return result;
-	}
-	
-	/**
-	 * 更改时间：2015-12-08 该接口废弃，和searchLabel整合
-	 * 按昵称搜索用户
-	 * @param client_id
-	 * @param username
-	 * @param page
-	 * @return
-	 * @throws SearchNoResultException
-	 * 昵称模糊搜索，当搜索不到时，提示前台搜索不到更多，但是第一次搜索不到则提示没有搜索结果。
-	 */
-	@Deprecated
-	public Map<String, Object> searchNick(String client_id,String username,boolean byDistance, int page){
-		// TODO Auto-generated method stub
-		List<Map<String,Object>> users = cache.getSearchNickNameCache(client_id, username, byDistance, page);
 		int cache_page = (users.size()/Constant.PAGESIZE)+1;
 		return getFindResult(users, page, cache_page);
+//		int front = (page-1)*Constant.PAGESIZE;
+//		//当前页数的尾索引
+//		int now = page*Constant.PAGESIZE;
+//		//缓存中数据页数
+//		int cache_page = (users.size()/Constant.PAGESIZE)+1;
+//		if((users==null||users.size()==0)&&page==1){
+//			result.put("success", CommonMapUtil.baseMsgToMapConvertor("首页推荐没有结果", 520));
+//		}else if(users==null&&page!=1||page>cache_page){
+//			result.put("success", CommonMapUtil.baseMsgToMapConvertor("搜索不到更多了", 520));
+//		}else{
+//			if(page==cache_page){
+//				success.put("users", users.subList(front, users.size()));
+//				success.putAll(CommonMapUtil.baseMsgToMapConvertor());
+//				result.put("success", success);
+//			}else if(page<cache_page){
+//				success.put("users", users.subList(front, now));
+//				success.putAll(CommonMapUtil.baseMsgToMapConvertor());
+//				result.put("success", success);
+//			}
+//		}
+//		return result;
 	}
+//	/**
+//	 * 更改时间：2015-12-08 该接口废弃，和searchNickname整合
+//	 * 按标签搜索用户
+//	 * @param client_id
+//	 * @param label_name
+//	 * @param page
+//	 * @return
+//	 * @throws SearchNoResultException
+//	 * 标签搜索是模糊搜索，当搜索不到时，提示前台搜索不到更多，但是第一次搜索不到则提示没有搜索结果。
+//	 */
+//	@Deprecated
+//	public Map<String, Object> searchLabel(String client_id,String label_name, boolean byDistance,int page){
+//		// TODO Auto-generated method stub
+//		Map<String,Object> result = new HashMap<String, Object>();
+//		Map<String,Object> success = new HashMap<String, Object>();
+//		List<Map<String,Object>> users = cache.getSearchLabelCache(client_id, label_name, byDistance);
+//		//当page=1时userss.size()为0说明用户一开始就搜不到数据，
+//		//page>1时userss.size()为0说明用户刷新了数据，但是没有结果了
+//		int front = (page-1)*Constant.PAGESIZE;
+//		//当前页数的尾索引
+//		int now = page*Constant.PAGESIZE;
+//		//缓存中数据页数
+//		System.out.println("当前页数："+page);
+//		int cache_page = (users.size()/Constant.PAGESIZE)+1;
+//		System.out.println("缓存总页数："+cache_page);
+//		System.out.println("缓存方法中取出的数据："+users);
+//		if((users==null||users.size()==0)&&page==1){
+//			result.put("success", CommonMapUtil.baseMsgToMapConvertor("首页推荐没有结果", 520));
+//		}else if(users==null&&page!=1||page>cache_page){
+//			result.put("success", CommonMapUtil.baseMsgToMapConvertor("搜索不到更多了", 520));
+//		}else{
+//			if(page==cache_page){
+//				success.put("users", users.subList(front, users.size()));
+//				success.putAll(CommonMapUtil.baseMsgToMapConvertor());
+//				result.put("success", success);
+//			}else if(page<cache_page){
+//				success.put("users", users.subList(front, now));
+//				success.putAll(CommonMapUtil.baseMsgToMapConvertor());
+//				result.put("success", success);
+//			}
+//		}
+//		return result;
+//	}
+//	
+//	/**
+//	 * 更改时间：2015-12-08 该接口废弃，和searchLabel整合
+//	 * 按昵称搜索用户
+//	 * @param client_id
+//	 * @param username
+//	 * @param page
+//	 * @return
+//	 * @throws SearchNoResultException
+//	 * 昵称模糊搜索，当搜索不到时，提示前台搜索不到更多，但是第一次搜索不到则提示没有搜索结果。
+//	 */
+//	@Deprecated
+//	public Map<String, Object> searchNick(String client_id,String username,boolean byDistance, int page){
+//		// TODO Auto-generated method stub
+//		List<Map<String,Object>> users = cache.getSearchNickNameCache(client_id, username, byDistance, page);
+//		int cache_page = (users.size()/Constant.PAGESIZE)+1;
+//		return getFindResult(users, page, cache_page);
+//	}
 	/**
 	 * 添加时间2015-12-08
 	 * 业务功能：整合了按标签搜索和按昵称搜索的功能
@@ -317,45 +325,11 @@ public class UserService {
 	 * @return
 	 */
 	public Map<String, Object> searchUser(String client_id,String content,boolean byDistance, int page){
-		List<Map<String,Object>> users = cache.getSearchUserCache(client_id, content, byDistance, page);
+		List<Map<String,Object>> users = cache.getSearchUserCache(client_id, content, byDistance);
 		int cache_page = (users.size()/Constant.PAGESIZE)+1;
 		return getFindResult(users, page, cache_page);
 	}
-	/**
-	 * 从缓存中获取用户数据
-	 * @param users
-	 * @param page
-	 * @param cache_page
-	 * @return
-	 */
-	private Map<String,Object> getFindResult(List<Map<String,Object>> users,int page,int cache_page){
-		Map<String,Object> result = new HashMap<String, Object>();
-		Map<String,Object> success = new HashMap<String, Object>();
-		if((users==null||users.size()==0)&&page==1){
-			result.put("success", CommonMapUtil.baseMsgToMapConvertor("首页推荐没有结果", 520));
-		}else if(users==null&&page!=1||page>cache_page){
-			result.put("success", CommonMapUtil.baseMsgToMapConvertor("搜索不到更多了", 520));
-		}else{
-			if(page==cache_page){
-				success.put("users", users.subList(frontPage(page), users.size()));
-				success.putAll(CommonMapUtil.baseMsgToMapConvertor());
-				result.put("success", success);
-			}else if(page<cache_page){
-				success.put("users", users.subList(frontPage(page), nowPage(page)));
-				success.putAll(CommonMapUtil.baseMsgToMapConvertor());
-				result.put("success", success);
-			}
-		}
-		return result;
-	}
-	//当前页数的尾索引
-	private int frontPage(int page){
-		return (page-1)*Constant.PAGESIZE;
-	}
-	//缓存中数据页数
-	private int nowPage(int page){
-		return page*Constant.PAGESIZE;
-	}
+
 	/**
 	 * 更改时间：2015-12-03
 	 * 按照id获取某个用户的所有信息
@@ -373,10 +347,11 @@ public class UserService {
 		}
 		Map<String,Object> usermap = new HashMap<String, Object>();
 		if(user!=null){
-			usermap = userUtil.userToMapConvertor(user,client_id);
+			usermap = userUtil.userToMapWithRoomConvertor(user,client_id);
 		}
-		usermap.putAll(CommonMapUtil.baseMsgToMapConvertor());
-		result.put("success", usermap);
+		CommonMapUtil.generateResult(usermap, CommonMapUtil.baseMsgToMapConvertor(), result);
+//		usermap.putAll(CommonMapUtil.baseMsgToMapConvertor());
+//		result.put("success", usermap);
 		return result;
 	}
 
@@ -417,19 +392,20 @@ public class UserService {
 	public Map<String, Object> updatePassword(String client_id,String old_passwd, String new_passwd){
 		// TODO Auto-generated method stub
 		Map<String,Object> result = new HashMap<String, Object>();
-		User user = new User();
-		user.setClient_id(client_id);
-		user = userDao.findUserById(client_id);
-		if(user.getPassword().equals(old_passwd)||user.getPassword().equals(SecurityUtil.getMD5(old_passwd))){
+//		User user = new User();
+//		user.setClient_id(client_id);
+		User user = userDao.findUserById(client_id);
+		if(user.getPassword().equals(old_passwd)){
 			user.setPassword(new_passwd);
 			HuanXinUtil.changePassword(user.getPassword(), user.getClient_id());
 			userDao.saveOrUpdate(user);
-			user = userDao.findUserById(client_id);
-			Map<String,Object> usermap = userUtil.userToMapConvertor(user,client_id);
-			usermap.putAll(CommonMapUtil.baseMsgToMapConvertor());
-			result.put("success", usermap);
+//			user = userDao.findUserById(client_id);
+//			Map<String,Object> usermap = userUtil.userToMapConvertor(user,client_id);
+//			usermap.putAll(CommonMapUtil.baseMsgToMapConvertor());
+//			result.put("success", usermap);
+			CommonMapUtil.generateResult(userUtil.userToMapConvertor(user,client_id), CommonMapUtil.baseMsgToMapConvertor(), result);
 		}else {
-			result.put("success", CommonMapUtil.baseMsgToMapConvertor("修改失败，原密码不正确", 513));
+			CommonMapUtil.generateResult(null, CommonMapUtil.baseMsgToMapConvertor("修改失败，原密码不正确", 513),result);
 		}
 		return result;
 	}
@@ -460,6 +436,7 @@ public class UserService {
 		for(String id:client_ids){
 			users.add(findUserByRyId(id));
 		}
+		System.out.println("查询出的所有用户信息：\n "+users);
 		return userUtil.usersToMapConvertor(users,client_id);
 	}
 	
@@ -731,5 +708,142 @@ public class UserService {
 		}
 		cache.evictValidateCode(client_id,email);
 		return result;
+	}
+	
+//重构部分
+	
+	/**
+	 * 查看账号是否存在
+	 * @param number
+	 * @param what
+	 * @return
+	 * 替换位置：
+	 * 			method:login 
+	 * 			line number: 79~90
+	 */
+	private User accoutNumberExist(String number,String what){
+		return what.equals(Constant.EMAIL_LOGIN)?userDao.findUserByEmail(number):userDao.findUserByPhone(number);
+	}
+	
+	/**
+	 * 检查用户是否可登陆，并放回相应的校验信息
+	 * @param user
+	 * @param password
+	 * @param result
+	 * 替换位置：
+	 * 			method:login 
+	 * 			line number: 81~109
+	 * @return 
+	 */
+	private Map<String, Object> canLogin(User user,String password){
+		Map<String,Object> result = new HashMap<String, Object>();
+		if(user==null){
+			CommonMapUtil.generateResult(null,CommonMapUtil.baseMsgToMapConvertor(Constant.LOGIN_FAIL+Constant.NOUSER, 510),result);
+		}else{
+			//把没有容联云id的人设置上RYID
+			user.getRy_id();
+			if(user.isIsolate()){
+				CommonMapUtil.generateResult(null,CommonMapUtil.baseMsgToMapConvertor(Constant.LOGIN_FAIL+Constant.USER_ISOLATED, 510),result);
+			}else{
+				validatePassword(user, password, result);
+//				if(user.getPassword().equals(password)){
+//					CommonMapUtil.generateResult(userUtil.userToMapWithRoomConvertor(user,user.getClient_id()), CommonMapUtil.baseMsgToMapConvertor(),result);
+//					//User 使用内部类的建造者模式
+//					user.new UserBuilder().setIsonline("1").setPassword(password).setLast_login_at(new Date());
+//					userDao.saveOrUpdate(user);
+//				}else{
+//					CommonMapUtil.generateResult(null, CommonMapUtil.baseMsgToMapConvertor(Constant.LOGIN_FAIL+Constant.PASSWORD_INVALID, 510),result);
+//				}
+			}
+		}
+		return result;
+	}
+	/**
+	 * 校验用户名密码密码
+	 * @param user			数据库中的标准用户
+	 * @param password		输入的密码
+	 * @param result		结果集
+	 *  替换位置：
+	 * 			method:canLogin 
+	 * 			line number: 81~109
+	 */
+	private void validatePassword(User user,String password,Map<String,Object> result){
+		if(user.getPassword().equals(password)){
+			CommonMapUtil.generateResult(userUtil.userToMapWithRoomConvertor(user,user.getClient_id()), CommonMapUtil.baseMsgToMapConvertor(),result);
+			//User 使用内部类的建造者模式
+			user.new UserBuilder().setIsonline("1").setPassword(password).setLast_login_at(new Date());
+			userDao.saveOrUpdate(user);
+		}else{
+			CommonMapUtil.generateResult(null, CommonMapUtil.baseMsgToMapConvertor(Constant.LOGIN_FAIL+Constant.PASSWORD_INVALID, 510),result);
+		}
+	}
+	/**
+	 * 从缓存中获取用户数据
+	 * @param users
+	 * @param page
+	 * @param cache_page
+	 * @return
+	 * 替换位置：
+	 * 				method:recommend	line number:226
+	 * 				method:searchUser line number:326
+	 */
+	private Map<String,Object> getFindResult(List<Map<String,Object>> users,int page,int cache_page){
+		Map<String,Object> result = new HashMap<String, Object>();
+//		Map<String,Object> success = new HashMap<String, Object>();
+//		Map<String,Object> usermap = new HashMap<String, Object>();
+		if((users==null||users.size()==0)&&page==1){
+			result.put("success", CommonMapUtil.baseMsgToMapConvertor(Constant.NO_RESULT, 520));
+		}else if(users==null&&page!=1||page>cache_page){
+			result.put("success", CommonMapUtil.baseMsgToMapConvertor(Constant.NO_MORE_RESULT, 520));
+		}else{
+			pagination(users, page, cache_page, result);
+//			if(page==cache_page){
+//				usermap.put("users", users.subList(frontPage(page), users.size()));
+////				success.put("users", users.subList(frontPage(page), users.size()));
+////				success.putAll(CommonMapUtil.baseMsgToMapConvertor());
+////				result.put("success", success);
+//				CommonMapUtil.generateResult(usermap,CommonMapUtil.baseMsgToMapConvertor(),result);
+//			}else if(page<cache_page){
+//				usermap.put("users", users.subList(frontPage(page), nowPage(page)));
+////				success.put("users", users.subList(frontPage(page), nowPage(page)));
+////				success.putAll(CommonMapUtil.baseMsgToMapConvertor());
+////				result.put("success", success);
+//				CommonMapUtil.generateResult(usermap,CommonMapUtil.baseMsgToMapConvertor(),result);
+//			}
+		}
+		return result;
+	}
+	//当前页数的尾索引
+	private int frontPage(int page){
+		return (page-1)*Constant.PAGESIZE;
+	}
+	//缓存中数据页数
+	private int nowPage(int page){
+		return page*Constant.PAGESIZE;
+	}
+	/**
+	 * 分页获取用户列表
+	 * @param users
+	 * @param page
+	 * @param cache_page
+	 * @param result
+	 * 替换位置
+	 * 			method:getFindResult  line number: 788
+	 */
+	private void pagination(List<Map<String,Object>> users,int page,int cache_page,Map<String,Object> result){
+		Map<String,Object> usermap = new HashMap<String, Object>();
+		if(page==cache_page){
+			usermap.put("users", users.subList(frontPage(page), users.size()));
+//			success.put("users", users.subList(frontPage(page), users.size()));
+//			success.putAll(CommonMapUtil.baseMsgToMapConvertor());
+//			result.put("success", success);
+			CommonMapUtil.generateResult(usermap,CommonMapUtil.baseMsgToMapConvertor(),result);
+		}else if(page<cache_page){
+			usermap.put("users", users.subList(frontPage(page), nowPage(page)));
+//			success.put("users", users.subList(frontPage(page), nowPage(page)));
+//			success.putAll(CommonMapUtil.baseMsgToMapConvertor());
+//			result.put("success", success);
+			CommonMapUtil.generateResult(usermap,CommonMapUtil.baseMsgToMapConvertor(),result);
+		}
 	}
 }

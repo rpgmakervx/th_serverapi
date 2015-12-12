@@ -119,7 +119,7 @@ public class FriendService {
 			Invitation invitation = it.next();
 			//这里一定要记住map不能放在外面  否则用户数据永远都是最后一个人
 			Map<String,Object> invitmsg = new HashMap<String,Object>();
-			invitmsg.put("invitor", userUtil.userToMapConvertor(invitation.getInviter(),false,client_id).get("user"));
+			invitmsg.put("invitor", userUtil.userToMapConvertor(invitation.getInviter(),client_id).get("user"));
 			invitmsg.put("reason", invitation.getReason());
 			invitmsg.put("created_at", invitation.getCreated_at());
 			invitmsg.put("invitee_id", invitation.getInvitee().getClient_id());

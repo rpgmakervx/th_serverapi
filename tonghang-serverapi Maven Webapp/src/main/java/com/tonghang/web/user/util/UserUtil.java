@@ -46,10 +46,8 @@ public class UserUtil {
 	 */
 	public Map<String,Object> userToMapConvertorTemplate(User user,String client_id){
 		Map<String,Object> msg = new HashMap<String, Object>();
-		Map<String,Object> usermap = new HashMap<String, Object>();
-		msg.put("user", userMapBuilder(user, true,false, client_id));
-		usermap.put("user", msg);
-		return usermap;
+		msg.put("user", userMapBuilder(user, client_id, conditionGenetator()/*false,false,false*/));
+		return msg;
 	}
 	/**
 	 * List<User> 对象 最基本的封装模板
@@ -58,12 +56,12 @@ public class UserUtil {
 	 */
 	public Map<String,Object> usersToMapConvertorTemplate(List<User> users){
 		List<Map<String,Object>> usersmsg = new ArrayList<Map<String,Object>>();
-		Map<String,Object> usermap = CommonMapUtil.baseMsgToMapConvertor();
+		Map<String,Object> usermap = new HashMap<String, Object>();
 		if(users==null){
 			users = new ArrayList<User>();
 		}
 		for(User u:users){
-			usermap.put("user", userMapBuilder(u,false,false));
+			usermap.putAll(userMapBuilder(u,null,conditionGenetator()/*false,false,false*/));
 		}
 		usermap.put("users", usersmsg);
 		return usermap;
@@ -78,16 +76,12 @@ public class UserUtil {
 	 */
 	public Map<String,Object> usersToMapConvertor(List<User> users,String client_id){
 		List<Map<String,Object>> usersmsg = new ArrayList<Map<String,Object>>();
-		Map<String,Object> usermap = CommonMapUtil.baseMsgToMapConvertor();
-		Map<String,Object> result = new HashMap<String, Object>();
 		for(User u:users){
 			Map<String,Object> msg = new HashMap<String, Object>();
-			msg.put("user", userMapBuilder(u, false,false,client_id));
+			msg.put("user", userMapBuilder(u,client_id, conditionGenetator("hasRoom","hasDistance")/*false,false,true*/));
 			usersmsg.add(msg);
 		}
-		usermap.put("users", usersmsg);
-		result.put("success", usermap);
-		return result;
+		return generateResult(usersmsg);
 	}
 	/**
 	 * 获取用户详细信息
@@ -95,11 +89,11 @@ public class UserUtil {
 	 * @param client_id
 	 * @return
 	 */
-	public Map<String,Object> userToMapConvertor(User user,String client_id){
-		Map<String,Object> usermap = new HashMap<String, Object>();
-		usermap.put("user", userMapBuilder(user,false,false, client_id));
-		return usermap;
-	}
+//	public Map<String,Object> userToMapConvertor(User user,String client_id){
+//		Map<String,Object> usermap = new HashMap<String, Object>();
+//		usermap.put("user", userMapBuilder(user,false,false, client_id));
+//		return usermap;
+//	}
 	
 	/**
 	 * 和usersToMapConvertor方法功能一样，多一个按照距离排序的功能
@@ -109,19 +103,21 @@ public class UserUtil {
 	 */
 	public Map<String,Object> usersToMapSortByDistanceConvertor(List<User> users,String client_id){
 		List<Map<String,Object>> usersmsg = new ArrayList<Map<String,Object>>();
-		Map<String,Object> usermap = CommonMapUtil.baseMsgToMapConvertor();
-		Map<String,Object> result = new HashMap<String, Object>();
 		for(User u:users){
 			Map<String,Object> msg = new HashMap<String, Object>();
-			msg.put("user", userMapBuilder(u, true,true ,client_id));
-			usersmsg.add(msg);
+			msg.put("user", userMapBuilder(u,client_id, conditionGenetator("hasFriend","hasRoom","hasDistance")/*true,true,true */));
 			usersmsg.add(msg);
 		}
 		//根据距离排序
 		usersmsg = SortUtil.sortByDistance(usersmsg);
-		usermap.put("users", usersmsg);
-		result.put("success", usermap);
-		return result;
+		return generateResult(usersmsg);
+	}
+	
+	//带有房间信息的封装过的User
+	public Map<String,Object> userToMapWithRoomConvertor(User user,String client_id){
+		Map<String,Object> usermap = new HashMap<String, Object>();
+		usermap.put("user", userMapBuilder(user, client_id, conditionGenetator("hasFriend","hasRoom","hasDistance")/*true,false,true*/));
+		return usermap;
 	}
 	/**
 	 * 重载userToMapConvertor方法，ignore表示忽略好友关系（因为有可能已知对方肯定是或者不是好友关系）
@@ -130,9 +126,9 @@ public class UserUtil {
 	 * @param ignore
 	 * @return
 	 */
-	public Map<String,Object> userToMapConvertor(User user,boolean ignore,String client_id){
+	public Map<String,Object> userToMapConvertor(User user,String client_id){
 		Map<String,Object> usermap = new HashMap<String, Object>();
-		usermap.put("user", userMapBuilder(user, true,false, client_id));
+		usermap.put("user", userMapBuilder(user, client_id, conditionGenetator("hasFriend","hasDistance")/*true,false,true*/));
 		return usermap;
 	}
 	/**
@@ -143,19 +139,15 @@ public class UserUtil {
 	 */
 	public Map<String,Object> usersToMapSortedConvertor(List<User> users,User me){
 		List<Map<String,Object>> usersmsg = new ArrayList<Map<String,Object>>();
-		Map<String,Object> usermap = CommonMapUtil.baseMsgToMapConvertor();
-		Map<String,Object> result = new HashMap<String, Object>();
 		for(User u:users){
 			Map<String,Object> msg = new HashMap<String, Object>();
-			msg.put("user", userMapBuilder(u, false,false, me.getClient_id()));
+			msg.put("user", userMapBuilder(u, me.getClient_id(), conditionGenetator("hasDistance")/*false,false,true*/));
 			usersmsg.add(msg);
 			//比较当前用户哪些标签是根据使用者的标签被推出来的
 		}
 		//排序操作，详细请看 SortUtil 类
 		usersmsg = SortUtil.sortByLabelName(usersmsg, me.getLabelnames());
-		usermap.put("users", usersmsg);
-		result.put("success", usermap);
-		return result;
+		return generateResult(usersmsg);
 	}
 	/**
 	 * 该方法是usersToMapSortedConvertor(List<User> users,String client_id)方法的改良版，
@@ -166,20 +158,16 @@ public class UserUtil {
 	 */
 	public Map<String,Object> usersToMapSortedWithDistanceConvertor(List<User> users,User me){
 		List<Map<String,Object>> usersmsg = new ArrayList<Map<String,Object>>();
-		Map<String,Object> usermap = CommonMapUtil.baseMsgToMapConvertor();
-		Map<String,Object> result = new HashMap<String, Object>();
 		for(User u:users){
 			Map<String,Object> msg = new HashMap<String, Object>();
-			msg.put("user", userMapBuilder(u, true,true ,me.getClient_id()));
+			msg.put("user", userMapBuilder(u,me.getClient_id(), conditionGenetator("hasFriend","hasRoom","hasDistance")/*true,true,true*/));
 			usersmsg.add(msg);
 		}
 		//排序操作，详细请看 SortUtil 类
 		usersmsg = SortUtil.sortByLabelName(usersmsg, me.getLabelnames());
 		if(locationService.findLocationByUser(me)!=null)
 			usersmsg = SortUtil.sortByDistance(usersmsg);
-		usermap.put("users", usersmsg);
-		result.put("success", usermap);
-		return result;
+		return generateResult(usersmsg);
 	}
 	
 	public Map<String,Object> messageToMapConvertor(int code,String message){
@@ -238,6 +226,7 @@ public class UserUtil {
 		usermap.put("user", msg);
 		return usermap;
 	}
+//重构部分
 	/**
 	 * 通用封装用户数据的方法,
 	 * 该方法中的client_id 这个可变参数的有无 决定了这个方法是否要确定使用者和要封装的用户的关系。
@@ -245,17 +234,19 @@ public class UserUtil {
 	 * @param hasRoom		是否需要把用户的房间信息也封装进去
 	 * @param client_id	当前的使用者,客户端只填写一个id,多个id则只取第一个id
 	 * @return
+	 * notice: client_id 用来封装user对象和它的属性的关系，比如好友关系，距离关系等等，
+	 * 			如果不需要这些关系可以将client_id设置为null
 	 */
-	private Map<String,Object> userMapBuilder(User user,boolean hasRoom,boolean byDistance,String...client_id){
+	private Map<String,Object> userMapBuilder(User user,String client_id,Map<String,String> condition){
 		Map<String,Object> msg = new HashMap<String, Object>();
-		if(client_id!=null&&client_id.length!=0){
-			friendUserMap(user, client_id[0], msg);
+		if(condition.get("hasFriend")!=null){//hasFriend
+			friendUserMap(user, client_id, msg);
 		}
-		if(hasRoom){
+		if(condition.get("hasRoom")!=null){//hasRoom
 			roomUserMap(user, msg);
 		}
-		if(byDistance){
-			distanceUserMap(user, client_id[0], msg);
+		if(condition.get("hasDistance")!=null){//byDistance
+			distanceUserMap(user, client_id, msg);
 		}
 		baseUserMap(user, msg);
 		return msg;
@@ -296,5 +287,20 @@ public class UserUtil {
 		Location my_local = locationService.findLocationByUser(userService.findUserById(client_id));
 		msg.put("distance", locationService.computeDistance(user, my_local));
 	}
-	
+	//根据参数个数生成判断条件，索引所在的参数存在，则按照参数设置，不存在默认为
+	private Map<String,String> conditionGenetator(String... condition){
+		Map<String,String> result = new HashMap<String, String>();
+		for(String str:condition){
+			result.put(str, str);
+		}
+		return result;
+	}
+	//生成结果集（针对list类型数据）
+	private Map<String,Object> generateResult(List<Map<String,Object>> usersmsg){
+		Map<String,Object> result = new HashMap<String, Object>();
+		Map<String,Object> usermap = CommonMapUtil.baseMsgToMapConvertor();
+		usermap.put("users", usersmsg);
+		result.put("success", usermap);
+		return result;
+	}
 }

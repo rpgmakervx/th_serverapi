@@ -18,6 +18,9 @@ public class Constant extends HuanXinUtil{
 	public static final String EMAIL = "邮件已发送";
 	public static final String EMAIL_EXIST = "该邮箱已被注册";
 	
+	public static final String NO_RESULT = "首页推荐没有结果";
+	public static final String NO_MORE_RESULT = "搜索不到更多了";
+	
 	public static final String LOGIN_FAIL = "登录失败！";
 	
 	public static final String AGREE_ADD_MSG = "同意添加您为好友"; 
@@ -68,6 +71,7 @@ public class Constant extends HuanXinUtil{
 	public static final String NATIVE_ADV_SERVER = "http://192.168.23.1:8080/tonghang";
 	public static final String HUANXIN_URL = "http://a1.easemob.com/tonghang/tonghang/";
 	public static final String IMAGE_PATH = "/images/";
+	public static final String VOICE_PATH = "/answer/";
 	public static final String IMAGE_NAME = "sign.jpg";
 	public static final String ADV_NAME = "advertise_";
 	public static final String ADV_PATH = "/resources/";

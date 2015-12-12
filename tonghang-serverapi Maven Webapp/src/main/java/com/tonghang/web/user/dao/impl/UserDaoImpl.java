@@ -66,10 +66,10 @@ public class UserDaoImpl implements UserDao {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<User> findUserByUsername(String username,int page) {
+	public List<User> findUserByUsername(String username) {
 		// TODO Auto-generated method stub 
 		List<User> users = sessionFactory.getCurrentSession().createQuery("select distinct user from User as user where lower(username) like concat('%',lower(:username),'%') and (user.birth is not null and user.birth != '') and(user.sex is not null and user.sex != '') order by user.created_at").
-							setParameter("username", username).setFirstResult(Constant.PAGESIZE*(page-1)).setMaxResults(Constant.PAGESIZE).list();
+							setParameter("username", username).list();
 		return users;
 	}
 

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.tonghang.web.common.util.CommonMapUtil;
+import com.tonghang.web.common.util.TimeUtil;
 import com.tonghang.web.record.pojo.Record;
 import com.tonghang.web.record.service.RecordService;
 import com.tonghang.web.room.pojo.Room;
@@ -77,12 +78,12 @@ public class RoomController {
 	@ResponseBody
 	public ResponseEntity<Map<String,Object>> openRoom(@PathVariable String room_id){
 		Map<String,Object> success = new HashMap<String, Object>();	
-		Map<String,Object> result = new HashMap<String, Object>();
+		Map<String,Object> result = CommonMapUtil.baseMsgToMapConvertor();
 		Room room = roomService.findRoomById(room_id);
 		room.setOpen_at(new Date());
 		room.setOnline(1);
 		roomService.updateRoom(room);
-		result = CommonMapUtil.baseMsgToMapConvertor();
+		result.putAll(roomService.getRoomMessage(room_id,room.getUser().getClient_id()));
 		success.put("success", result);
 		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
 	}
@@ -135,8 +136,8 @@ public class RoomController {
 		String client_id = (String) map.get("client_id");
 		Room room = roomService.findRoomById(room_id);
 		User user = userService.findUserById(client_id);
-		Date join_at = (Date)map.get("join_at");
-		Date leave_at = (Date)map.get("leave_at");
+		Date join_at = TimeUtil.getFormatDate((String)map.get("join_at"));
+		Date leave_at = TimeUtil.getFormatDate((String)map.get("leave_at"));
 		Record record = new Record();
 		record.setUser(user);
 		record.setRoom(room);
@@ -216,5 +217,20 @@ public class RoomController {
 		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
 	}
 	
-	
+	/**
+	 * 业务功能：用户加入直播间
+	 * @param client_id
+	 * @param room_id
+	 * @return
+	 */
+	@RequestMapping("/{room_id}")
+	@ResponseBody
+	public ResponseEntity<Map<String,Object>> roomMessage(@PathVariable String room_id,@RequestParam String mapstr)throws Exception{
+		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
+		Map<String,Object> success = new HashMap<String, Object>();	
+		Map<String,Object> result = CommonMapUtil.baseMsgToMapConvertor();
+		result.putAll(roomService.getRoomMessage(room_id,(String)map.get("client_id")));
+		success.put("success", result);
+		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
+	}
 }

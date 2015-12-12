@@ -21,6 +21,7 @@ import com.tonghang.web.label.pojo.Label;
 import com.tonghang.web.room.cache.RoomCache;
 import com.tonghang.web.room.dao.RoomDao;
 import com.tonghang.web.room.pojo.Room;
+import com.tonghang.web.room.util.RoomUtil;
 import com.tonghang.web.user.pojo.User;
 import com.tonghang.web.user.service.UserService;
 
@@ -36,6 +37,8 @@ public class RoomService {
 	private RongYunUtil ryUtil;
 	@Resource(name="roomCache")
 	private RoomCache roomCache;
+	@Resource(name="roomUtil")
+	private RoomUtil roomUtil;
 	/**
 	 * 通过id查找room
 	 * @param room_id
@@ -68,7 +71,6 @@ public class RoomService {
 		User user = userService.findUserById(owner_id);
 		System.out.println(owner_id+" user room : "+user);
 		if(roomDao.findRoomByOwner(user.getClient_id())==null){
-			Set<Label> labels = user.getLabellist();
 			Room room = new Room();
 			room.setOnline(1);
 			room.setRy_id(user.getRy_id());
@@ -192,5 +194,25 @@ public class RoomService {
 			ids.add(user.getClient_id());
 		}
 		JPushUtil.pushList(ids, room.getUser().getClient_id(), room.getUser().getUsername(), Constant.ANCHOR_ONLINE, Constant.ANCHOR_ONLINE_MSG1+room.getUser().getUsername()+Constant.ANCHOR_ONLINE_MSG2);
+	}
+	/**
+	 * 查看单一直播间,返回直播间内的数据
+	 * @param room_id
+	 * @return
+	 */
+	public Map<String,Object> getRoomMessage(String room_id,String client_id){
+		return roomUtil.roomToMapConverter(findRoomById(room_id),client_id);
+	}
+	
+	/**
+	 * 查看某用户是否已经关注过该房间
+	 * @param room
+	 * @param member
+	 * @return
+	 */
+	public boolean isFollowed(Room room,User member){
+		System.out.println("关注详情："+member);
+		System.out.println("关注者："+room.getFollower());
+		return room.getFollower().contains(member);
 	}
 }

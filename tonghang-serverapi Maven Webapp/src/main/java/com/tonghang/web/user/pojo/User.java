@@ -24,7 +24,10 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.springframework.stereotype.Component;
 
+import com.tonghang.web.common.builder.Builder;
 import com.tonghang.web.common.pojo.FeedBack;
+import com.tonghang.web.common.util.SecurityUtil;
+import com.tonghang.web.common.util.StringUtil;
 import com.tonghang.web.label.pojo.Label;
 import com.tonghang.web.question.pojo.Question;
 import com.tonghang.web.room.pojo.Room;
@@ -38,11 +41,15 @@ import com.tonghang.web.topic.pojo.Topic;
  *         头像(image) 创建时间(created_time) 最近登录时间(last_login_time)关联属性(labellist:用户包含的标签，topic:用户加入的话题)
  * 			关联属性均由多的地方管理，所以user_topics关系由Topic类管理
  * 			salary(薪资) next_change(下次可以修改薪资信息的时间)
+ * notice:城市信息格式为：province-city
+ * 2015-12-11  新增建造者模式
+ * 
  */
 @Component("user")
 @Entity
 @Table(name="users")
 public class User implements Serializable{
+	
 	@Id
 	@GenericGenerator(strategy="assigned",name="idGenerator")
 	@GeneratedValue(generator="idGenerator")
@@ -71,7 +78,7 @@ public class User implements Serializable{
 	private String birth;
 	
 	@Column(name="status")
-	public String status;
+	private String status;
 	
 	@Column(name="isonline")
 	private String isonline;
@@ -86,11 +93,11 @@ public class User implements Serializable{
 	@JoinColumn(name="channel_id")
 	private Channel channel;
 	
-	@Column(name="")
-	private Date next_change;
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="created_at",updatable=true)
 	private Date created_at = new Date();
+	@Column(name="")
+	private Date next_change;
 	
 	@Column(name="last_login_at")
 	private Date last_login_at;
@@ -312,6 +319,9 @@ public class User implements Serializable{
 	}
 	
 	public String getRy_id() {
+		//设置非空校验
+		if(ry_id==null)
+			this.setClient_id(SecurityUtil.getRYID(this.getClient_id()));
 		return ry_id;
 	}
 	public void setRy_id(String ry_id) {
@@ -322,24 +332,6 @@ public class User implements Serializable{
 	}
 	public void setFollow(Set<Room> follow) {
 		this.follow = follow;
-	}
-	//获得所在城市信息（二级城市列表），城市信息不存在则设置为 未知
-	public String getCityValue(){
-		if(this.getProvince()==null||"".equals(this.getProvince()))
-			return "未知";
-		else return this.getCity()==null||"".equals(this.getCity())?this.getProvince():this.getProvince()+"-"+this.getCity();
-	}
-	//获取某用户的标签名
-	public List<String> getLabelnames(){
-		List<String> labels = new ArrayList<String>();
-		if(this.getLabellist()!=null){
-			for(Label l:this.getLabellist()){
-				labels.add(l.getLabel_name());
-			}
-			return labels;			
-		}else{
-			return null;
-		}
 	}
 	@Override
 	public int hashCode() {
@@ -370,5 +362,145 @@ public class User implements Serializable{
 		return "User [client_id=" + client_id + ", username=" + username
 				+ ", labellist=" + labellist+ "]";
 	}
+//重构部分
 	
+	//获得所在城市信息（二级城市列表），城市信息不存在则设置为 未知
+	public String getCityValue(){
+		if(this.getProvince()==null||"".equals(this.getProvince()))
+			return "未知";
+		else return this.getCity()==null||"".equals(this.getCity())?this.getProvince():this.getProvince()+"-"+this.getCity();
+	}
+	//设置城市信息（二级城市列表）,不存在则两个变量均为null
+	public void setCityValue(String city){
+		if(city!=null){
+			this.makeCityName(city);
+		}else{
+			this.city = null;
+			this.province = null;
+		}
+	}
+	//将前台的城市信息字符串转换为User对象的city和province
+	private void makeCityName(String city){
+		if(city.contains("-")){
+			String pr = StringUtil.seperate(city, 0);
+			String ci = StringUtil.seperate(city, 1);
+			if(!ci.equals(this.getCity())&&city!=null)
+				this.setCity(ci);
+			if(!pr.equals(this.getProvince())&&pr!=null)
+				this.setProvince(pr);
+		}else{
+			this.setProvince(city);
+		}
+	}
+	//获取某用户的标签名
+	public List<String> getLabelnames(){
+		List<String> labels = new ArrayList<String>();
+		if(this.getLabellist()!=null){
+			for(Label l:this.getLabellist()){
+				labels.add(l.getLabel_name());
+			}
+			return labels;			
+		}else{
+			return null;
+		}
+	}
+	//当前用户是否被封号
+	public boolean isIsolate(){
+		return this.getStatus().equals("0");
+	}
+	//建造者模式，建造者在构建的时候检查  要构建的字段是不是和以前的对象一样
+	//如果一样则不覆盖以前的字段，否则覆盖
+	//构建者不能构建null的属性
+	public class UserBuilder implements Builder<User>{
+		public UserBuilder setClient_id(String client_id){
+			User.this.setClient_id(client_id);
+			return this;
+		}
+		public UserBuilder setUsername(String username) {
+			if(username!=null&&!username.equals(User.this.getUsername()))
+				User.this.setUsername(username);
+			return this;
+		}
+
+		public UserBuilder setRy_id(String ry_id) {
+			if(ry_id!=null&&!ry_id.equals(User.this.getRy_id()))
+				User.this.setRy_id(ry_id);
+			return this;
+		}
+
+		public UserBuilder setPassword(String password) {
+			if(password!=null&&!password.equals(User.this.getPassword()))
+				User.this.setPassword(password);
+			return this;
+		}
+
+		public UserBuilder setImage(String image) {
+			if(image!=null&&!image.equals(User.this.getImage()))
+				User.this.setImage(image);
+			return this;
+		}
+
+		public UserBuilder setEmail(String email) {
+			if(email!=null&&!email.equals(User.this.getEmail()))
+				User.this.setEmail(email);
+			return this;
+		}
+
+		public UserBuilder setPhone(String phone) {
+			if(phone!=null&&!phone.equals(User.this.getPhone()))
+				User.this.setPhone(phone);
+			return this;
+		}
+
+		public UserBuilder setSex(String sex) {
+			if(sex!=null&&!sex.equals(User.this.getSex()))
+				User.this.setSex(sex);
+			return this;
+		}
+
+		public UserBuilder setBirth(String birth) {
+			if(birth!=null&&!birth.equals(User.this.getBirth()))
+				User.this.setBirth(birth);
+			return this;
+		}
+
+		public UserBuilder setStatus(String status) {
+			if(status!=null&&!status.equals(User.this.getStatus()))
+				User.this.setStatus(status);
+			return this;
+		}
+
+		public UserBuilder setIsonline(String isonline) {
+			if(isonline!=null&&!isonline.equals(User.this.getIsonline()))
+				User.this.setIsonline(isonline);
+			return this;
+		}
+		//直接建造city的完整格式
+		public UserBuilder setCity(String city) {
+			if(city!=null&&!city.equals(User.this.getCityValue()))
+				User.this.setCityValue(city);
+			return this;
+		}
+
+		public UserBuilder setCreated_at(Date created_at) {
+			User.this.setCreated_at(created_at);
+			return this;
+		}
+
+		public UserBuilder setNext_change(Date next_change) {
+			User.this.setNext_change(next_change);
+			return this;
+		}
+
+		public UserBuilder setLast_login_at(Date last_login_at) {
+			User.this.setLast_login_at(last_login_at);
+			return this;
+		}
+
+		@Override
+		public User build() {
+			// TODO Auto-generated method stub
+			return User.this;
+		}
+	}
 }

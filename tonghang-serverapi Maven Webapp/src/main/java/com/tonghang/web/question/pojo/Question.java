@@ -36,6 +36,9 @@ public class Question {
 	@Column(name="content")
 	private String content;
 	
+	@Column(name="answer_times")
+	private int answer_times;
+	
 	@Column(name="created_at")
 	private Date created_at;
 
@@ -69,6 +72,14 @@ public class Question {
 
 	public void setContent(String content) {
 		this.content = content;
+	}
+	
+	public int getAnswer_times() {
+		return answer_times;
+	}
+
+	public void setAnswer_times(int answer_times) {
+		this.answer_times = answer_times;
 	}
 
 	public Date getCreated_at() {

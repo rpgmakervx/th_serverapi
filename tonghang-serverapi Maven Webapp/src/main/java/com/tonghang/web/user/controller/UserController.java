@@ -284,19 +284,18 @@ public class UserController extends BaseController{
 	@RequestMapping(value = "/update/{client_id}")
 	public ResponseEntity<Map<String,Object>> update(HttpServletRequest request,@RequestParam(required=false) CommonsMultipartFile image,@RequestParam String mapstr,@PathVariable String client_id) throws Exception {
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
-		Map<String, Object> result = new HashMap<String, Object>();
-		Map<String, Object> usermap = new HashMap<String, Object>();
+//		Map<String, Object> result = new HashMap<String, Object>();
+//		Map<String, Object> usermap = new HashMap<String, Object>();
 		String img_name = null;
 		if(image!=null){
 			img_name = requestUtil.UserImageReceiver(request, client_id, image);
 		}
-		//此处新建room
-		roomService.createRoom(client_id,(String)map.get("meeting_id"));
-		System.out.println("username:"+(String)map.get("username")+" sex:"+(String)map.get("sex")+" birth:"+(String)map.get("birth")+" city:"+(String)map.get("city"));
-		usermap = userService.update(client_id,(String)map.get("username"),(String)map.get("sex"),(String)map.get("birth"),(String)map.get("city"),img_name);
-		usermap.putAll(CommonMapUtil.baseMsgToMapConvertor());
-		result.put("success", usermap);
-		return new ResponseEntity<Map<String,Object>>(result, HttpStatus.OK);
+		User newuser = new User().new UserBuilder().setBirth((String)map.get("birth")).setCity((String)map.get("city")).
+						setUsername((String)map.get("username")).setSex((String)map.get("sex")).build();
+//		usermap = userService.update(client_id,newuser);
+//		usermap.putAll(CommonMapUtil.baseMsgToMapConvertor());
+//		result.put("success", usermap);
+		return new ResponseEntity<Map<String,Object>>(userService.update(client_id,newuser), HttpStatus.OK);
 	}
 	
 	/**
@@ -353,6 +352,7 @@ public class UserController extends BaseController{
 	 * 2.所有返回用户信息的地方都会返回是否是好友关系
 	 * @throws SearchNoResultException 
 	 */
+	@Deprecated
 	@RequestMapping(value = "/topic")
 	public ResponseEntity<Map<String,Object>> userTopic(@RequestParam String mapstr) throws JsonParseException, JsonMappingException, IOException, SearchNoResultException {
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
@@ -386,11 +386,11 @@ public class UserController extends BaseController{
 	@RequestMapping(value="/recommend/distance")
 	public ResponseEntity<Map<String,Object>> recommendUserByDistance(@RequestParam String mapstr) throws JsonParseException, JsonMappingException, IOException, SearchNoResultException{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class); 
-		String client_id = (String)map.get("client_id");
-		double x_point = (Double)map.get("x_point");
-		double y_point = (Double)map.get("y_point");
-		userService.saveUsersLocation(client_id, x_point, y_point);
-		return new ResponseEntity<Map<String,Object>>(userService.recommend(client_id,true,(Integer)map.get("pageindex")), HttpStatus.OK);
+//		String client_id = (String)map.get("client_id");
+//		double x_point = (Double)map.get("x_point");
+//		double y_point = (Double)map.get("y_point");
+		userService.saveUsersLocation((String)map.get("client_id"), (Double)map.get("x_point"), (Double)map.get("y_point"));
+		return new ResponseEntity<Map<String,Object>>(userService.recommend((String)map.get("client_id"),true,(Integer)map.get("pageindex")), HttpStatus.OK);
 	}
 	/**
 	 * 业务功能：修改个人地理位置信息
@@ -403,11 +403,11 @@ public class UserController extends BaseController{
 	public ResponseEntity<Map<String,Object>> updateLocation(@PathVariable String client_id,@RequestParam String mapstr) throws JsonParseException, JsonMappingException, IOException{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
 		Map<String,Object> result = new HashMap<String, Object>();
-		result.put("success", CommonMapUtil.baseMsgToMapConvertor());
-		double x_point = (Double)map.get("x_point");
-		double y_point = (Double)map.get("y_point");
-		System.out.println("地理位置信息：X= "+x_point+" Y= "+y_point);
-		userService.saveUsersLocation(client_id, x_point, y_point);
+//		result.put("success", CommonMapUtil.baseMsgToMapConvertor());
+		CommonMapUtil.generateResult(null, CommonMapUtil.baseMsgToMapConvertor(), result);
+//		double x_point = (Double)map.get("x_point");
+//		double y_point = (Double)map.get("y_point");
+		userService.saveUsersLocation(client_id, (Double)map.get("x_point"), (Double)map.get("y_point"));
 		return new ResponseEntity<Map<String,Object>>(result,HttpStatus.OK);
 	}
 	/**
@@ -417,6 +417,7 @@ public class UserController extends BaseController{
 	 * @return
 	 * @throws Exception
 	 */
+	@Deprecated
 	@RequestMapping(value="salary/{client_id}/modify",method=RequestMethod.POST)
 	public ResponseEntity<Map<String,Object>> modifySalary(@RequestParam String mapstr,@PathVariable String client_id) throws Exception{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
@@ -433,6 +434,7 @@ public class UserController extends BaseController{
 	 * @return
 	 * @throws Exception
 	 */
+	@Deprecated
 	@RequestMapping(value="salary/request",method=RequestMethod.POST)
 	public ResponseEntity<Map<String,Object>> requestExchangeSalary(@RequestParam String mapstr) throws  Exception{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
@@ -446,6 +448,7 @@ public class UserController extends BaseController{
 	 * @return
 	 * @throws Exception
 	 */
+	@Deprecated
 	@RequestMapping(value="salary/agree",method=RequestMethod.POST)
 	public ResponseEntity<Map<String,Object>> agreeExchangeSalary(@RequestParam String mapstr) throws Exception{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
@@ -459,6 +462,7 @@ public class UserController extends BaseController{
 	 * @return
 	 * @throws Exception
 	 */
+	@Deprecated
 	@RequestMapping(value="salary/check")
 	public ResponseEntity<Map<String,Object>> checkUserSalary(@RequestParam String mapstr) throws Exception{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
@@ -479,6 +483,7 @@ public class UserController extends BaseController{
 	 * @return
 	 * @throws Exception
 	 */
+	@Deprecated
 	@RequestMapping(value="salary/{client_id}/check",method=RequestMethod.POST)
 	public ResponseEntity<Map<String,Object>> checkSelfSalary(@PathVariable String client_id) throws Exception{
 		Map<String,Object> success = new HashMap<String, Object>();
@@ -493,6 +498,7 @@ public class UserController extends BaseController{
 	 * @param map
 	 * @return
 	 */
+	@Deprecated
 	@RequestMapping(value="salary/chart",method=RequestMethod.POST)
 	public ResponseEntity<Map<String,Object>> salaryChart(@RequestBody(required=false) Map map){
 		String client_id ="";
@@ -551,22 +557,23 @@ public class UserController extends BaseController{
 	@RequestMapping(value="phone/forget_password",method=RequestMethod.POST)
 	public ResponseEntity<Map<String,Object>> forgetPasswordByPhone(@RequestParam String mapstr) throws Exception{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
-		Map<String,Object> success = new HashMap<String, Object>();	
+//		Map<String,Object> success = new HashMap<String, Object>();	
 		Map<String,Object> result = new HashMap<String, Object>();
-		String phone = (String)map.get("phone");
-		String client_id = (String)map.get("client_id");
-		String password = (String)map.get("password");
-		User user = userService.findUserById(client_id);
-		if(user.getPhone().equals(phone)){
-			HuanXinUtil.changePassword(password, client_id);
-			user.setPassword(password);
+//		String phone = (String)map.get("phone");
+//		String client_id = (String)map.get("client_id");
+//		String password = (String)map.get("password");
+		User user = userService.findUserById((String)map.get("client_id"));
+		if(user.getPhone().equals((String)map.get("phone"))){
+			HuanXinUtil.changePassword((String)map.get("password"), (String)map.get("client_id"));
+			user.setPassword((String)map.get("password"));
 			userService.updateUser(user);
-			result.putAll(CommonMapUtil.baseMsgToMapConvertor(Constant.MODIFY_SUCCESS,Constant.SUCCESS));
+			CommonMapUtil.generateResult(null,CommonMapUtil.baseMsgToMapConvertor(Constant.MODIFY_SUCCESS,Constant.SUCCESS),result);
 		}else{
-			result.putAll(CommonMapUtil.baseMsgToMapConvertor(Constant.VALIDATE_SECURETY,Constant.UNAUTHORIZED));
+//			result.putAll(CommonMapUtil.baseMsgToMapConvertor(Constant.VALIDATE_SECURETY,Constant.UNAUTHORIZED));
+			CommonMapUtil.generateResult(null,CommonMapUtil.baseMsgToMapConvertor(Constant.VALIDATE_SECURETY,Constant.UNAUTHORIZED),result);
 		}
-		success.put("success", result);
-		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
+//		success.put("success", result);
+		return new ResponseEntity<Map<String,Object>>(result,HttpStatus.OK);
 	}
 	/**
 	 * 添加时间：2015-10-25
@@ -578,18 +585,18 @@ public class UserController extends BaseController{
 	@RequestMapping(value="bind/validate",method=RequestMethod.POST)
 	public ResponseEntity<Map<String,Object>> validateBeforeBind(@RequestParam String mapstr) throws Exception{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
-		Map<String,Object> success = new HashMap<String, Object>();	
+//		Map<String,Object> success = new HashMap<String, Object>();	
 		Map<String,Object> result = new HashMap<String, Object>();	
-		String client_id = (String)map.get("client_id");
-		String password = (String)map.get("password");
-		User user = userService.findUserById(client_id);
-		if(user.getPassword().equals(password)){
-			result.putAll(CommonMapUtil.baseMsgToMapConvertor());
+//		String client_id = (String)map.get("client_id");
+//		String password = (String)map.get("password");
+		User user = userService.findUserById((String)map.get("client_id"));
+		if(user.getPassword().equals((String)map.get("password"))){
+			CommonMapUtil.generateResult(null,CommonMapUtil.baseMsgToMapConvertor(),result);
 		}else{
-			result.putAll(CommonMapUtil.baseMsgToMapConvertor(Constant.VALIDATE_PASSWORD_ERROR,Constant.PASSWORD_ERROR));
+			CommonMapUtil.generateResult(null,CommonMapUtil.baseMsgToMapConvertor(Constant.VALIDATE_PASSWORD_ERROR,Constant.PASSWORD_ERROR),result);
 		}
-		success.put("success", result);
-		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
+//		success.put("success", result);
+		return new ResponseEntity<Map<String,Object>>(result,HttpStatus.OK);
 	}
 	/**
 	 * 添加时间：2015-10-25
@@ -626,27 +633,27 @@ public class UserController extends BaseController{
 	@RequestMapping(value="bind/email",method=RequestMethod.POST)
 	public ResponseEntity<Map<String,Object>> bindEmail(@RequestParam String mapstr) throws Exception{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
-		Map<String,Object> success = new HashMap<String, Object>();	
+//		Map<String,Object> success = new HashMap<String, Object>();	
 		Map<String,Object> result = new HashMap<String, Object>();
-		String email = (String) map.get("email");
-		String code = (String) map.get("code");
-		String client_id = (String)map.get("client_id");
-		User user = userService.findUserById(client_id);
-		Map<String,Object> m = userService.validateEmailCode(client_id, code,email);
+//		String email = (String) map.get("email");
+//		String code = (String) map.get("code");
+//		String client_id = (String)map.get("client_id");
+		User user = userService.findUserById((String)map.get("client_id"));
+		Map<String,Object> m = userService.validateEmailCode((String)map.get("client_id"), (String) map.get("code"),(String) map.get("email"));
 		System.out.println("邮箱绑定返回码："+m.get("code"));
-		if(Constant.SUCCESS==(Integer)m.get("code")){
-			User u = userService.findUserById(client_id);
-			u.setEmail(email);
+		if(Constant.SUCCESS==(Integer)((Map<String,Object>)m.get("success")).get("code")){
+			User u = userService.findUserById((String)map.get("client_id"));
+			u.setEmail((String)map.get("email"));
 			userService.updateUser(user);
 		}
-		result.putAll(CommonMapUtil.baseMsgToMapConvertor((String)m.get("message"), (Integer)m.get("code")));
+		CommonMapUtil.generateResult(null,CommonMapUtil.baseMsgToMapConvertor((String)m.get("message"), (Integer)m.get("code")),result);
 //		if(user.getEmail().equals(email)){
 //			
 //		}else{
 //			result.putAll(CommonMapUtil.baseMsgToMapConvertor(Constant.EMAIL_EXIST, Constant.EMAIL_ALREADY_EXIST_CODE));
 //		}
-		success.put("success", result);
-		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
+//		success.put("success", result);
+		return new ResponseEntity<Map<String,Object>>(result,HttpStatus.OK);
 	}
 	
 	/**
@@ -659,16 +666,20 @@ public class UserController extends BaseController{
 	@RequestMapping(value="phone/exists",method=RequestMethod.POST)
 	public ResponseEntity<Map<String,Object>> phoeExsists(@RequestParam String mapstr) throws Exception{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
-		Map<String,Object> success = new HashMap<String, Object>();	
+//		Map<String,Object> success = new HashMap<String, Object>();	
 		Map<String,Object> result = new HashMap<String, Object>();
-		String phone = (String) map.get("phone");
-		User user = userService.findUserByPhone(phone);
+//		String phone = (String) map.get("phone");
+		User user = userService.findUserByPhone((String) map.get("phone"));
 		if(user!=null){
-			result = CommonMapUtil.baseMsgToMapConvertor(Constant.PHONE_ALREADY_EXISTS,Constant.PHONE_ALREADY_EXISTS_CODE);
+//			result = CommonMapUtil.baseMsgToMapConvertor(Constant.PHONE_ALREADY_EXISTS,Constant.PHONE_ALREADY_EXISTS_CODE);
+			CommonMapUtil.generateResult(null,CommonMapUtil.baseMsgToMapConvertor(
+							Constant.PHONE_ALREADY_EXISTS,Constant.PHONE_ALREADY_EXISTS_CODE),result);
 		}else{
-			result = CommonMapUtil.baseMsgToMapConvertor(Constant.PHONE_NOT_EXISTS,Constant.PHONE_NOT_EXISTS_CODE);
+//			result = CommonMapUtil.baseMsgToMapConvertor(Constant.PHONE_NOT_EXISTS,Constant.PHONE_NOT_EXISTS_CODE);
+			CommonMapUtil.generateResult(null,CommonMapUtil.baseMsgToMapConvertor(
+					Constant.PHONE_NOT_EXISTS,Constant.PHONE_NOT_EXISTS_CODE),result);
 		}
-		success.put("success", result);
-		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
+//		success.put("success", result);
+		return new ResponseEntity<Map<String,Object>>(result,HttpStatus.OK);
 	}
 }

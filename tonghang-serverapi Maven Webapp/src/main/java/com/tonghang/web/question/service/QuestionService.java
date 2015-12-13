@@ -23,7 +23,20 @@ public class QuestionService {
 	
 	@Resource(name="questionDao")
 	private QuestionDao questionDao;
-	
+	/**
+	 * 保存问题信息
+	 * @param question
+	 */
+	public void save(Question question){
+		questionDao.save(question);
+	}
+	/**
+	 * 更新问题信息
+	 * @param question
+	 */
+	public void update(Question question){
+		questionDao.saveOrUpdate(question);
+	}
 	/**
 	 * 发问者向主播发送提问问题的推送
 	 * @param asker_id
@@ -43,7 +56,7 @@ public class QuestionService {
 	public void sendAnswerRequest(Question question,String asker_id,String anchor_id){
 		User anchor = userService.findUserById(asker_id);
 		JPushUtil.push(anchor_id, asker_id, anchor.getUsername(),question.getContent(), Constant.ANSWER_QUESTION, anchor.getUsername()+Constant.ANSWER_QUESTION_MSG+question.getContent());
-		questionDao.save(question);
+		
 	}
 	
 	/**
@@ -53,5 +66,13 @@ public class QuestionService {
 	 */
 	public List<Question> findQuestionByAnchor(String anchor_id){
 		return questionDao.findQuestionByTime(anchor_id);
+	}
+	/**
+	 * 增加回答某问题的次数
+	 * @param question
+	 */
+	public void addTimes(Question question){
+		question.setAnswer_times(question.getAnswer_times()+1);
+		update(question);
 	}
 }

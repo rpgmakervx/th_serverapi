@@ -228,6 +228,23 @@ public class UserUtil {
 	}
 //重构部分
 	/**
+	 * 解析UsersMap
+	 * @param success
+	 * @return
+	 */
+	public List<Map<String,Object>> decodeUsersMap(Map<String,Object> success){
+		return (List<Map<String,Object>>)((Map<String,Object>)success.get("success")).get("users");
+	}
+	/**
+	 * 解析UserMap
+	 * @param success
+	 * @return
+	 */
+	public Map<String,Object> decodeUserMap(Map<String,Object> success){
+		return (Map<String,Object>)((Map<String,Object>)success.get("success")).get("user");
+	}
+	
+	/**
 	 * 通用封装用户数据的方法,
 	 * 该方法中的client_id 这个可变参数的有无 决定了这个方法是否要确定使用者和要封装的用户的关系。
 	 * @param user		要封装的用户

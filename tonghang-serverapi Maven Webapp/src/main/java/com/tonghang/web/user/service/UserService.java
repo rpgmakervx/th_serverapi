@@ -40,7 +40,6 @@ import com.tonghang.web.topic.util.TopicUtil;
 import com.tonghang.web.user.cache.UserCache;
 import com.tonghang.web.user.dao.UserDao;
 import com.tonghang.web.user.pojo.User;
-import com.tonghang.web.user.pojo.User.UserBuilder;
 import com.tonghang.web.user.util.UserUtil;
 /**
  * 
@@ -54,8 +53,8 @@ public class UserService {
 	
 	@Resource(name="userDao")
 	private UserDao userDao;
-	@Resource(name="labelDao")
-	private LabelDao labelDao;
+//	@Resource(name="labelDao")
+//	private LabelDao labelDao;
 	@Resource(name="topicDao")
 	private TopicDao topicDao;
 	@Resource(name="friendDao")
@@ -71,6 +70,37 @@ public class UserService {
 	@Resource(name="smsUtil")
 	private SMSUtil sms;
 	
+	/**
+	 * 通过id查找某用户
+	 * @param client_id
+	 * @return
+	 */
+	public User findUserById(String client_id){
+		return userDao.findUserById(client_id);
+	}
+	/**
+	 * 通过12位ry_id查找用户
+	 * @param ry_id
+	 * @return
+	 */
+	public User findUserByRyId(String ry_id){
+		return userDao.findUserByRYID(ry_id);
+	}
+	/**
+	 * 通过手机号查找用户
+	 * @param phone
+	 * @return
+	 */
+	public User findUserByPhone(String phone){
+		return userDao.findUserByPhone(phone);
+	}
+	/**
+	 * 业务功能：修改用户信息
+	 * @param user
+	 */
+	public void updateUser(User user){
+		userDao.saveOrUpdate(user);
+	}
 	/**
 	 * 用户登录
 	 * @param 
@@ -374,10 +404,9 @@ public class UserService {
 		{
 		 "com.tonghang.web.user.cache.UserCache.getSearchUserCache"
 		},allEntries = true)
-	public Map<String, Object> update(String client_id, String username,
-			String sex, String birth, String city,String img_name){
+	public Map<String, Object> update(String client_id, User newuser){
 		// TODO Auto-generated method stub
-		return cache.evictUpdateCache(birth, city, sex, username, client_id, img_name);
+		return cache.evictUpdateCache(client_id,newuser);
 	}
 	/**
 	 * 修改密码
@@ -436,7 +465,6 @@ public class UserService {
 		for(String id:client_ids){
 			users.add(findUserByRyId(id));
 		}
-		System.out.println("查询出的所有用户信息：\n "+users);
 		return userUtil.usersToMapConvertor(users,client_id);
 	}
 	
@@ -447,6 +475,7 @@ public class UserService {
 	 * @return
 	 * @throws SearchNoResultException
 	 */
+	@Deprecated
 	public Map<String, Object> userTopic(String client_id, int page) throws SearchNoResultException {
 		// TODO Auto-generated method stub
 		List<Topic> topics = topicDao.findTopicByUserId(client_id, page);
@@ -457,22 +486,7 @@ public class UserService {
 		}
 		return TopicUtil.topicsToMapConvertor(topics);
 	}
-	/**
-	 * 通过id查找某用户
-	 * @param client_id
-	 * @return
-	 */
-	public User findUserById(String client_id){
-		return userDao.findUserById(client_id);
-	}
 	
-	public User findUserByRyId(String ry_id){
-		return userDao.findUserByRYID(ry_id);
-	}
-	
-	public User findUserByPhone(String phone){
-		return userDao.findUserByPhone(phone);
-	}
 	/**
 	 * 2015-08-26日新增
 	 * 
@@ -487,20 +501,7 @@ public class UserService {
 		User newuser = findUserById(client_id);
 		Map<String,Object>  result = new HashMap<String, Object>();
 		result.put("success", CommonMapUtil.baseMsgToMapConvertor());
-		int index = 1;
-		while(true){
-			Map<String,Object> olders = recommend(client_id,false, index);
-			Map<String,Object> oldersmap = ((Map<String,Object>)olders.get("success"));
-			if(!oldersmap.get("code").equals("200"))
-				break;
-			List<Map<String,Object>> olderlist = (List<Map<String, Object>>) oldersmap.get("users");
-			List<String> client_ids = new ArrayList<String>();
-			for(Map<String,Object> older:olderlist){
-				client_ids.add((String)older.get("client_id"));
-			}
-			JPushUtil.pushList(client_ids, client_id, newuser.getUsername(),Constant.RECOMMEND_NEWBE,newuser.getUsername()+Constant.NEWBE_MSG);
-			index++;
-		}
+		pushNewUser(newuser);
 		return result;
 	}
 	/**
@@ -536,6 +537,7 @@ public class UserService {
 	 * @param salary
 	 * @return
 	 */
+	@Deprecated
 	public Map<String,Object> updateSalary(String client_id,int salary){
 		Map<String,Object>  result = CommonMapUtil.baseMsgToMapConvertor();
 		User user = userDao.findUserById(client_id);
@@ -554,6 +556,7 @@ public class UserService {
 	 * @return
 	 * notice:给接收方发送推送
 	 */
+	@Deprecated
 	public Map<String,Object> createRequest(String self_id,String other_id){
 		Map<String,Object> success = new HashMap<String, Object>();
 		User self = findUserById(self_id);
@@ -567,6 +570,7 @@ public class UserService {
 	 * @param other_id		请求接收方ID
 	 * @return
 	 */
+	@Deprecated
 	public Map<String,Object> agreeExchange(String self_id,String other_id){
 		Map<String,Object> success = new HashMap<String, Object>();
 		User self = findUserById(self_id);
@@ -579,6 +583,7 @@ public class UserService {
 	 * @param client_id
 	 * @return
 	 */
+	@Deprecated
 	public Map<String,Object> salarySuvey(String client_id){
 		Map<String,Object> result = new HashMap<String, Object>();
 		User self = findUserById(client_id);
@@ -601,6 +606,7 @@ public class UserService {
 	 * @param client_id
 	 * @return
 	 */
+	@Deprecated
 	public Map<String,Object> checkSalary(String client_id){
 		User user = findUserById(client_id);
 		return userUtil.salaryConvertor(user);
@@ -633,6 +639,7 @@ public class UserService {
 	 * noticce:目前返回信息包括所有人的薪资分布 
 	 * 			以及 比自己高和比自己低的人的百分比
 	 */
+	@Deprecated
 	public Map<String,Object> analyzeUserSalary(String client_id){
 		Map<String,Object> success = new HashMap<String, Object>();
 		List<Integer> data = new ArrayList<Integer>();
@@ -661,13 +668,7 @@ public class UserService {
 		success.put("success", distribution);
 		return success;
 	}
-	/**
-	 * 业务功能：修改用户信息
-	 * @param user
-	 */
-	public void updateUser(User user){
-		userDao.saveOrUpdate(user);
-	}
+
 	/**
 	 * 业务功能：生成邮箱验证码，并保存或更新该验证码
 	 * @param email
@@ -675,15 +676,15 @@ public class UserService {
 	 * @return
 	 */
 	public String generateEmailCode(String email,String client_id){
-		User user = userDao.findUserByEmail(email);
-		if(user!=null){
+//		User user = userDao.findUserByEmail(email);
+		if(userDao.findUserByEmail(email)!=null){
 			return null;
 		}
 		String code = StringUtil.randomCode(6);
-		User me = userDao.findUserById(client_id);
+//		User me = userDao.findUserById(client_id);
 		code = cache.generateValidateCode(client_id,email);
 		System.out.println("当前验证码是："+code);
-		EmailUtil.sendEmail(email, "尊敬的" + me.getUsername() + "，您好！\n\n"
+		EmailUtil.sendEmail(email, "尊敬的" + userDao.findUserById(client_id).getUsername() + "，您好！\n\n"
 				+ "您本次操作获取的验证码为：" + code+"\n 请在两分钟内完成相关操作");
 		return code;
 	}
@@ -698,13 +699,14 @@ public class UserService {
 	 */
 	public Map<String,Object> validateEmailCode(String client_id,String code,String email){
 		Map<String,Object> result = new HashMap<String, Object>();
-		String c = cache.generateValidateCode(client_id,email);
-		if(c.equals(code)){
-			result.put("message", Constant.VALIDECODE_SUCCESS);
-			result.put("code", Constant.SUCCESS);
+		if(cache.generateValidateCode(client_id,email).equals(code)){
+//			result.put("message", Constant.VALIDECODE_SUCCESS);
+//			result.put("code", Constant.SUCCESS);
+			CommonMapUtil.generateResult(null, CommonMapUtil.baseMsgToMapConvertor(Constant.VALIDECODE_SUCCESS, Constant.SUCCESS), result);
 		}else{
-			result.put("message", Constant.INVALID_CODE);
-			result.put("code", Constant.EMAIL_VALIDATE_ERROR_CODE);
+//			result.put("message", Constant.INVALID_CODE);
+//			result.put("code", Constant.EMAIL_VALIDATE_ERROR_CODE);
+			CommonMapUtil.generateResult(null, CommonMapUtil.baseMsgToMapConvertor(Constant.INVALID_CODE,Constant.EMAIL_VALIDATE_ERROR_CODE), result);
 		}
 		cache.evictValidateCode(client_id,email);
 		return result;
@@ -844,6 +846,27 @@ public class UserService {
 //			success.putAll(CommonMapUtil.baseMsgToMapConvertor());
 //			result.put("success", success);
 			CommonMapUtil.generateResult(usermap,CommonMapUtil.baseMsgToMapConvertor(),result);
+		}
+	}
+	/**
+	 * 循环推送新用户
+	 * @param client_id		
+	 * @param newuser	新用户
+	 * 替换部分：	
+	 * 				method:newUserRecommendation  line number:499
+	 */
+	public void pushNewUser(User newuser){
+		int index = 1;
+		while(true){
+			List<Map<String,Object>> olders = userUtil.decodeUsersMap(recommend(newuser.getClient_id(),false, index++));
+//			Map<String,Object> oldersmap = ((Map<String,Object>)olders.get("success"));
+			if(!(olders.size()==0))
+				break;
+			List<String> client_ids = new ArrayList<String>();
+			for(Map<String,Object> older:olders){
+				client_ids.add((String)older.get("client_id"));
+			}
+			JPushUtil.pushList(client_ids, newuser.getClient_id(), newuser.getUsername(),Constant.RECOMMEND_NEWBE,newuser.getUsername()+Constant.NEWBE_MSG);
 		}
 	}
 }

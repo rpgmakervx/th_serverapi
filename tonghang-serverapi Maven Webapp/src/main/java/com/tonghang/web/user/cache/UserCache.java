@@ -105,14 +105,15 @@ public class UserCache {
 		List<Map<String,Object>> us = (List<Map<String, Object>>) success.get("users");
 		return us;
 	}
-	
+	@Deprecated
 	@Cacheable(value="com.tonghang.web.user.cache.UserCache.getSearchNickNameCache",key="#client_id+#byDistance+#username")
 	public List<Map<String,Object>> getSearchNickNameCache(String client_id,String username,boolean byDistance, int page){
 		List<User> users = userDao.findUserByUsername(username);
 		Map<String,Object> result = byDistance?userUtil.usersToMapSortByDistanceConvertor(users, client_id):userUtil.usersToMapConvertor(users,client_id);
-		Map<String,Object> success = (Map<String, Object>) result.get("success");
-		List<Map<String,Object>> us = (List<Map<String, Object>>) success.get("users");
-		return us;
+//		Map<String,Object> success = (Map<String, Object>) result.get("success");
+//		List<Map<String,Object>> us = (List<Map<String, Object>>) success.get("users");
+		
+		return userUtil.decodeUsersMap(result);
 	}
 	
 	@Cacheable(value="com.tonghang.web.user.cache.UserCache.getSearchUserCache",key="#client_id+#byDistance+#username")
@@ -132,9 +133,9 @@ public class UserCache {
 		userss.addAll(users1);
 		users2.addAll(userss);
 		Map<String,Object> result = byDistance?userUtil.usersToMapSortByDistanceConvertor(users2, client_id):userUtil.usersToMapConvertor(users2,client_id);
-		Map<String,Object> success = (Map<String, Object>) result.get("success");
-		List<Map<String,Object>> us = (List<Map<String, Object>>) success.get("users");
-		return us;
+//		Map<String,Object> success = (Map<String, Object>) result.get("success");
+//		List<Map<String,Object>> us = (List<Map<String, Object>>) success.get("users");
+		return userUtil.decodeUsersMap(result);
 	}
 	/**
 	 * 业务功能：抽取出来的修改用户信息功能，修改信息时将搜索和首页推荐的缓存数据清空
@@ -151,13 +152,9 @@ public class UserCache {
 		 "com.tonghang.web.user.cache.UserCache.getSearchUserCache",
 		 "com.tonghang.web.room.cache.RoomCache.getRecommendCache"
 		},allEntries = true)
-	public Map<String,Object> evictUpdateCache(String birth,String city,String sex,String username,String client_id,String img_name){
+	public Map<String,Object> evictUpdateCache(String client_id,User newuser){
 		Map<String,Object> result = new HashMap<String, Object>();
 		User user = userDao.findUserById(client_id);
-		User newuser = new User().new UserBuilder().
-							setBirth(birth).setCity(city).
-							setSex(sex).setUsername(username).
-							setImage(img_name).build();
 		if(user==null){
 			CommonMapUtil.generateResult(null, CommonMapUtil.baseMsgToMapConvertor("更新失败，当前用户不存在", 513), result);
 //			result.put("success", CommonMapUtil.baseMsgToMapConvertor("更新失败，当前用户不存在", 513));

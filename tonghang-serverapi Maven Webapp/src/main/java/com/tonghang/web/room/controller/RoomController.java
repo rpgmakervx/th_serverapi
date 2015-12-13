@@ -143,6 +143,7 @@ public class RoomController {
 		record.setRoom(room);
 		record.setLeave_at(leave_at);
 		record.setJoin_at(join_at);
+		System.out.println("记录退出");
 		recordService.recordAction(record);
 		result = CommonMapUtil.baseMsgToMapConvertor();
 		success.put("success", result);

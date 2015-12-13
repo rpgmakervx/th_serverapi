@@ -74,14 +74,16 @@ public class QuestionController {
 		Map<String,Object> success = new HashMap<String, Object>();	
 		Map<String,Object> result = new HashMap<String, Object>();
 		String content = (String)map.get("content");
-		User asker = userService.findUserById(asker_id);
-		User anchor = userService.findUserById(anchor_id);
+		String question_id = (String)map.get("question_id");
 		Question question = new Question();
-		question.setAnchor(anchor);
-		question.setAsker(asker);
+		question.setAnchor(userService.findUserById(anchor_id));
+		question.setAsker(userService.findUserById(asker_id));
 		question.setCreated_at(new Date());
 		question.setContent(content);
 		question.setQuestion_id(SecurityUtil.getMD5(asker_id+content+new Date().getTime()));
+		if(question_id==null)
+			questionService.save(question);
+		else questionService.addTimes(question);
 		questionService.sendAnswerRequest(question, asker_id, anchor_id);
 		requestUtil.voiceReceiver(request, anchor_id, question.getQuestion_id(), voice);
 		result = CommonMapUtil.baseMsgToMapConvertor();

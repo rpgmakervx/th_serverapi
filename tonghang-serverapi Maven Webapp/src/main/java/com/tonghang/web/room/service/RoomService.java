@@ -71,15 +71,18 @@ public class RoomService {
 		User user = userService.findUserById(owner_id);
 		System.out.println(owner_id+" user room : "+user);
 		if(roomDao.findRoomByOwner(user.getClient_id())==null){
-			Room room = new Room();
-			room.setOnline(1);
-			room.setRy_id(user.getRy_id());
-			room.setCreated_at(new Date());
-			room.setOpen_at(new Date());
-			room.setUser(user);
-			room.setTheme(Constant.THEME);
-			room.setRoom_id(ryUtil.createChatRoom(user.getRy_id()));
-			room.setMeeting_id(meeting_id);
+			Room room = new Room().new RoomBuilder().setOnline(1).
+					setRoom_id(ryUtil.createChatRoom(user.getRy_id())).setCreated_at(new Date()).
+					setRy_id(user.getRy_id()).setMeeting_id(meeting_id).setUser(user).setTheme(Constant.THEME).
+					setOpen_at(new Date()).setRoom_id(ryUtil.createChatRoom(user.getRy_id())).build();
+//			room.setOnline(1);
+//			room.setRy_id(user.getRy_id());
+//			room.setCreated_at(new Date());
+//			room.setOpen_at(new Date());
+//			room.setUser(user);
+//			room.setTheme(Constant.THEME);
+//			room.setRoom_id(ryUtil.createChatRoom(user.getRy_id()));
+//			room.setMeeting_id(meeting_id);
 			roomDao.save(room);
 		}
 	}
@@ -96,35 +99,43 @@ public class RoomService {
 //		if(!room.equals(roomCache.getRoomState(room.getRoom_id())))
 		roomDao.saveOrUpdate(room);
 	}
-	
+	/**
+	 * 按照在线状态和开播时间推荐首页房间
+	 * @param client_id
+	 * @param byDistance
+	 * @param page
+	 * @return
+	 */
 	public Map<String,Object> recommendRooms(String client_id,boolean byDistance, int page){
-		Map<String,Object> result = new HashMap<String, Object>();
-		Map<String,Object> success = new HashMap<String, Object>();
-		System.out.println("recommendRooms Service");
+//		Map<String,Object> result = new HashMap<String, Object>();
+//		Map<String,Object> success = new HashMap<String, Object>();
+//		System.out.println("recommendRooms Service");
 		User me = userService.findUserById(client_id);
 		List<Map<String,Object>> rooms = roomCache.getRecommendCache(me, byDistance);
-		System.out.println("首页推荐的房间数量："+rooms);
-		int front = (page-1)*Constant.PAGESIZE;
-		//当前页数的尾索引
-		int now = page*Constant.PAGESIZE;
-		//缓存中数据页数
 		int cache_page = (rooms.size()/Constant.PAGESIZE)+1;
-		if((rooms==null||rooms.size()==0)&&page==1){
-			result.put("success", CommonMapUtil.baseMsgToMapConvertor("首页推荐没有结果", 520));
-		}else if(rooms==null&&page!=1||page>cache_page){
-			result.put("success", CommonMapUtil.baseMsgToMapConvertor("搜索不到更多了", 520));
-		}else{
-			if(page==cache_page){
-				success.put("rooms", rooms.subList(front, rooms.size()));
-				success.putAll(CommonMapUtil.baseMsgToMapConvertor());
-				result.put("success", success);
-			}else if(page<cache_page){
-				success.put("rooms", rooms.subList(front, now));
-				success.putAll(CommonMapUtil.baseMsgToMapConvertor());
-				result.put("success", success);
-			}
-		}
-		return result;
+		return getFindResult(rooms, page, cache_page);
+//		System.out.println("首页推荐的房间数量："+rooms);
+//		int front = (page-1)*Constant.PAGESIZE;
+//		//当前页数的尾索引
+//		int now = page*Constant.PAGESIZE;
+//		//缓存中数据页数
+//		int cache_page = (rooms.size()/Constant.PAGESIZE)+1;
+//		if((rooms==null||rooms.size()==0)&&page==1){
+//			result.put("success", CommonMapUtil.baseMsgToMapConvertor("首页推荐没有结果", 520));
+//		}else if(rooms==null&&page!=1||page>cache_page){
+//			result.put("success", CommonMapUtil.baseMsgToMapConvertor("搜索不到更多了", 520));
+//		}else{
+//			if(page==cache_page){
+//				success.put("rooms", rooms.subList(front, rooms.size()));
+//				success.putAll(CommonMapUtil.baseMsgToMapConvertor());
+//				result.put("success", success);
+//			}else if(page<cache_page){
+//				success.put("rooms", rooms.subList(front, now));
+//				success.putAll(CommonMapUtil.baseMsgToMapConvertor());
+//				result.put("success", success);
+//			}
+//		}
+//		return result;
 	}
 	/**
 	 * 房间是否存在
@@ -211,8 +222,56 @@ public class RoomService {
 	 * @return
 	 */
 	public boolean isFollowed(Room room,User member){
-		System.out.println("关注详情："+member);
-		System.out.println("关注者："+room.getFollower());
-		return room.getFollower().contains(member);
+		System.out.println(member.getUsername() +"关注详情："+room);
+		if(room==null||member==null)
+			return false;
+		else return room.getFollower().contains(member);
+	}
+//重构部分
+	
+	//当前页数的尾索引
+	private int frontPage(int page){
+		return (page-1)*Constant.PAGESIZE;
+	}
+	//缓存中数据页数
+	private int nowPage(int page){
+		return page*Constant.PAGESIZE;
+	}
+	/**
+	 * 从缓存中获取用户数据
+	 * @param users
+	 * @param page
+	 * @param cache_page
+	 * @return
+	 */
+	private Map<String,Object> getFindResult(List<Map<String,Object>> rooms,int page,int cache_page){
+		Map<String,Object> result = new HashMap<String, Object>();
+		if((rooms==null||rooms.size()==0)&&page==1){
+			result.put("success", CommonMapUtil.baseMsgToMapConvertor(Constant.NO_RESULT, 520));
+		}else if(rooms==null&&page!=1||page>cache_page){
+			result.put("success", CommonMapUtil.baseMsgToMapConvertor(Constant.NO_MORE_RESULT, 520));
+		}else{
+			pagination(rooms, page, cache_page, result);
+		}
+		return result;
+	}
+	/**
+	 * 分页获取users集合中的数据
+	 * @param users			要被分页的对象
+	 * @param page			当前页数
+	 * @param cache_page	缓存的页数
+	 * @param result		结果集
+	 *  替换位置
+	 * 			method:getFindResult
+	 */
+	private void pagination(List<Map<String,Object>> rooms,int page,int cache_page,Map<String,Object> result){
+		Map<String,Object> roommap = new HashMap<String, Object>();
+		if(page==cache_page){
+			roommap.put("rooms", rooms.subList(frontPage(page), rooms.size()));
+			CommonMapUtil.generateResult(roommap,CommonMapUtil.baseMsgToMapConvertor(),result);
+		}else if(page<cache_page){
+			roommap.put("rooms", rooms.subList(frontPage(page), nowPage(page)));
+			CommonMapUtil.generateResult(roommap,CommonMapUtil.baseMsgToMapConvertor(),result);
+		}
 	}
 }

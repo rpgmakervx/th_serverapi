@@ -1,5 +1,6 @@
 package com.tonghang.web.user.util;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -61,7 +62,7 @@ public class UserUtil {
 			users = new ArrayList<User>();
 		}
 		for(User u:users){
-			usermap.putAll(userMapBuilder(u,null,conditionGenetator()/*false,false,false*/));
+			usersmsg.add(userMapBuilder(u,null,conditionGenetator()));
 		}
 		usermap.put("users", usersmsg);
 		return usermap;
@@ -77,9 +78,7 @@ public class UserUtil {
 	public Map<String,Object> usersToMapConvertor(List<User> users,String client_id){
 		List<Map<String,Object>> usersmsg = new ArrayList<Map<String,Object>>();
 		for(User u:users){
-			Map<String,Object> msg = new HashMap<String, Object>();
-			msg.put("user", userMapBuilder(u,client_id, conditionGenetator("hasRoom","hasDistance")/*false,false,true*/));
-			usersmsg.add(msg);
+			usersmsg.add(userMapBuilder(u,client_id, conditionGenetator("hasRoom","hasDistance")));
 		}
 		return generateResult(usersmsg);
 	}
@@ -260,7 +259,7 @@ public class UserUtil {
 			friendUserMap(user, client_id, msg);
 		}
 		if(condition.get("hasRoom")!=null){//hasRoom
-			roomUserMap(user, msg);
+			roomUserMap(user,client_id, msg);
 		}
 		if(condition.get("hasDistance")!=null){//byDistance
 			distanceUserMap(user, client_id, msg);
@@ -278,18 +277,17 @@ public class UserUtil {
 		msg.put("city", user.getCityValue());
 		msg.put("client_id", user.getClient_id());
 		msg.put("ry_id", user.getRy_id());
-		msg.put("image", Constant.IMAGE_PATH+user.getClient_id()+user.getImage()+Constant.IMAGE_NAME);
+		msg.put("image", Constant.IMAGE_PATH+user.getClient_id()+File.separator+user.getImage()+Constant.IMAGE_NAME);
 		msg.put("created_at", user.getCreated_at());
 		msg.put("birth", user.getBirth());
 		msg.put("type", true);
 	}
 	
 	//封装用户的房间信息
-	private void roomUserMap(User user,Map<String,Object> msg){
+	private void roomUserMap(User user,String client_id,Map<String,Object> msg){
 		Room room = roomService.findRoomByOwner(user.getClient_id());
 		msg.putAll(roomUtil.roomToMapConverterTemplate(room));
-		msg.put("followed", usersToMapConvertorTemplate(room==null?null:room.getFollower()));
-		msg.put("follow", roomUtil.roomsToMapConverterForFollower(user.getFollow()));
+		roomUtil.followRoomMap(msg, room, client_id);
 	}
 	//封装用户之间的好友关系
 	private void friendUserMap(User user,String client_id,Map<String,Object> msg){

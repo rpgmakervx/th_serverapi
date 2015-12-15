@@ -41,11 +41,11 @@ public class RoomController {
 	@ResponseBody
 	public ResponseEntity<Map<String,Object>> createRoom(@PathVariable String client_id,@RequestParam String mapstr)throws Exception{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
-		Map<String,Object> success = new HashMap<String, Object>();	
+		Map<String,Object> result = new HashMap<String, Object>();	
 		roomService.createRoom(client_id, (String) map.get("meeting_id"));
-		Map<String,Object> result = CommonMapUtil.baseMsgToMapConvertor();
-		success.put("success", result);
-		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
+//		Map<String,Object> result = CommonMapUtil.baseMsgToMapConvertor();
+//		success.put("success", result);
+		return new ResponseEntity<Map<String,Object>>(result,HttpStatus.OK);
 	}
 	
 	/**
@@ -59,15 +59,16 @@ public class RoomController {
 	@ResponseBody
 	public ResponseEntity<Map<String,Object>> modifyRoom(@PathVariable String room_id,@RequestParam String mapstr)throws Exception{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
-		Map<String,Object> success = new HashMap<String, Object>();	
+//		Map<String,Object> success = new HashMap<String, Object>();	
 		Map<String,Object> result = new HashMap<String, Object>();
-		String theme = (String) map.get("theme");
+//		String theme = (String) map.get("theme");
 		Room room = roomService.findRoomById(room_id);
-		room.setTheme(theme);
+		room.setTheme((String) map.get("theme"));
 		roomService.updateRoom(room);
-		result = CommonMapUtil.baseMsgToMapConvertor();
-		success.put("success", result);
-		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
+//		result = CommonMapUtil.baseMsgToMapConvertor();
+//		success.put("success", result);
+		CommonMapUtil.generateResult(null, CommonMapUtil.baseMsgToMapConvertor(), result);
+		return new ResponseEntity<Map<String,Object>>(result,HttpStatus.OK);
 	}
 	/**
 	 * 业务功能：主播进入直播间后更新开播时间
@@ -77,28 +78,30 @@ public class RoomController {
 	@RequestMapping("open/{room_id}")
 	@ResponseBody
 	public ResponseEntity<Map<String,Object>> openRoom(@PathVariable String room_id){
-		Map<String,Object> success = new HashMap<String, Object>();	
+//		Map<String,Object> success = new HashMap<String, Object>();	
 		Map<String,Object> result = CommonMapUtil.baseMsgToMapConvertor();
 		Room room = roomService.findRoomById(room_id);
 		room.setOpen_at(new Date());
 		room.setOnline(1);
 		roomService.updateRoom(room);
-		result.putAll(roomService.getRoomMessage(room_id,room.getUser().getClient_id()));
-		success.put("success", result);
-		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
+//		result.putAll(roomService.getRoomMessage(room_id,room.getUser().getClient_id()));
+//		success.put("success", result);
+		CommonMapUtil.generateResult(roomService.getRoomMessage(room_id,room.getUser().getClient_id()), CommonMapUtil.baseMsgToMapConvertor(), result);
+		return new ResponseEntity<Map<String,Object>>(result,HttpStatus.OK);
 	}
 	
 	@RequestMapping("close/{room_id}")
 	@ResponseBody
 	public ResponseEntity<Map<String,Object>> closeRoom(@PathVariable String room_id){
-		Map<String,Object> success = new HashMap<String, Object>();	
+//		Map<String,Object> success = new HashMap<String, Object>();	
 		Map<String,Object> result = new HashMap<String, Object>();
 		Room room = roomService.findRoomById(room_id);
 		room.setOnline(0);
 		roomService.updateRoom(room);
-		result = CommonMapUtil.baseMsgToMapConvertor();
-		success.put("success", result);
-		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
+//		result = CommonMapUtil.baseMsgToMapConvertor();
+//		success.put("success", result);
+		CommonMapUtil.generateResult(null, CommonMapUtil.baseMsgToMapConvertor(), result);
+		return new ResponseEntity<Map<String,Object>>(result,HttpStatus.OK);
 	}
 	/**
 	 * 创建时间：2015-11-23
@@ -111,12 +114,12 @@ public class RoomController {
 	@ResponseBody
 	public ResponseEntity<Map<String,Object>> recommend(@RequestParam String mapstr)throws Exception{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
-		String client_id = (String)map.get("client_id");
+//		String client_id = (String)map.get("client_id");
 		System.out.println("recommend param "+(Integer) map.get("pageindex"));
-		Map<String,Object> success = roomService.recommendRooms(client_id, 
+		Map<String,Object> result = roomService.recommendRooms((String)map.get("client_id"), 
 						(Boolean)map.get("byDistance")==null?false:(Boolean)map.get("byDistance"), 
 						(Integer) map.get("pageindex")==null?1:(Integer) map.get("pageindex"));
-		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
+		return new ResponseEntity<Map<String,Object>>(result,HttpStatus.OK);
 	}
 	
 	/**
@@ -130,24 +133,27 @@ public class RoomController {
 	@ResponseBody
 	public ResponseEntity<Map<String,Object>> recordUserInAndOut(@RequestParam String mapstr)throws Exception{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
-		Map<String,Object> success = new HashMap<String, Object>();	
+//		Map<String,Object> success = new HashMap<String, Object>();	
 		Map<String,Object> result = new HashMap<String, Object>();
-		String room_id = (String) map.get("room_id");
-		String client_id = (String) map.get("client_id");
-		Room room = roomService.findRoomById(room_id);
-		User user = userService.findUserById(client_id);
-		Date join_at = TimeUtil.getFormatDate((String)map.get("join_at"));
-		Date leave_at = TimeUtil.getFormatDate((String)map.get("leave_at"));
-		Record record = new Record();
-		record.setUser(user);
-		record.setRoom(room);
-		record.setLeave_at(leave_at);
-		record.setJoin_at(join_at);
-		System.out.println("记录退出");
+//		String room_id = (String) map.get("room_id");
+//		String client_id = (String) map.get("client_id");
+		Room room = roomService.findRoomById((String) map.get("room_id"));
+		User user = userService.findUserById((String) map.get("client_id"));
+//		Date join_at = TimeUtil.getFormatDate((String)map.get("join_at"));
+//		Date leave_at = TimeUtil.getFormatDate((String)map.get("leave_at"));
+		Record record = new Record.RecordBuilder().create().setUser(user).setRoom(room).
+							setLeave_at(TimeUtil.getFormatDate((String)map.get("leave_at"))).
+							setJoin_at(TimeUtil.getFormatDate((String)map.get("join_at"))).build();
+//		record.setUser(user);
+//		record.setRoom(room);
+//		record.setLeave_at(leave_at);
+//		record.setJoin_at(join_at);
+//		System.out.println("记录退出");
 		recordService.recordAction(record);
-		result = CommonMapUtil.baseMsgToMapConvertor();
-		success.put("success", result);
-		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
+//		result = CommonMapUtil.baseMsgToMapConvertor();
+//		success.put("success", result);
+		CommonMapUtil.generateResult(null,  CommonMapUtil.baseMsgToMapConvertor(), result);
+		return new ResponseEntity<Map<String,Object>>(result,HttpStatus.OK);
 	}
 	
 	/**
@@ -163,11 +169,12 @@ public class RoomController {
 	@ResponseBody
 	public ResponseEntity<Map<String,Object>> pushRoomMemberNum(@PathVariable String room_id,@RequestParam String mapstr)throws Exception{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
-		roomService.changeRoomsMember(room_id, (Integer)map.get("member_num"),(Boolean)map.get("byDistance"));
-		Map<String,Object> success = new HashMap<String, Object>();	
 		Map<String,Object> result = new HashMap<String, Object>();
-		success.put("success", result);
-		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
+		roomService.changeRoomsMember(room_id, (Integer)map.get("member_num"),(Boolean)map.get("byDistance"));
+//		Map<String,Object> success = new HashMap<String, Object>();	
+//		success.put("success", result);
+		CommonMapUtil.generateResult(null, CommonMapUtil.baseMsgToMapConvertor(), result);
+		return new ResponseEntity<Map<String,Object>>(result,HttpStatus.OK);
 	}
 	
 	/**
@@ -188,12 +195,12 @@ public class RoomController {
 	public ResponseEntity<Map<String,Object>> followRoom(@RequestParam String mapstr,
 													@PathVariable String client_id,@PathVariable String room_id) throws Exception{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
-		Map<String,Object> success = new HashMap<String, Object>();	
+//		Map<String,Object> success = new HashMap<String, Object>();	
 		Map<String,Object> result = new HashMap<String, Object>();
 		roomService.followRoom(room_id, client_id,(Boolean)map.get("byDistance"));
-		result = CommonMapUtil.baseMsgToMapConvertor();
-		success.put("success", result);
-		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
+//		result = CommonMapUtil.baseMsgToMapConvertor();
+//		success.put("success", result);
+		return new ResponseEntity<Map<String,Object>>(result,HttpStatus.OK);
 	}
 	
 	/**
@@ -210,12 +217,13 @@ public class RoomController {
 	public ResponseEntity<Map<String,Object>> unFollowRoom(@RequestParam String mapstr,
 													@PathVariable String client_id,@PathVariable String room_id) throws Exception{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
-		Map<String,Object> success = new HashMap<String, Object>();	
+//		Map<String,Object> success = new HashMap<String, Object>();	
 		Map<String,Object> result = new HashMap<String, Object>();
 		roomService.unFollowRoom(room_id, client_id,(Boolean)map.get("byDistance"));
-		result = CommonMapUtil.baseMsgToMapConvertor();
-		success.put("success", result);
-		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
+//		result = CommonMapUtil.baseMsgToMapConvertor();
+//		success.put("success", result);
+		CommonMapUtil.generateResult(null, CommonMapUtil.baseMsgToMapConvertor(), result);
+		return new ResponseEntity<Map<String,Object>>(result,HttpStatus.OK);
 	}
 	
 	/**
@@ -228,10 +236,11 @@ public class RoomController {
 	@ResponseBody
 	public ResponseEntity<Map<String,Object>> roomMessage(@PathVariable String room_id,@RequestParam String mapstr)throws Exception{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
-		Map<String,Object> success = new HashMap<String, Object>();	
-		Map<String,Object> result = CommonMapUtil.baseMsgToMapConvertor();
-		result.putAll(roomService.getRoomMessage(room_id,(String)map.get("client_id")));
-		success.put("success", result);
-		return new ResponseEntity<Map<String,Object>>(success,HttpStatus.OK);
+//		Map<String,Object> success = new HashMap<String, Object>();	
+		Map<String,Object> result = new HashMap<String, Object>();
+//		result.putAll(roomService.getRoomMessage(room_id,(String)map.get("client_id")));
+//		success.put("success", result);
+		CommonMapUtil.generateResult(roomService.getRoomMessage(room_id,(String)map.get("client_id")), CommonMapUtil.baseMsgToMapConvertor(), result);
+		return new ResponseEntity<Map<String,Object>>(result,HttpStatus.OK);
 	}
 }

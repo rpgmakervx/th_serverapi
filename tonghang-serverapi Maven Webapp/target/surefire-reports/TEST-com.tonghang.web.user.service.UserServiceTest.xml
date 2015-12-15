@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite failures="0" time="0.01" errors="1" skipped="0" tests="1" name="com.tonghang.web.user.service.UserServiceTest">
+  <properties>
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
+    <property name="sun.boot.library.path" value="E:\environment\java\1.7\jdk\jre\bin"/>
+    <property name="java.vm.version" value="24.45-b08"/>
+    <property name="java.vm.vendor" value="Oracle Corporation"/>
+    <property name="java.vendor.url" value="http://java.oracle.com/"/>
+    <property name="path.separator" value=";"/>
+    <property name="guice.disable.misplaced.annotation.check" value="true"/>
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM"/>
+    <property name="file.encoding.pkg" value="sun.io"/>
+    <property name="user.script" value=""/>
+    <property name="user.country" value="CN"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="sun.os.patch.level" value="Service Pack 1"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="user.dir" value="D:\WebWorkSpace\th_serverapi\tonghang-serverapi Maven Webapp"/>
+    <property name="java.runtime.version" value="1.7.0_45-b18"/>
+    <property name="java.awt.graphicsenv" value="sun.awt.Win32GraphicsEnvironment"/>
+    <property name="java.endorsed.dirs" value="E:\environment\java\1.7\jdk\jre\lib\endorsed"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="java.io.tmpdir" value="C:\Users\ADMINI~1\AppData\Local\Temp\"/>
+    <property name="line.separator" value="
+"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="user.variant" value=""/>
+    <property name="os.name" value="Windows 7"/>
+    <property name="classworlds.conf" value="D:\WebWorkSpace\.metadata\.plugins\org.eclipse.m2e.core\launches\m2conf989338655810671413.tmp"/>
+    <property name="sun.jnu.encoding" value="GBK"/>
+    <property name="java.library.path" value="E:\environment\java\1.7\jdk\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;C:\ProgramData\Oracle\Java\javapath;E:\environment\ruby\Ruby200\bin;D:\codekit\java\AllSQL\Oracle\Oracle_Home\bin;C:\Program Files (x86)\Common Files\NetSarang;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;E:\environment\java\1.8\jdk/bin;E:\environment\apache-maven-3.1.1/bin;D:\codekit\java\AllSQL\mysql-5.6.19-winx64\mysql\bin;C:\Program Files\TortoiseGit\bin;E:\environment\nodejs;E:\study\资料\工具\adt-bundle-windows-x86_64-20140321;E:\study\资料\工具\adt-bundle-windows-x86_64-20140321\sdk\tools;;E:\study\资料\工具\curl\bin;E:\study\资料\工具\curl\bin;E:\environment\python\;D:\codekit\java\AllSQL\mongoDB\mongodb-win32-x86_64-2.6.6/bin;E:\study\资料\工具\honk\netcat;D:\codekit\java\AllSQL\SqlServer\100\Tools\Binn\;D:\codekit\java\AllSQL\SqlServer2008\100\Tools\Binn\;D:\codekit\java\AllSQL\SqlServer2008\100\DTS\Binn\;D:\codekit\java\AllSQL\SqlServer\100\Tools\Binn\VSShell\Common7\IDE\;C:\Program Files (x86)\Microsoft Visual Studio 9.0\Common7\IDE\PrivateAssemblies\;D:\codekit\java\AllSQL\SqlServer\100\DTS\Binn\;D:\codekit\java\Web\nginx-1.8.0;;E:\node_global;E:\environment\nodejs\;C:\Users\Administrator\.dnx\bin;E:\study\资料\工具\ssh;C:\Users\Administrator\AppData\Roaming\npm;.;;.;;."/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="java.class.version" value="51.0"/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="os.version" value="6.1"/>
+    <property name="user.home" value="C:\Users\Administrator"/>
+    <property name="user.timezone" value="Asia/Shanghai"/>
+    <property name="java.awt.printerjob" value="sun.awt.windows.WPrinterJob"/>
+    <property name="java.specification.version" value="1.7"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="user.name" value="Administrator"/>
+    <property name="java.class.path" value="E:\environment\apache-maven-3.1.1\boot\plexus-classworlds-2.5.1.jar"/>
+    <property name="org.slf4j.simpleLogger.defaultLogLevel" value="info"/>
+    <property name="java.vm.specification.version" value="1.7"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="java.home" value="E:\environment\java\1.7\jdk\jre"/>
+    <property name="sun.java.command" value="org.codehaus.classworlds.Launcher -B -s E:\maven\settings.xml test"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="user.language" value="zh"/>
+    <property name="awt.toolkit" value="sun.awt.windows.WToolkit"/>
+    <property name="java.vm.info" value="mixed mode"/>
+    <property name="java.version" value="1.7.0_45"/>
+    <property name="java.ext.dirs" value="E:\environment\java\1.7\jdk\jre\lib\ext;C:\Windows\Sun\Java\lib\ext"/>
+    <property name="sun.boot.class.path" value="E:\environment\java\1.7\jdk\jre\lib\resources.jar;E:\environment\java\1.7\jdk\jre\lib\rt.jar;E:\environment\java\1.7\jdk\jre\lib\sunrsasign.jar;E:\environment\java\1.7\jdk\jre\lib\jsse.jar;E:\environment\java\1.7\jdk\jre\lib\jce.jar;E:\environment\java\1.7\jdk\jre\lib\charsets.jar;E:\environment\java\1.7\jdk\jre\lib\jfr.jar;E:\environment\java\1.7\jdk\jre\classes"/>
+    <property name="java.vendor" value="Oracle Corporation"/>
+    <property name="maven.home" value="E:\environment\apache-maven-3.1.1"/>
+    <property name="file.separator" value="\"/>
+    <property name="java.vendor.url.bug" value="http://bugreport.sun.com/bugreport/"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="sun.desktop" value="windows"/>
+    <property name="sun.cpu.isalist" value="amd64"/>
+  </properties>
+  <testcase time="0.01" classname="com.tonghang.web.user.service.UserServiceTest" name="test">
+    <error message="Error creating bean with name &apos;com.tonghang.web.user.service.UserServiceTest&apos;: Injection of resource dependencies failed; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No bean named &apos;userService&apos; is defined" type="org.springframework.beans.factory.BeanCreationException">org.springframework.beans.factory.BeanCreationException: Error creating bean with name &apos;com.tonghang.web.user.service.UserServiceTest&apos;: Injection of resource dependencies failed; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No bean named &apos;userService&apos; is defined
+	at org.springframework.context.annotation.CommonAnnotationBeanPostProcessor.postProcessPropertyValues(CommonAnnotationBeanPostProcessor.java:307)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1204)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireBeanProperties(AbstractAutowireCapableBeanFactory.java:385)
+	at org.springframework.test.context.support.DependencyInjectionTestExecutionListener.injectDependencies(DependencyInjectionTestExecutionListener.java:117)
+	at org.springframework.test.context.support.DependencyInjectionTestExecutionListener.prepareTestInstance(DependencyInjectionTestExecutionListener.java:82)
+	at org.springframework.test.context.TestContextManager.prepareTestInstance(TestContextManager.java:212)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.createTest(SpringJUnit4ClassRunner.java:199)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner$1.runReflectiveCall(SpringJUnit4ClassRunner.java:251)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:15)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.methodBlock(SpringJUnit4ClassRunner.java:253)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.runChild(SpringJUnit4ClassRunner.java:216)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.runChild(SpringJUnit4ClassRunner.java:82)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:231)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:60)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:229)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:50)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:222)
+	at org.springframework.test.context.junit4.statements.RunBeforeTestClassCallbacks.evaluate(RunBeforeTestClassCallbacks.java:60)
+	at org.springframework.test.context.junit4.statements.RunAfterTestClassCallbacks.evaluate(RunAfterTestClassCallbacks.java:67)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:300)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.run(SpringJUnit4ClassRunner.java:162)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:252)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:141)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:112)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:606)
+	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray(ReflectionUtils.java:189)
+	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:165)
+	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:85)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
+Caused by: org.springframework.beans.factory.NoSuchBeanDefinitionException: No bean named &apos;userService&apos; is defined
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.getBeanDefinition(DefaultListableBeanFactory.java:660)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getMergedLocalBeanDefinition(AbstractBeanFactory.java:1157)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:280)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:198)
+	at org.springframework.context.annotation.CommonAnnotationBeanPostProcessor.autowireResource(CommonAnnotationBeanPostProcessor.java:443)
+	at org.springframework.context.annotation.CommonAnnotationBeanPostProcessor.getResource(CommonAnnotationBeanPostProcessor.java:417)
+	at org.springframework.context.annotation.CommonAnnotationBeanPostProcessor$ResourceElement.getResourceToInject(CommonAnnotationBeanPostProcessor.java:542)
+	at org.springframework.beans.factory.annotation.InjectionMetadata$InjectedElement.inject(InjectionMetadata.java:155)
+	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:87)
+	at org.springframework.context.annotation.CommonAnnotationBeanPostProcessor.postProcessPropertyValues(CommonAnnotationBeanPostProcessor.java:304)
+	... 32 more
+</error>
+    <system-out> | 2015-12-13 16:38:04,710 WARN - RootClass.checkCompositeIdentifier(288) | HHH000038: Composite-id class does not override equals(): com.tonghang.web.statistics.pojo.ActiveUser
+ | 2015-12-13 16:38:04,722 WARN - RootClass.checkCompositeIdentifier(289) | HHH000039: Composite-id class does not override hashCode(): com.tonghang.web.statistics.pojo.ActiveUser
+ | 2015-12-13 16:38:04,723 WARN - RootClass.checkCompositeIdentifier(288) | HHH000038: Composite-id class does not override equals(): com.tonghang.web.record.pojo.Record
+ | 2015-12-13 16:38:04,724 WARN - RootClass.checkCompositeIdentifier(289) | HHH000039: Composite-id class does not override hashCode(): com.tonghang.web.record.pojo.Record
+ | 2015-12-13 16:38:04,726 WARN - RootClass.checkCompositeIdentifier(288) | HHH000038: Composite-id class does not override equals(): com.tonghang.web.card.pojo.Card
+ | 2015-12-13 16:38:04,727 WARN - RootClass.checkCompositeIdentifier(289) | HHH000039: Composite-id class does not override hashCode(): com.tonghang.web.card.pojo.Card
+ | 2015-12-13 16:38:04,729 WARN - RootClass.checkCompositeIdentifier(288) | HHH000038: Composite-id class does not override equals(): com.tonghang.web.friend.pojo.Invitation
+ | 2015-12-13 16:38:04,730 WARN - RootClass.checkCompositeIdentifier(289) | HHH000039: Composite-id class does not override hashCode(): com.tonghang.web.friend.pojo.Invitation
+ | 2015-12-13 16:38:04,731 WARN - RootClass.checkCompositeIdentifier(288) | HHH000038: Composite-id class does not override equals(): com.tonghang.web.location.pojo.Location
+ | 2015-12-13 16:38:04,732 WARN - RootClass.checkCompositeIdentifier(289) | HHH000039: Composite-id class does not override hashCode(): com.tonghang.web.location.pojo.Location
+ | 2015-12-13 16:38:06,600 ERROR - SchemaUpdate.execute(261) | HHH000388: Unsuccessful: alter table active_user add index FK_r3p0fk5o0dr530vval1ri2o4x (client_id), add constraint FK_r3p0fk5o0dr530vval1ri2o4x foreign key (client_id) references users (client_id)
+ | 2015-12-13 16:38:06,601 ERROR - SchemaUpdate.execute(262) | Can&apos;t create table &apos;tonghang.#sql-8c0_3b8&apos; (errno: 150)
+ | 2015-12-13 16:38:06,679 ERROR - SchemaUpdate.execute(261) | HHH000388: Unsuccessful: alter table blacklist add index FK_trtwvxta3hfatn1s1t14i3lsp (blocker_id), add constraint FK_trtwvxta3hfatn1s1t14i3lsp foreign key (blocker_id) references users (client_id)
+ | 2015-12-13 16:38:06,680 ERROR - SchemaUpdate.execute(262) | Can&apos;t create table &apos;tonghang.#sql-8c0_3b8&apos; (errno: 150)
+ | 2015-12-13 16:38:06,789 ERROR - SchemaUpdate.execute(261) | HHH000388: Unsuccessful: alter table blacklist add index FK_i8nqlriwjts0sbsdvoha08ydc (client_id), add constraint FK_i8nqlriwjts0sbsdvoha08ydc foreign key (client_id) references users (client_id)
+ | 2015-12-13 16:38:06,790 ERROR - SchemaUpdate.execute(262) | Can&apos;t create table &apos;tonghang.#sql-8c0_3b8&apos; (errno: 150)
+ | 2015-12-13 16:38:06,795 ERROR - SchemaUpdate.execute(261) | HHH000388: Unsuccessful: alter table cardhistory add index null (client_id), add constraint null foreign key (client_id) references users (client_id)
+ | 2015-12-13 16:38:06,796 ERROR - SchemaUpdate.execute(262) | You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near &apos;null (client_id), add constraint null foreign key (client_id) references users (&apos; at line 1
+ | 2015-12-13 16:38:06,930 ERROR - SchemaUpdate.execute(261) | HHH000388: Unsuccessful: alter table feedbacks add index FK_3hhg7i0qlb8jd88jlocl72nos (client_id), add constraint FK_3hhg7i0qlb8jd88jlocl72nos foreign key (client_id) references users (client_id)
+ | 2015-12-13 16:38:06,930 ERROR - SchemaUpdate.execute(262) | Can&apos;t create table &apos;tonghang.#sql-8c0_3b8&apos; (errno: 150)
+ | 2015-12-13 16:38:07,053 ERROR - SchemaUpdate.execute(261) | HHH000388: Unsuccessful: alter table questions add index FK_cu474t1c9oc0f1l8d1iwg1nc0 (anchor_id), add constraint FK_cu474t1c9oc0f1l8d1iwg1nc0 foreign key (anchor_id) references users (client_id)
+ | 2015-12-13 16:38:07,053 ERROR - SchemaUpdate.execute(262) | Can&apos;t create table &apos;tonghang.#sql-8c0_3b8&apos; (errno: 150)
+ | 2015-12-13 16:38:07,277 ERROR - SchemaUpdate.execute(261) | HHH000388: Unsuccessful: alter table questions add index FK_e3hyqckbsqy9ncdof0whfjn1r (asker_id), add constraint FK_e3hyqckbsqy9ncdof0whfjn1r foreign key (asker_id) references users (client_id)
+ | 2015-12-13 16:38:07,278 ERROR - SchemaUpdate.execute(262) | Can&apos;t create table &apos;tonghang.#sql-8c0_3b8&apos; (errno: 150)
+ | 2015-12-13 16:38:07,507 ERROR - SchemaUpdate.execute(261) | HHH000388: Unsuccessful: alter table record add index FK_1yj2gi4ynrjh6lrc93sehty07 (client_id), add constraint FK_1yj2gi4ynrjh6lrc93sehty07 foreign key (client_id) references users (client_id)
+ | 2015-12-13 16:38:07,507 ERROR - SchemaUpdate.execute(262) | Can&apos;t create table &apos;tonghang.#sql-8c0_3b8&apos; (errno: 150)
+ | 2015-12-13 16:38:07,662 ERROR - SchemaUpdate.execute(261) | HHH000388: Unsuccessful: alter table room_followers add index FK_qw5wh50u2iy3ob8pogaggtcg (client_id), add constraint FK_qw5wh50u2iy3ob8pogaggtcg foreign key (client_id) references users (client_id)
+ | 2015-12-13 16:38:07,663 ERROR - SchemaUpdate.execute(262) | Can&apos;t create table &apos;tonghang.#sql-8c0_3b8&apos; (errno: 150)
+ | 2015-12-13 16:38:07,782 ERROR - SchemaUpdate.execute(261) | HHH000388: Unsuccessful: alter table rooms add index FK_5ds5nxn7q34al55fr9wqmqttb (client_id), add constraint FK_5ds5nxn7q34al55fr9wqmqttb foreign key (client_id) references users (client_id)
+ | 2015-12-13 16:38:07,782 ERROR - SchemaUpdate.execute(262) | Can&apos;t create table &apos;tonghang.#sql-8c0_3b8&apos; (errno: 150)
+ | 2015-12-13 16:38:07,915 ERROR - SchemaUpdate.execute(261) | HHH000388: Unsuccessful: alter table secret add index FK_dxoedotgaei7q2v5314a688v1 (client_id), add constraint FK_dxoedotgaei7q2v5314a688v1 foreign key (client_id) references users (client_id)
+ | 2015-12-13 16:38:07,915 ERROR - SchemaUpdate.execute(262) | Can&apos;t create table &apos;tonghang.#sql-8c0_3b8&apos; (errno: 150)
+ | 2015-12-13 16:38:07,917 ERROR - SchemaUpdate.execute(261) | HHH000388: Unsuccessful: alter table system_config add index null (app_code), add constraint null foreign key (app_code) references apk (app_code)
+ | 2015-12-13 16:38:07,918 ERROR - SchemaUpdate.execute(262) | You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near &apos;null (app_code), add constraint null foreign key (app_code) references apk (app_&apos; at line 1
+ | 2015-12-13 16:38:08,007 ERROR - SchemaUpdate.execute(261) | HHH000388: Unsuccessful: alter table user_topics add index FK_ogpb1qhqgmwmct3d6jecrcvsl (huanxin_group_id), add constraint FK_ogpb1qhqgmwmct3d6jecrcvsl foreign key (huanxin_group_id) references topics (huanxin_group_id)
+ | 2015-12-13 16:38:08,008 ERROR - SchemaUpdate.execute(262) | Can&apos;t create table &apos;tonghang.#sql-8c0_3b8&apos; (errno: 150)
+ | 2015-12-13 16:38:08,144 ERROR - SchemaUpdate.execute(261) | HHH000388: Unsuccessful: alter table user_topics add index FK_9hhsg3mpv11hvw724bft005o (client_id), add constraint FK_9hhsg3mpv11hvw724bft005o foreign key (client_id) references users (client_id)
+ | 2015-12-13 16:38:08,145 ERROR - SchemaUpdate.execute(262) | Can&apos;t create table &apos;tonghang.#sql-8c0_3b8&apos; (errno: 150)
+ | 2015-12-13 16:38:08,239 ERROR - SchemaUpdate.execute(261) | HHH000388: Unsuccessful: alter table users add index FK_7it5mrsltdf8f93rppibu1jpq (channel_id), add constraint FK_7it5mrsltdf8f93rppibu1jpq foreign key (channel_id) references channels (channel_id)
+ | 2015-12-13 16:38:08,240 ERROR - SchemaUpdate.execute(262) | Can&apos;t create table &apos;tonghang.#sql-8c0_3b8&apos; (errno: 150)
+ | 2015-12-13 16:38:08,463 ERROR - TestContextManager.prepareTestInstance(215) | Caught exception while allowing TestExecutionListener [org.springframework.test.context.support.DependencyInjectionTestExecutionListener@29a8186c] to prepare test instance [com.tonghang.web.user.service.UserServiceTest@5adb6fd1]
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name &apos;com.tonghang.web.user.service.UserServiceTest&apos;: Injection of resource dependencies failed; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No bean named &apos;userService&apos; is defined
+	at org.springframework.context.annotation.CommonAnnotationBeanPostProcessor.postProcessPropertyValues(CommonAnnotationBeanPostProcessor.java:307)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1204)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireBeanProperties(AbstractAutowireCapableBeanFactory.java:385)
+	at org.springframework.test.context.support.DependencyInjectionTestExecutionListener.injectDependencies(DependencyInjectionTestExecutionListener.java:117)
+	at org.springframework.test.context.support.DependencyInjectionTestExecutionListener.prepareTestInstance(DependencyInjectionTestExecutionListener.java:82)
+	at org.springframework.test.context.TestContextManager.prepareTestInstance(TestContextManager.java:212)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.createTest(SpringJUnit4ClassRunner.java:199)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner$1.runReflectiveCall(SpringJUnit4ClassRunner.java:251)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:15)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.methodBlock(SpringJUnit4ClassRunner.java:253)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.runChild(SpringJUnit4ClassRunner.java:216)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.runChild(SpringJUnit4ClassRunner.java:82)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:231)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:60)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:229)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:50)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:222)
+	at org.springframework.test.context.junit4.statements.RunBeforeTestClassCallbacks.evaluate(RunBeforeTestClassCallbacks.java:60)
+	at org.springframework.test.context.junit4.statements.RunAfterTestClassCallbacks.evaluate(RunAfterTestClassCallbacks.java:67)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:300)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.run(SpringJUnit4ClassRunner.java:162)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:252)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:141)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:112)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:606)
+	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray(ReflectionUtils.java:189)
+	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:165)
+	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:85)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
+Caused by: org.springframework.beans.factory.NoSuchBeanDefinitionException: No bean named &apos;userService&apos; is defined
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.getBeanDefinition(DefaultListableBeanFactory.java:660)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getMergedLocalBeanDefinition(AbstractBeanFactory.java:1157)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:280)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:198)
+	at org.springframework.context.annotation.CommonAnnotationBeanPostProcessor.autowireResource(CommonAnnotationBeanPostProcessor.java:443)
+	at org.springframework.context.annotation.CommonAnnotationBeanPostProcessor.getResource(CommonAnnotationBeanPostProcessor.java:417)
+	at org.springframework.context.annotation.CommonAnnotationBeanPostProcessor$ResourceElement.getResourceToInject(CommonAnnotationBeanPostProcessor.java:542)
+	at org.springframework.beans.factory.annotation.InjectionMetadata$InjectedElement.inject(InjectionMetadata.java:155)
+	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:87)
+	at org.springframework.context.annotation.CommonAnnotationBeanPostProcessor.postProcessPropertyValues(CommonAnnotationBeanPostProcessor.java:304)
+	... 32 more
+</system-out>
+  </testcase>
+</testsuite>

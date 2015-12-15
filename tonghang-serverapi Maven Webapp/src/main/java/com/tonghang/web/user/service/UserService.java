@@ -824,11 +824,12 @@ public class UserService {
 		return page*Constant.PAGESIZE;
 	}
 	/**
-	 * 分页获取用户列表
-	 * @param users
-	 * @param page
-	 * @param cache_page
-	 * @param result
+	 * 分页获取users集合中的数据
+	 * @param users			要被分页的对象
+	 * @param page			当前页数
+	 * @param cache_page	缓存的页数
+	 * @param result		结果集
+	 *
 	 * 替换位置
 	 * 			method:getFindResult  line number: 788
 	 */

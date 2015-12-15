@@ -60,7 +60,7 @@ public class RoomUtil {
 	 */
 	public Map<String,Object> roomToMapConverter(Room room,String client_id){
 		Map<String,Object> result = new HashMap<String, Object>();
-		result.put("room", roomMapBuilder(room,room.getUser().getClient_id(), conditionGenetator("hasOwner","hasDistance","hasFollow")));
+		result.put("room", roomMapBuilder(room,client_id, conditionGenetator("hasOwner","hasDistance","hasFollow","hasQuestion")));
 		return result;
 	}
 	/**
@@ -111,7 +111,7 @@ public class RoomUtil {
 				questionRoomMap(roommsg, room);
 			baseRoomMap(roommsg, room);
 		}else{
-			nullRoomMap(roommsg, room);
+			nullRoomMap(roommsg);
 		}
 		return roommsg;
 	}
@@ -121,16 +121,18 @@ public class RoomUtil {
 		roommsg.put("room_id", room.getRoom_id());
 		roommsg.put("meeting_id", room.getMeeting_id());
 		roommsg.put("created_at", TimeUtil.getFormatString(room.getCreated_at()));
+		roommsg.put("open_at", TimeUtil.getFormatString(room.getOpen_at()));
 		roommsg.put("theme", room.getTheme());
 		roommsg.put("member_num", room.getMember_num());
 		roommsg.put("online", room.getOnline()==1?true:false);
 	}
 	//空的room体
-	private void nullRoomMap(Map<String,Object> roommsg,Room room){
+	private void nullRoomMap(Map<String,Object> roommsg){
 		roommsg.put("owner","");
 		roommsg.put("room_id", "");
 		roommsg.put("meeting_id", "");
 		roommsg.put("created_at", "");
+		roommsg.put("open_at", "");
 		roommsg.put("theme", "");
 		roommsg.put("member_num", 0);
 		roommsg.put("online", false);
@@ -152,9 +154,15 @@ public class RoomUtil {
 		msg.put("distance", locationService.computeDistance(other, my_local));
 	}
 	//封装关注消息的方法
-	private void followRoomMap(Map<String,Object> roommsg,Room room,String client_id){
+	public void followRoomMap(Map<String,Object> roommsg,Room room,String client_id){
+		System.out.println("follow id : searcher: "+client_id);
 		roommsg.put("follow_status", roomService.isFollowed(room, userService.findUserById(client_id)));
-		roommsg.put("followed", userUtil.usersToMapConvertorTemplate(room==null?null:room.getFollower()));
+		//这里的用户列表不叫users,叫followed
+		roommsg.put("followed", userUtil.usersToMapConvertorTemplate(room==null?null:room.getFollower()).get("users"));
+		roommsg.put("follow", roomsToMapConverterForFollower(userService.findUserById(client_id).getFollow()));
+//		Room room = roomService.findRoomByOwner(user.getClient_id());
+//		msg.putAll(roomUtil.roomToMapConverterTemplate(room));
+//		msg.put("followed", usersToMapConvertorTemplate(room==null?null:room.getFollower()));
 	}
 	//根据参数个数生成判断条件，索引所在的参数存在，则按照参数设置，不存在默认为false
 	private Map<String,String> conditionGenetator(String... condition){

@@ -17,6 +17,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.stereotype.Component;
 
+import com.tonghang.web.common.builder.Builder;
 import com.tonghang.web.user.pojo.User;
 
 @Component("room")
@@ -221,6 +222,74 @@ public class Room implements Serializable{
 		} else if (!user.equals(other.user))
 			return false;
 		return true;
+	}
+	
+//重构部分
+	
+	public class RoomBuilder implements Builder<Room>{
+		
+		public RoomBuilder setRoom_id(String room_id) {
+			Room.this.room_id = room_id;
+			return this;
+		}
+
+		public RoomBuilder setMeeting_id(String meeting_id) {
+			Room.this.meeting_id = meeting_id;
+			return this;
+		}
+
+		public RoomBuilder setUser(User user) {
+			Room.this.user = user;
+			return this;
+		}
+
+		public RoomBuilder setRy_id(String ry_id) {
+			Room.this.ry_id = ry_id;
+			return this;
+		}
+
+		public RoomBuilder setTheme(String theme) {
+			Room.this.theme = theme;
+			return this;
+		}
+
+		public RoomBuilder setCreated_at(Date created_at) {
+			Room.this.created_at = created_at;
+			return this;
+		}
+
+		public RoomBuilder setOpen_at(Date open_at) {
+			Room.this.open_at = open_at;
+			return this;
+		}
+
+		public RoomBuilder setOnline(int online) {
+			Room.this.online = online;
+			return this;
+		}
+
+		public RoomBuilder setFollower(List<User> follower) {
+			Room.this.follower = follower;
+			return this;
+		}
+
+		public RoomBuilder setMember_num(int member_num) {
+			Room.this.member_num = member_num;
+			return this;
+		}
+		
+		@Override
+		public Room build() {
+			// TODO Auto-generated method stub
+			return Room.this;
+		}
+
+		@Override
+		public RoomBuilder create() {
+			// TODO Auto-generated method stub
+			return this;
+		}
+		
 	}
 	
 }

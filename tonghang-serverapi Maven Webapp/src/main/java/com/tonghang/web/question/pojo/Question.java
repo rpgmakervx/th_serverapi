@@ -13,6 +13,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.stereotype.Component;
 
+import com.tonghang.web.common.builder.Builder;
 import com.tonghang.web.user.pojo.User;
 
 @Component("question")
@@ -90,4 +91,51 @@ public class Question {
 		this.created_at = created_at;
 	}
 	
+	
+	public static class QuestionBuilder implements Builder<Question>{
+
+		private Question question;
+		public QuestionBuilder setQuestion_id(String question_id) {
+			question.question_id = question_id;
+			return this;
+		}
+
+		public QuestionBuilder setAnchor(User anchor) {
+			question.anchor = anchor;
+			return this;
+		}
+
+		public QuestionBuilder setAsker(User asker) {
+			question.asker = asker;
+			return this;
+		}
+
+		public QuestionBuilder setContent(String content) {
+			question.content = content;
+			return this;
+		}
+
+		public QuestionBuilder setAnswer_times(int answer_times) {
+			question.answer_times = answer_times;
+			return this;
+		}
+
+		public QuestionBuilder setCreated_at(Date created_at) {
+			question.created_at = created_at;
+			return this;
+		}
+		@Override
+		public QuestionBuilder create() {
+			// TODO Auto-generated method stub
+			question = new Question();
+			return this;
+		}
+
+		@Override
+		public Question build() {
+			// TODO Auto-generated method stub
+			return question;
+		}
+		
+	}
 }

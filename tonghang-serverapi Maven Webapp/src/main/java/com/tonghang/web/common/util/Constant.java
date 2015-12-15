@@ -60,6 +60,7 @@ public class Constant extends HuanXinUtil{
 	public static final String THEME = "房主太懒了，什么也没有写";
 	
 	public static final String PICTURE_SERVER = "http://114.215.143.83:8080/tonghang-serverapi";
+	public static final String PICTURE_SERVER_TEST = "http://192.168.23.1:8080/tonghang-serverapi";
 	public static final String ADV_SERVER = "http://114.215.143.83:8080/tonghang";
 	public static final String SHARE_SDK_URL ="https://web.sms.mob.com/sms/verify";
 	

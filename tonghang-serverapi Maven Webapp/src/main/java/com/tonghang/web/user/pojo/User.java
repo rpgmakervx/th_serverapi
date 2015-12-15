@@ -502,5 +502,10 @@ public class User implements Serializable{
 			// TODO Auto-generated method stub
 			return User.this;
 		}
+		@Override
+		public UserBuilder create() {
+			// TODO Auto-generated method stub
+			return this;
+		}
 	}
 }

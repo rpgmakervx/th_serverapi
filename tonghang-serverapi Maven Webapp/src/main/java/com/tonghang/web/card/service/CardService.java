@@ -26,6 +26,7 @@ import com.tonghang.web.user.util.UserUtil;
 
 @Service("cardService")
 @Transactional
+@Deprecated
 public class CardService {
 	
 	@Resource(name="cardDao")

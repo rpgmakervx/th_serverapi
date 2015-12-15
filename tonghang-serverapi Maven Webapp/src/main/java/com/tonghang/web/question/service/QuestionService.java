@@ -1,6 +1,7 @@
 package com.tonghang.web.question.service;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -11,6 +12,7 @@ import com.tonghang.web.common.util.Constant;
 import com.tonghang.web.common.util.JPushUtil;
 import com.tonghang.web.question.dao.QuestionDao;
 import com.tonghang.web.question.pojo.Question;
+import com.tonghang.web.question.util.QuestionUtil;
 import com.tonghang.web.user.pojo.User;
 import com.tonghang.web.user.service.UserService;
 
@@ -23,6 +25,8 @@ public class QuestionService {
 	
 	@Resource(name="questionDao")
 	private QuestionDao questionDao;
+	@Resource(name="questionUtil")
+	private QuestionUtil questionUtil;
 	/**
 	 * 保存问题信息
 	 * @param question
@@ -38,6 +42,14 @@ public class QuestionService {
 		questionDao.saveOrUpdate(question);
 	}
 	/**
+	 * 根据问题id查找问题
+	 * @param question_id
+	 * @return
+	 */
+	public Question findQuestionById(String question_id){
+		return questionDao.findQuestionById(question_id);
+	}
+	/**
 	 * 发问者向主播发送提问问题的推送
 	 * @param asker_id
 	 * @param anchor_id
@@ -45,7 +57,9 @@ public class QuestionService {
 	public void sendQuestionRequest(String asker_id,String anchor_id,String content){
 		User asker = userService.findUserById(asker_id);
 		System.out.println("发问者："+asker.getUsername()+"问题内容："+content);
-		JPushUtil.push(anchor_id, asker_id, asker.getUsername(),content, Constant.ASK_QUESTION, asker.getUsername()+Constant.ASK_QUESTION_MSG+content);
+		Question question = new Question();
+		question.setContent(content);
+		JPushUtil.pushQuestion(anchor_id, asker_id, asker.getUsername(),questionUtil.questionContentConverter(question), Constant.ASK_QUESTION, asker.getUsername()+Constant.ASK_QUESTION_MSG+content);
 	}
 	
 	/**
@@ -53,10 +67,11 @@ public class QuestionService {
 	 * @param asker_id
 	 * @param anchor_id
 	 */
-	public void sendAnswerRequest(Question question,String asker_id,String anchor_id){
+	public Map<String,Object> sendAnswerRequest(Question question,String asker_id,String anchor_id){
 		User anchor = userService.findUserById(asker_id);
-		JPushUtil.push(anchor_id, asker_id, anchor.getUsername(),question.getContent(), Constant.ANSWER_QUESTION, anchor.getUsername()+Constant.ANSWER_QUESTION_MSG+question.getContent());
-		
+		JPushUtil.pushQuestion(anchor_id, asker_id, anchor.getUsername(),questionUtil.questionToMapConterter(question), Constant.ANSWER_QUESTION, anchor.getUsername()+Constant.ANSWER_QUESTION_MSG+question.getContent());
+		System.out.println("SEND: "+questionUtil.questionToMapConterter(question));
+		return questionUtil.questionToMapConterter(question);
 	}
 	
 	/**

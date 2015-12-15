@@ -15,6 +15,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.tonghang.web.common.builder.Builder;
 import com.tonghang.web.room.pojo.Room;
 import com.tonghang.web.user.pojo.User;
 
@@ -22,9 +23,6 @@ import com.tonghang.web.user.pojo.User;
 @Table(name="record")
 public class Record implements Serializable {
 	
-	@Id
-	@GenericGenerator(strategy="assigned",name="idGenerator")
-	@GeneratedValue(generator="idGenerator")
 	@ManyToOne()
 	@JoinColumn(name="client_id",columnDefinition="default null")
 	private User user;
@@ -77,4 +75,41 @@ public class Record implements Serializable {
 		this.leave_at = leave_at;
 	}
 	
+	public static class RecordBuilder implements Builder<Record>{
+		
+		private Record record;
+
+		public RecordBuilder setUser(User user) {
+			record.user = user;
+			return this;
+		}
+
+		public RecordBuilder setRoom(Room room) {
+			record.room = room;
+			return this;
+		}
+
+		public RecordBuilder setJoin_at(Date join_at) {
+			record.join_at = join_at;
+			return this;
+		}
+
+		public RecordBuilder setLeave_at(Date leave_at) {
+			record.leave_at = leave_at;
+			return this;
+		}
+		@Override
+		public Record build() {
+			// TODO Auto-generated method stub
+			return record;
+		}
+
+		@Override
+		public RecordBuilder create() {
+			// TODO Auto-generated method stub
+			record = new Record();
+			return this;
+		}
+		
+	}
 }

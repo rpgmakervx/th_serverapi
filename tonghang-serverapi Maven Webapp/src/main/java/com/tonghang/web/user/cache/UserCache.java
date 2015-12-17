@@ -160,6 +160,7 @@ public class UserCache {
 //			result.put("success", CommonMapUtil.baseMsgToMapConvertor("更新失败，当前用户不存在", 513));
 		}else{
 			updateUserMessage(user, newuser, result);
+			CommonMapUtil.generateResult(userUtil.userToMapConvertor(user,client_id), CommonMapUtil.baseMsgToMapConvertor(),result);
 //			User.UserBuilder builder = user.new UserBuilder();
 //			builder.setBirth(birth).setCity(city).setSex(sex).setImage(img_name);
 //			if(username!=null&&!username.equals(user.getUsername())){

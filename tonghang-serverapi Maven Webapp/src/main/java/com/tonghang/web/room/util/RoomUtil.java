@@ -55,7 +55,8 @@ public class RoomUtil {
 	
 	/**
 	 * 返回一个room的map格式
-	 * @param room
+	 * @param room			使用者查看的房间
+	 * @param client_id		使用者的client_id
 	 * @return
 	 */
 	public Map<String,Object> roomToMapConverter(Room room,String client_id){
@@ -119,6 +120,7 @@ public class RoomUtil {
 	//基础的封装Room的方法
 	private void baseRoomMap(Map<String,Object> roommsg,Room room){
 		roommsg.put("room_id", room.getRoom_id());
+		roommsg.put("client_id", room.getUser().getClient_id());
 		roommsg.put("meeting_id", room.getMeeting_id());
 		roommsg.put("created_at", TimeUtil.getFormatString(room.getCreated_at()));
 		roommsg.put("open_at", TimeUtil.getFormatString(room.getOpen_at()));
@@ -130,6 +132,7 @@ public class RoomUtil {
 	private void nullRoomMap(Map<String,Object> roommsg){
 		roommsg.put("owner","");
 		roommsg.put("room_id", "");
+		roommsg.put("client_id", "");
 		roommsg.put("meeting_id", "");
 		roommsg.put("created_at", "");
 		roommsg.put("open_at", "");
@@ -159,7 +162,9 @@ public class RoomUtil {
 		roommsg.put("follow_status", roomService.isFollowed(room, userService.findUserById(client_id)));
 		//这里的用户列表不叫users,叫followed
 		roommsg.put("followed", userUtil.usersToMapConvertorTemplate(room==null?null:room.getFollower()).get("users"));
-		roommsg.put("follow", roomsToMapConverterForFollower(userService.findUserById(client_id).getFollow()));
+		//这里一定要用room的信息查询，因为要判断的是room的房主和clint_id所有者的关系
+		User anchor = userService.findUserById(room==null?"":room.getUser().getClient_id());
+		roommsg.put("follow", roomsToMapConverterForFollower(anchor==null?new ArrayList<Room>():anchor.getFollow()));
 //		Room room = roomService.findRoomByOwner(user.getClient_id());
 //		msg.putAll(roomUtil.roomToMapConverterTemplate(room));
 //		msg.put("followed", usersToMapConvertorTemplate(room==null?null:room.getFollower()));

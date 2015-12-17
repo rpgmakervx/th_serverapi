@@ -113,6 +113,12 @@ public class UserUtil {
 	}
 	
 	//带有房间信息的封装过的User
+	/**
+	 * 带有房间信息的封装过的User
+	 * @param user			要查看的用户
+	 * @param client_id		使用者的client_id
+	 * @return
+	 */
 	public Map<String,Object> userToMapWithRoomConvertor(User user,String client_id){
 		Map<String,Object> usermap = new HashMap<String, Object>();
 		usermap.put("user", userMapBuilder(user, client_id, conditionGenetator("hasFriend","hasRoom","hasDistance")/*true,false,true*/));

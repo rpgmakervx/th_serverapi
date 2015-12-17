@@ -43,6 +43,7 @@ public class RoomController {
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
 		Map<String,Object> result = new HashMap<String, Object>();	
 		roomService.createRoom(client_id, (String) map.get("meeting_id"));
+		CommonMapUtil.generateResult(null, CommonMapUtil.baseMsgToMapConvertor(), result);
 //		Map<String,Object> result = CommonMapUtil.baseMsgToMapConvertor();
 //		success.put("success", result);
 		return new ResponseEntity<Map<String,Object>>(result,HttpStatus.OK);

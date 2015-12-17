@@ -43,6 +43,8 @@ public class FriendDaoImpl implements FriendDao {
 		// TODO Auto-generated method stub
 		User my = (User) sessionFactory.getCurrentSession().get(User.class, my_id);
 		User friend = (User) sessionFactory.getCurrentSession().get(User.class, friend_id);
+		if(my.getFriends()==null||friend.getFriends()==null)
+			return false;
 		boolean flag = my.getFriends().contains(friend);
 		return flag;
 	}

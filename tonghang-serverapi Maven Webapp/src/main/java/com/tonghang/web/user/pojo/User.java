@@ -132,6 +132,11 @@ public class User implements Serializable{
 	@LazyCollection(LazyCollectionOption.FALSE)
 	private Set<User> blacklist;
 	
+//	@ManyToMany()
+//	@JoinTable(name = "room_follows",
+//	   joinColumns = @JoinColumn(name = "client_id"),
+//	   inverseJoinColumns = @JoinColumn(name = "room_id"))
+//	private Set<Room> follow;
 	@ManyToMany(mappedBy="follower")
 	private Set<Room> follow;
 	
@@ -321,7 +326,7 @@ public class User implements Serializable{
 	public String getRy_id() {
 		//设置非空校验
 		if(ry_id==null)
-			this.setClient_id(SecurityUtil.getRYID(this.getClient_id()));
+			this.setRy_id(SecurityUtil.getRYID(this.getClient_id()));
 		return ry_id;
 	}
 	public void setRy_id(String ry_id) {
@@ -414,6 +419,7 @@ public class User implements Serializable{
 	public class UserBuilder implements Builder<User>{
 		public UserBuilder setClient_id(String client_id){
 			User.this.setClient_id(client_id);
+			System.out.println("userbuilder setclient_id : "+client_id);
 			return this;
 		}
 		public UserBuilder setUsername(String username) {
@@ -425,6 +431,7 @@ public class User implements Serializable{
 		public UserBuilder setRy_id(String ry_id) {
 			if(ry_id!=null&&!ry_id.equals(User.this.getRy_id()))
 				User.this.setRy_id(ry_id);
+			System.out.println("userbuilder setRy_id : "+User.this.client_id);
 			return this;
 		}
 

@@ -3,6 +3,8 @@ package com.tonghang.web.common.controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -15,7 +17,6 @@ import com.tonghang.web.common.util.LogUtil;
 
 @Controller
 public class BaseController {
-
 	/**
 	 * 处理所有controller触发的异常并把异常信息和异常码返回给客户端
 	 * @param e

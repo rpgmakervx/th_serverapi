@@ -30,9 +30,9 @@ import com.tonghang.web.common.util.SecurityUtil;
 import com.tonghang.web.common.util.StringUtil;
 import com.tonghang.web.common.util.TimeUtil;
 import com.tonghang.web.friend.dao.FriendDao;
-import com.tonghang.web.label.dao.LabelDao;
 import com.tonghang.web.label.pojo.Label;
 import com.tonghang.web.location.service.LocationService;
+import com.tonghang.web.room.pojo.Room;
 import com.tonghang.web.statistics.service.StatisticsService;
 import com.tonghang.web.topic.dao.TopicDao;
 import com.tonghang.web.topic.pojo.Topic;
@@ -202,6 +202,7 @@ public class UserService {
 			user.new UserBuilder().setClient_id(SecurityUtil.getUUID()).setRy_id(SecurityUtil.getRYID(user.getClient_id()));
 //			user.setClient_id(SecurityUtil.getUUID());
 //			user.setRy_id(SecurityUtil.getRYID(user.getClient_id()));
+			System.out.println("注册第一步 client_id : "+user.getClient_id());
 			userDao.save(user);
 			HuanXinUtil.registUser(user);
 //			Map<String,Object> usermap = userUtil.userToMapConvertor(user,user.getClient_id());
@@ -513,7 +514,8 @@ public class UserService {
 	 */
 	public void saveUsersLocation(String client_id,double x_point,double y_point){
 		User user = findUserById(client_id);
-		locationService.saveLocation(user, x_point, y_point);
+		if(user!=null)
+			locationService.saveLocation(user, x_point, y_point);
 	}
 	/**
 	 * 业务功能：向share sdk 发送请求校验验证码，将校验信息反馈给客户端。
@@ -870,4 +872,5 @@ public class UserService {
 			JPushUtil.pushList(client_ids, newuser.getClient_id(), newuser.getUsername(),Constant.RECOMMEND_NEWBE,newuser.getUsername()+Constant.NEWBE_MSG);
 		}
 	}
+	
 }

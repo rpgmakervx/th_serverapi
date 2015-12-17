@@ -20,6 +20,7 @@ public class RecordService {
 	 * @param record
 	 */
 	public void recordAction(Record record){
-		recordDao.save(record);
+		if(record.getUser()!=null)
+			recordDao.save(record);
 	}
 }

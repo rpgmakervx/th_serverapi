@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.annotation.Resource;
 
@@ -17,11 +16,12 @@ import com.tonghang.web.common.util.CommonMapUtil;
 import com.tonghang.web.common.util.Constant;
 import com.tonghang.web.common.util.JPushUtil;
 import com.tonghang.web.common.util.RongYunUtil;
-import com.tonghang.web.label.pojo.Label;
+import com.tonghang.web.common.util.TimeUtil;
 import com.tonghang.web.room.cache.RoomCache;
 import com.tonghang.web.room.dao.RoomDao;
 import com.tonghang.web.room.pojo.Room;
 import com.tonghang.web.room.util.RoomUtil;
+import com.tonghang.web.user.dao.UserDao;
 import com.tonghang.web.user.pojo.User;
 import com.tonghang.web.user.service.UserService;
 
@@ -39,6 +39,8 @@ public class RoomService {
 	private RoomCache roomCache;
 	@Resource(name="roomUtil")
 	private RoomUtil roomUtil;
+	@Resource(name="userDao")
+	private UserDao userDao;
 	/**
 	 * 通过id查找room
 	 * @param room_id
@@ -72,7 +74,7 @@ public class RoomService {
 		System.out.println(owner_id+" user room : "+user);
 		if(roomDao.findRoomByOwner(user.getClient_id())==null){
 			Room room = new Room().new RoomBuilder().setOnline(1).
-					setRoom_id(ryUtil.createChatRoom(user.getRy_id())).setCreated_at(new Date()).
+					setRoom_id(ryUtil.createChatRoom(user.getRy_id())).setCreated_at(new Date()).setOnline(0).
 					setRy_id(user.getRy_id()).setMeeting_id(meeting_id).setUser(user).setTheme(Constant.THEME).
 					setOpen_at(new Date()).setRoom_id(ryUtil.createChatRoom(user.getRy_id())).build();
 //			room.setOnline(1);
@@ -157,7 +159,7 @@ public class RoomService {
 	public void followRoom(String room_id,String client_id,boolean byDistance){
 		Room room = findRoomById(room_id);
 		User user = userService.findUserById(client_id);
-		if(!room.getFollower().contains(user)){
+		if(!isFollowed(room, user)){
 			room.getFollower().add(user);
 		}
 		roomDao.saveOrUpdate(room);
@@ -175,7 +177,7 @@ public class RoomService {
 	public void unFollowRoom(String room_id,String client_id,boolean byDistance){
 		Room room = findRoomById(room_id);
 		User user = userService.findUserById(client_id);
-		if(room.getFollower().contains(user)){
+		if(isFollowed(room, user)){
 			room.getFollower().remove(user);
 		}
 		roomDao.saveOrUpdate(room);
@@ -204,7 +206,8 @@ public class RoomService {
 		for(User user:room.getFollower()){
 			ids.add(user.getClient_id());
 		}
-		JPushUtil.pushList(ids, room.getUser().getClient_id(), room.getUser().getUsername(), Constant.ANCHOR_ONLINE, Constant.ANCHOR_ONLINE_MSG1+room.getUser().getUsername()+Constant.ANCHOR_ONLINE_MSG2);
+		JPushUtil.pushList(ids, room.getUser().getClient_id(), room.getUser().getUsername(),roomUtil.roomToMapConverterTemplate(room),
+					room.getUser().getImage(),Constant.ANCHOR_ONLINE, Constant.ANCHOR_ONLINE_MSG1+room.getUser().getUsername()+Constant.ANCHOR_ONLINE_MSG2);
 	}
 	/**
 	 * 查看单一直播间,返回直播间内的数据
@@ -222,10 +225,9 @@ public class RoomService {
 	 * @return
 	 */
 	public boolean isFollowed(Room room,User member){
-		System.out.println(member.getUsername() +"关注详情："+room);
 		if(room==null||member==null)
 			return false;
-		else return room.getFollower().contains(member);
+		else return room.getFollower().contains(member)||member.getFollow().contains(room);
 	}
 //重构部分
 	
@@ -274,4 +276,14 @@ public class RoomService {
 			CommonMapUtil.generateResult(roommap,CommonMapUtil.baseMsgToMapConvertor(),result);
 		}
 	}
+	
+//	/**
+//	 * 获得某人所关注的房间列表
+//	 * @param client_id
+//	 * @return
+//	 */
+//	public List<Room> getFollow(String client_id){
+//		userService.findUserById(client_id);
+//		
+//	}
 }

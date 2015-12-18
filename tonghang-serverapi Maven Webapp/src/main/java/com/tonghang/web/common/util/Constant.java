@@ -57,7 +57,8 @@ public class Constant extends HuanXinUtil{
 	public static final String VALID_CODE_TIMEOUT = "验证码已失效，请重新获取";
 	
 	
-	public static final String THEME = "房主太懒了，什么也没有写";
+	public static final String THEME1 = "是";
+	public static final String THEME2 = "方面的行家";
 	
 	public static final String PICTURE_SERVER = "http://114.215.143.83:8080/tonghang-serverapi";
 	public static final String PICTURE_SERVER_TEST = "http://192.168.23.1:8080/tonghang-serverapi";

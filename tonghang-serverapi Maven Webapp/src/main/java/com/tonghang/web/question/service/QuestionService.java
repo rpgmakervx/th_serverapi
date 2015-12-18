@@ -59,7 +59,7 @@ public class QuestionService {
 		System.out.println("发问者："+asker.getUsername()+"问题内容："+content);
 		Question question = new Question();
 		question.setContent(content);
-		JPushUtil.pushQuestion(anchor_id, asker_id, asker.getUsername(),questionUtil.questionContentConverter(question), Constant.ASK_QUESTION, asker.getUsername()+Constant.ASK_QUESTION_MSG+content);
+		JPushUtil.pushQuestion(anchor_id, asker_id, asker.getUsername(),content/*questionUtil.questionContentConverter(question)*/, Constant.ASK_QUESTION, asker.getUsername()+Constant.ASK_QUESTION_MSG+content);
 	}
 	
 	/**
@@ -69,7 +69,7 @@ public class QuestionService {
 	 */
 	public Map<String,Object> sendAnswerRequest(Question question,String asker_id,String anchor_id){
 		User anchor = userService.findUserById(asker_id);
-		JPushUtil.pushQuestion(anchor_id, asker_id, anchor.getUsername(),questionUtil.questionToMapConterter(question), Constant.ANSWER_QUESTION, anchor.getUsername()+Constant.ANSWER_QUESTION_MSG+question.getContent());
+		JPushUtil.pushQuestion(anchor_id, asker_id, anchor.getUsername(),question.getContent(), Constant.ANSWER_QUESTION, anchor.getUsername()+Constant.ANSWER_QUESTION_MSG+question.getContent());
 		System.out.println("SEND: "+questionUtil.questionToMapConterter(question));
 		return questionUtil.questionToMapConterter(question);
 	}

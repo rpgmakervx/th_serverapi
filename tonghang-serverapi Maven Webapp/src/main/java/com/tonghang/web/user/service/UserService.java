@@ -357,6 +357,8 @@ public class UserService {
 	 */
 	public Map<String, Object> searchUser(String client_id,String content,boolean byDistance, int page){
 		List<Map<String,Object>> users = cache.getSearchUserCache(client_id, content, byDistance);
+		System.out.println("搜索条件："+content);
+		System.out.println("缓存搜索结果："+users);
 		int cache_page = (users.size()/Constant.PAGESIZE)+1;
 		return getFindResult(users, page, cache_page);
 	}
@@ -403,7 +405,8 @@ public class UserService {
 	 */
 	@CacheEvict(value=
 		{
-		 "com.tonghang.web.user.cache.UserCache.getSearchUserCache"
+		 "com.tonghang.web.user.cache.UserCache.getSearchUserCache",
+		 "com.tonghang.web.room.cache.RoomCache.getRecommendCache"
 		},allEntries = true)
 	public Map<String, Object> update(String client_id, User newuser){
 		// TODO Auto-generated method stub

@@ -225,6 +225,13 @@ public class Room implements Serializable{
 	}
 	
 //重构部分
+	public String generateTheme(){
+		StringBuffer buffer = new StringBuffer();
+		for(String label:this.getUser().getLabelnames()){
+			buffer.append(label+"  ");
+		}
+		return buffer.toString();
+	}
 	
 	public class RoomBuilder implements Builder<Room>{
 		

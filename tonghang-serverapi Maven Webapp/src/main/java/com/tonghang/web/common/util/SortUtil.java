@@ -45,7 +45,7 @@ public class SortUtil{
 		int result = 0;
 		int index = 0;
 		List<String> temp = new ArrayList<String>();
-		if(objlabels==null||objlabels.size()<=0){
+		if(objlabels==null||objlabels.size()<=0||srclabels==null||srclabels.size()<=0){
 			return 0;
 		}
 		if(objlabels.size()>srclabels.size()){

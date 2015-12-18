@@ -116,7 +116,7 @@ public class UserCache {
 		return userUtil.decodeUsersMap(result);
 	}
 	
-	@Cacheable(value="com.tonghang.web.user.cache.UserCache.getSearchUserCache",key="#client_id+#byDistance+#username")
+	@Cacheable(value="com.tonghang.web.user.cache.UserCache.getSearchUserCache",key="#client_id+#byDistance+#content")
 	public List<Map<String,Object>> getSearchUserCache(String client_id,String content,boolean byDistance){
 		//步骤一：查询出姓名模糊匹配的用户
 		List<User> users1 = userDao.findUserByUsername(content);
@@ -132,6 +132,7 @@ public class UserCache {
 		//整合两个步骤查询出的结果，用set去重
 		userss.addAll(users1);
 		users2.addAll(userss);
+		System.out.println("搜索结果："+users2);
 		Map<String,Object> result = byDistance?userUtil.usersToMapSortByDistanceConvertor(users2, client_id):userUtil.usersToMapConvertor(users2,client_id);
 //		Map<String,Object> success = (Map<String, Object>) result.get("success");
 //		List<Map<String,Object>> us = (List<Map<String, Object>>) success.get("users");
@@ -160,7 +161,8 @@ public class UserCache {
 //			result.put("success", CommonMapUtil.baseMsgToMapConvertor("更新失败，当前用户不存在", 513));
 		}else{
 			updateUserMessage(user, newuser, result);
-			CommonMapUtil.generateResult(userUtil.userToMapConvertor(user,client_id), CommonMapUtil.baseMsgToMapConvertor(),result);
+			System.out.println("evictUpdateCache："+result);
+//			CommonMapUtil.generateResult(userUtil.userToMapConvertor(user,client_id), CommonMapUtil.baseMsgToMapConvertor(),result);
 //			User.UserBuilder builder = user.new UserBuilder();
 //			builder.setBirth(birth).setCity(city).setSex(sex).setImage(img_name);
 //			if(username!=null&&!username.equals(user.getUsername())){
@@ -255,15 +257,15 @@ public class UserCache {
 	private void updateUserMessage(User user,User newuser,Map<String,Object> result){
 		User.UserBuilder builder = user.new UserBuilder();
 		builder.setBirth(newuser.getBirth()).setCity(newuser.getCity()).setSex(newuser.getSex()).setImage(newuser.getImage());
-		if(newuser.getUsername()!=null&&!newuser.getUsername().equals(user.getUsername())){
-			if(userDao.findUserByUsernameUnique(newuser.getUsername()).size()!=0){
-				CommonMapUtil.generateResult(null, CommonMapUtil.baseMsgToMapConvertor("该昵称已经被注册!", 512),result);
-			}else{
-				user.setUsername(newuser.getUsername());
-				HuanXinUtil.changeUsername(user.getUsername(),user.getClient_id());				
-				CommonMapUtil.generateResult(userUtil.userToMapConvertor(user,user.getClient_id()), CommonMapUtil.baseMsgToMapConvertor(),result);
-			}
-		}
+		if(newuser.getUsername()==null||newuser.getUsername().equals(user.getUsername())){
+			CommonMapUtil.generateResult(userUtil.userToMapWithRoomConvertor(user,user.getClient_id()), CommonMapUtil.baseMsgToMapConvertor(),result);
+		}else if(userDao.findUserByUsernameUnique(newuser.getUsername()).size()!=0){
+			CommonMapUtil.generateResult(null, CommonMapUtil.baseMsgToMapConvertor("该昵称已经被注册!", 512),result);
+		}else{
+			user.setUsername(newuser.getUsername());
+			HuanXinUtil.changeUsername(user.getUsername(),user.getClient_id());				
+			CommonMapUtil.generateResult(userUtil.userToMapWithRoomConvertor(user,user.getClient_id()), CommonMapUtil.baseMsgToMapConvertor(),result);
+		}	
 		userDao.saveOrUpdate(user);
 	}
 }

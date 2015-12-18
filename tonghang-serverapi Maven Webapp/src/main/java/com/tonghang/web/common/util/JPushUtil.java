@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 
 import com.tonghang.web.room.pojo.Room;
 import com.tonghang.web.room.util.RoomUtil;
@@ -18,7 +19,7 @@ public class JPushUtil {
 	 * @param name	用户名
 	 * @param type	推送类型
 	 */
-	public static void pushQuestion(String to_id,String from_id,String name,Map<String,Object> question,String type,String message){
+	public static void pushQuestion(String to_id,String from_id,String name,String content,String type,String message){
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type","application/json");
 		headers.add("Authorization","Basic " + "ZWI0ZTc5YzRhYjE4MmQ3MjVlYzJmZjE1OmVkMzIxNjdhODY0MWFiMWVlODY1OGIzYQ==");
@@ -32,7 +33,8 @@ public class JPushUtil {
 		Map<String, Object> map2 = new HashMap<String, Object>();
 		map2.put("id", from_id);
 		map2.put("name", name);
-		map2.putAll(question);
+//		map2.putAll(question);
+		map2.put("content", content);
 		map2.put("type", type);
 		//to_id 测试用 后期可以删除.
 		map2.put("to_id", to_id);
@@ -42,7 +44,8 @@ public class JPushUtil {
 		map3.put("msg_content", map2);
 		parts.put("message", map3);
 		try {
-			DataUtil.postEntity("https://api.jpush.cn/v3/push", new HttpEntity(parts,headers),Map.class);
+			ResponseEntity<Map> response = DataUtil.postEntity("https://api.jpush.cn/v3/push", new HttpEntity(parts,headers),Map.class);
+//			System.out.println("JPush response : "+DataUtil.postEntity("https://api.jpush.cn/v3/push", new HttpEntity(parts,headers),Map.class));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 		}

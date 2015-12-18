@@ -75,8 +75,9 @@ public class RoomService {
 		if(roomDao.findRoomByOwner(user.getClient_id())==null){
 			Room room = new Room().new RoomBuilder().setOnline(1).
 					setRoom_id(ryUtil.createChatRoom(user.getRy_id())).setCreated_at(new Date()).setOnline(0).
-					setRy_id(user.getRy_id()).setMeeting_id(meeting_id).setUser(user).setTheme(Constant.THEME).
+					setRy_id(user.getRy_id()).setMeeting_id(meeting_id).setUser(user).
 					setOpen_at(new Date()).setRoom_id(ryUtil.createChatRoom(user.getRy_id())).build();
+			room.setTheme(user.getUsername()+Constant.THEME1+room.generateTheme()+Constant.THEME2);
 //			room.setOnline(1);
 //			room.setRy_id(user.getRy_id());
 //			room.setCreated_at(new Date());

@@ -291,7 +291,7 @@ public class UserController extends BaseController{
 			img_name = requestUtil.UserImageReceiver(request, client_id, image);
 		}
 		User newuser = new User().new UserBuilder().setBirth((String)map.get("birth")).setCity((String)map.get("city")).
-						setUsername((String)map.get("username")).setSex((String)map.get("sex")).build();
+						setUsername((String)map.get("username")).setSex((String)map.get("sex")).setImage(img_name).build();
 //		usermap = userService.update(client_id,newuser);
 //		usermap.putAll(CommonMapUtil.baseMsgToMapConvertor());
 //		result.put("success", usermap);

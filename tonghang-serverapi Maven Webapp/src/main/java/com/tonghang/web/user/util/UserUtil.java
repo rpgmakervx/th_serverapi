@@ -141,6 +141,7 @@ public class UserUtil {
 	 * 核心作用相同，该方法多了一层按标签排序
 	 * @param users
 	 * @return
+	 * 2015-12-18:暂时去掉标签排序
 	 */
 	public Map<String,Object> usersToMapSortedConvertor(List<User> users,User me){
 		List<Map<String,Object>> usersmsg = new ArrayList<Map<String,Object>>();
@@ -151,6 +152,7 @@ public class UserUtil {
 			//比较当前用户哪些标签是根据使用者的标签被推出来的
 		}
 		//排序操作，详细请看 SortUtil 类
+		System.out.println("你的标签："+me.getLabelnames());
 		usersmsg = SortUtil.sortByLabelName(usersmsg, me.getLabelnames());
 		return generateResult(usersmsg);
 	}

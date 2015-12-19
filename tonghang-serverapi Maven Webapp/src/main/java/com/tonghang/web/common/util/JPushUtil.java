@@ -19,7 +19,7 @@ public class JPushUtil {
 	 * @param name	用户名
 	 * @param type	推送类型
 	 */
-	public static void pushQuestion(String to_id,String from_id,String name,String content,String type,String message){
+	public static void pushQuestion(String to_id,String from_id,String name,Map<String,Object> question,String type,String message){
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type","application/json");
 		headers.add("Authorization","Basic " + "ZWI0ZTc5YzRhYjE4MmQ3MjVlYzJmZjE1OmVkMzIxNjdhODY0MWFiMWVlODY1OGIzYQ==");
@@ -33,8 +33,7 @@ public class JPushUtil {
 		Map<String, Object> map2 = new HashMap<String, Object>();
 		map2.put("id", from_id);
 		map2.put("name", name);
-//		map2.putAll(question);
-		map2.put("content", content);
+		map2.putAll(question);
 		map2.put("type", type);
 		//to_id 测试用 后期可以删除.
 		map2.put("to_id", to_id);

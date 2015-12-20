@@ -51,21 +51,8 @@ public class UserCache {
 		Set<User> userss = new HashSet<User>();
 		List<String> label_names = new ArrayList<String>();
 		long begin = System.currentTimeMillis();
-		System.out.println("### 走数据库开始："+begin);
 		User user = userDao.findUserById(client_id);
 		users = userService.recommendUsers(user);
-//		Set<Label> labels = user.getLabellist();
-//		for(Label label : labels){
-//			List<User> us = userDao.findUserByLabel(label.getLabel_name(), 0);
-//			if(us.contains(user)){
-//				us.remove(user);
-//			}
-//			label_names.add(label.getLabel_name());
-//			userss.addAll(us);
-//		}
-//		//按日期倒序 一次取出一个用户，去重复 不包括自己 取满100人
-//		users.addAll(userss);
-		System.out.println("###走数据库总耗时："+(System.currentTimeMillis()-begin));
 		Map<String,Object> result = byDistance?userUtil.usersToMapSortedWithDistanceConvertor(users, user):userUtil.usersToMapSortedConvertor(users,user);
 		Map<String,Object> success = (Map<String, Object>) result.get("success");
 		List<Map<String,Object>> us = (List<Map<String, Object>>) success.get("users");
@@ -110,9 +97,6 @@ public class UserCache {
 	public List<Map<String,Object>> getSearchNickNameCache(String client_id,String username,boolean byDistance, int page){
 		List<User> users = userDao.findUserByUsername(username);
 		Map<String,Object> result = byDistance?userUtil.usersToMapSortByDistanceConvertor(users, client_id):userUtil.usersToMapConvertor(users,client_id);
-//		Map<String,Object> success = (Map<String, Object>) result.get("success");
-//		List<Map<String,Object>> us = (List<Map<String, Object>>) success.get("users");
-		
 		return userUtil.decodeUsersMap(result);
 	}
 	
@@ -134,8 +118,6 @@ public class UserCache {
 		users2.addAll(userss);
 		System.out.println("搜索结果："+users2);
 		Map<String,Object> result = byDistance?userUtil.usersToMapSortByDistanceConvertor(users2, client_id):userUtil.usersToMapConvertor(users2,client_id);
-//		Map<String,Object> success = (Map<String, Object>) result.get("success");
-//		List<Map<String,Object>> us = (List<Map<String, Object>>) success.get("users");
 		return userUtil.decodeUsersMap(result);
 	}
 	/**
@@ -158,45 +140,9 @@ public class UserCache {
 		User user = userDao.findUserById(client_id);
 		if(user==null){
 			CommonMapUtil.generateResult(null, CommonMapUtil.baseMsgToMapConvertor("更新失败，当前用户不存在", 513), result);
-//			result.put("success", CommonMapUtil.baseMsgToMapConvertor("更新失败，当前用户不存在", 513));
 		}else{
 			updateUserMessage(user, newuser, result);
 			System.out.println("evictUpdateCache："+result);
-//			CommonMapUtil.generateResult(userUtil.userToMapConvertor(user,client_id), CommonMapUtil.baseMsgToMapConvertor(),result);
-//			User.UserBuilder builder = user.new UserBuilder();
-//			builder.setBirth(birth).setCity(city).setSex(sex).setImage(img_name);
-//			if(username!=null&&!username.equals(user.getUsername())){
-//				if(userDao.findUserByUsernameUnique(username).size()!=0){
-//					CommonMapUtil.generateResult(null, CommonMapUtil.baseMsgToMapConvertor("该昵称已经被注册!", 512),result);
-//				}else{
-//					user.setUsername(username);
-//					HuanXinUtil.changeUsername(user.getUsername(),user.getClient_id());				
-//					CommonMapUtil.generateResult(userUtil.userToMapConvertor(user,client_id), CommonMapUtil.baseMsgToMapConvertor(),result);
-//				}
-//			}
-//			userDao.saveOrUpdate(user);
-//			if(img_name!=null){
-//				user.setImage(img_name);
-//			}
-//			if(birth!=null&&!birth.equals(user.getBirth()))
-//				user.setBirth(birth);
-//			//修改省份前先清空省份
-//			if(city!=null){
-//				user.setProvince(null);
-//				user.setCity(null);
-//				if(city.contains("-")){
-//					String pr = StringUtil.seperate(city, 0);
-//					String ci = StringUtil.seperate(city, 1);
-//					if(!ci.equals(user.getCity())&&city!=null)
-//						user.setCity(ci);
-//					if(!pr.equals(user.getProvince())&&pr!=null)
-//						user.setProvince(pr);
-//				}else{
-//					user.setProvince(city);
-//				}
-//			}
-//			if(sex!=null&&!sex.equals(user.getSex()))
-//				user.setSex(sex);
 		}
 		return result;
 	}
@@ -210,22 +156,8 @@ public class UserCache {
 		User user = userDao.findUserById(client_id);
 		List<Label> labels = new ArrayList<Label>();
 		userDao.deleteAllLabel(client_id);
-//		for(String label_name : list){
-//			Label label = labelDao.findLabelById(label_name);
-//			if(label==null){
-//				label = new Label();
-//				label.setLabel_name(label_name);
-//				labelDao.save(label);				
-//			}
-//			labels.add(label);
-//		}
-//		Set<Label> labellist = new HashSet<Label>();
-//		labellist.addAll(labels);
 		user.setLabellist(labelService.makeLabelByLabelnames(list));
 		userDao.saveOrUpdate(user);
-//		Map<String,Object> usermap = userUtil.userToMapConvertor(user,client_id);
-//		usermap.putAll(CommonMapUtil.baseMsgToMapConvertor());
-//		result.put("success", usermap);
 		CommonMapUtil.generateResult(userUtil.userToMapConvertor(user,client_id), CommonMapUtil.baseMsgToMapConvertor(), result);
 		return result;
 	}

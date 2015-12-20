@@ -124,14 +124,6 @@ public class UserController extends BaseController{
 		User user = new User().new UserBuilder().setUsername((String)map.get("username")).
 				setPhone((String)map.get("phone")).setPassword((String)map.get("password")).
 				setIsonline("0").setStatus("1").build();
-//		User user = new User();
-//		String username = (String)map.get("username");
-//		String phone = (String)map.get("phone");
-//		user.setPhone(phone);
-//		user.setUsername(username);
-//		user.setPassword((String)map.get("password"));
-//		user.setIsonline("0");
-//		user.setStatus("1");
 		return new ResponseEntity<Map<String,Object>>(userService.registUser(user), HttpStatus.OK);
 	}
 
@@ -182,61 +174,6 @@ public class UserController extends BaseController{
 			byDistance = (Boolean)map.get("byDistance");
 		return new ResponseEntity<Map<String,Object>>(userService.searchUser(client_id,(String)map.get("content"),byDistance,(Integer)map.get("pageindex")), HttpStatus.OK);
 	}
-	
-//	/**
-//	 * 2015-08-28新增按距离推荐,新增字段 byDistance,是否需要按照距离排序
-//	 * 修改时间：2015-12-08 该接口废弃，与 /search/nick 合并
-//	 * 业务功能: 通过标签查询用户(调试通过)
-//	 * @param mapstr 前端的JSON数据，全部包括在mapstr中
-//	 * @return user(List<Map>)[ labels(List) email (String) image(String) 
-//	 * 				sex(String) phone(String) city(String) username(String)
-//	 * 				client_id(String) created_at(Date) birth(Date) is_friend(boolean)]
-//	 * @throws Exception
-//	 * 1.jackson类库ObjectMapper类  readVlaue()方法 参数一为json格式的字符串，转换结果的类型
-//	 * searchLabel()方法按标签名 模糊匹配 得到的标签对象，再按照这些标签名模糊查找对应的用户，用户信息包装成map,
-//	 * 然后包装成一个大的List,并由ResponseEntity包装成JSON返回给前台
-//	 * 2.返回值为列表的请求全部需要分页，客户端需要传一个pageindex表示当前页数
-//	 */
-//	@Deprecated
-//	@RequestMapping(value = "/search/label")
-//	public ResponseEntity<Map<String,Object>> searchLabel(@RequestParam String mapstr) throws Exception {
-//		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
-//		String client_id = (String)map.get("client_id");
-//		boolean byDistance = false;
-//		if(map.get("byDistance")!=null)
-//			byDistance = (Boolean)map.get("byDistance");
-//		return new ResponseEntity<Map<String,Object>>(userService.searchLabel(client_id,(String)map.get("label_name"),byDistance,(Integer)map.get("pageindex")), HttpStatus.OK);
-//	}
-//	
-//	/**
-//	 * 2015-08-28新增按距离推荐,新增字段 byDistance,是否需要按照距离排序
-//	 * 修改时间：2015-12-08 该接口废弃，与 /search/label 合并
-//	 * 业务功能：通过昵称查询用户(调试通过)
-//	 * @param mapstr 前端的JSON数据，全部包括在mapstr中(client_id,username)
-//	 * @return user(List<Map>)[ labels(List) email (String) image(String) 
-//	 * 				sex(String) phone(String) city(String) username(String)
-//	 * 				client_id(String) created_at(Date) birth(Date) is_friend(boolean)]
-//	 * @throws JsonParseException
-//	 * @throws JsonMappingException
-//	 * @throws IOException
-//	 * 1.jackson类库ObjectMapper类  readVlaue()方法 参数一为json格式的字符串，转换结果的类型
-//	 * 2.searchNick()方法按照用户名模糊匹配用户信息，将得到的用户结果封装成Map,然后包装成一个大的List,
-//	 * 并由ResponseEntity包装成JSON返回给前台
-//	 * 3.返回值为列表的请求全部需要分页，客户端需要传一个pageindex表示当前页数
-//	 * 4.所有返回用户信息的地方都会返回是否是好友关系
-//	 * @throws SearchNoResultException 
-//	 */
-//	@Deprecated
-//	@RequestMapping(value = "search/nick")
-//	public ResponseEntity<Map<String,Object>> searchNick(@RequestParam String mapstr) throws JsonParseException, JsonMappingException, IOException, SearchNoResultException {
-//		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
-//		String client_id = (String)map.get("client_id");
-//		boolean byDistance = false;
-//		if(map.get("byDistance")!=null)
-//			byDistance = (Boolean)map.get("byDistance");
-//		return new ResponseEntity<Map<String,Object>>(userService.searchNick(client_id,(String)map.get("username"),byDistance,(Integer)map.get("pageindex")), HttpStatus.OK);
-//	}
-	
 	/**
 	 * 业务功能：查看用户信息（该请求暂时没找到对应的业务）
 	 * @param client_id rest请求中所携带的参数 表示用户的client_id
@@ -284,17 +221,12 @@ public class UserController extends BaseController{
 	@RequestMapping(value = "/update/{client_id}")
 	public ResponseEntity<Map<String,Object>> update(HttpServletRequest request,@RequestParam(required=false) CommonsMultipartFile image,@RequestParam String mapstr,@PathVariable String client_id) throws Exception {
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
-//		Map<String, Object> result = new HashMap<String, Object>();
-//		Map<String, Object> usermap = new HashMap<String, Object>();
 		String img_name = null;
 		if(image!=null){
 			img_name = requestUtil.UserImageReceiver(request, client_id, image);
 		}
 		User newuser = new User().new UserBuilder().setBirth((String)map.get("birth")).setCity((String)map.get("city")).
 						setUsername((String)map.get("username")).setSex((String)map.get("sex")).setImage(img_name).build();
-//		usermap = userService.update(client_id,newuser);
-//		usermap.putAll(CommonMapUtil.baseMsgToMapConvertor());
-//		result.put("success", usermap);
 		return new ResponseEntity<Map<String,Object>>(userService.update(client_id,newuser), HttpStatus.OK);
 	}
 	
@@ -386,9 +318,6 @@ public class UserController extends BaseController{
 	@RequestMapping(value="/recommend/distance")
 	public ResponseEntity<Map<String,Object>> recommendUserByDistance(@RequestParam String mapstr) throws JsonParseException, JsonMappingException, IOException, SearchNoResultException{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class); 
-//		String client_id = (String)map.get("client_id");
-//		double x_point = (Double)map.get("x_point");
-//		double y_point = (Double)map.get("y_point");
 		userService.saveUsersLocation((String)map.get("client_id"), (Double)map.get("x_point"), (Double)map.get("y_point"));
 		return new ResponseEntity<Map<String,Object>>(userService.recommend((String)map.get("client_id"),true,(Integer)map.get("pageindex")), HttpStatus.OK);
 	}
@@ -403,10 +332,7 @@ public class UserController extends BaseController{
 	public ResponseEntity<Map<String,Object>> updateLocation(@PathVariable String client_id,@RequestParam String mapstr) throws JsonParseException, JsonMappingException, IOException{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
 		Map<String,Object> result = new HashMap<String, Object>();
-//		result.put("success", CommonMapUtil.baseMsgToMapConvertor());
 		CommonMapUtil.generateResult(null, CommonMapUtil.baseMsgToMapConvertor(), result);
-//		double x_point = (Double)map.get("x_point");
-//		double y_point = (Double)map.get("y_point");
 		userService.saveUsersLocation(client_id, (Double)map.get("x_point"), (Double)map.get("y_point"));
 		return new ResponseEntity<Map<String,Object>>(result,HttpStatus.OK);
 	}
@@ -557,11 +483,7 @@ public class UserController extends BaseController{
 	@RequestMapping(value="phone/forget_password",method=RequestMethod.POST)
 	public ResponseEntity<Map<String,Object>> forgetPasswordByPhone(@RequestParam String mapstr) throws Exception{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
-//		Map<String,Object> success = new HashMap<String, Object>();	
 		Map<String,Object> result = new HashMap<String, Object>();
-//		String phone = (String)map.get("phone");
-//		String client_id = (String)map.get("client_id");
-//		String password = (String)map.get("password");
 		User user = userService.findUserById((String)map.get("client_id"));
 		if(user.getPhone().equals((String)map.get("phone"))){
 			HuanXinUtil.changePassword((String)map.get("password"), (String)map.get("client_id"));
@@ -569,10 +491,8 @@ public class UserController extends BaseController{
 			userService.updateUser(user);
 			CommonMapUtil.generateResult(null,CommonMapUtil.baseMsgToMapConvertor(Constant.MODIFY_SUCCESS,Constant.SUCCESS),result);
 		}else{
-//			result.putAll(CommonMapUtil.baseMsgToMapConvertor(Constant.VALIDATE_SECURETY,Constant.UNAUTHORIZED));
 			CommonMapUtil.generateResult(null,CommonMapUtil.baseMsgToMapConvertor(Constant.VALIDATE_SECURETY,Constant.UNAUTHORIZED),result);
 		}
-//		success.put("success", result);
 		return new ResponseEntity<Map<String,Object>>(result,HttpStatus.OK);
 	}
 	/**
@@ -585,10 +505,7 @@ public class UserController extends BaseController{
 	@RequestMapping(value="bind/validate",method=RequestMethod.POST)
 	public ResponseEntity<Map<String,Object>> validateBeforeBind(@RequestParam String mapstr) throws Exception{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
-//		Map<String,Object> success = new HashMap<String, Object>();	
 		Map<String,Object> result = new HashMap<String, Object>();	
-//		String client_id = (String)map.get("client_id");
-//		String password = (String)map.get("password");
 		User user = userService.findUserById((String)map.get("client_id"));
 		if(user.getPassword().equals((String)map.get("password"))){
 			CommonMapUtil.generateResult(null,CommonMapUtil.baseMsgToMapConvertor(),result);
@@ -635,9 +552,6 @@ public class UserController extends BaseController{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
 //		Map<String,Object> success = new HashMap<String, Object>();	
 		Map<String,Object> result = new HashMap<String, Object>();
-//		String email = (String) map.get("email");
-//		String code = (String) map.get("code");
-//		String client_id = (String)map.get("client_id");
 		User user = userService.findUserById((String)map.get("client_id"));
 		Map<String,Object> m = userService.validateEmailCode((String)map.get("client_id"), (String) map.get("code"),(String) map.get("email"));
 		System.out.println("邮箱绑定返回码："+m.get("code"));
@@ -647,12 +561,6 @@ public class UserController extends BaseController{
 			userService.updateUser(user);
 		}
 		CommonMapUtil.generateResult(null,CommonMapUtil.baseMsgToMapConvertor((String)m.get("message"), (Integer)m.get("code")),result);
-//		if(user.getEmail().equals(email)){
-//			
-//		}else{
-//			result.putAll(CommonMapUtil.baseMsgToMapConvertor(Constant.EMAIL_EXIST, Constant.EMAIL_ALREADY_EXIST_CODE));
-//		}
-//		success.put("success", result);
 		return new ResponseEntity<Map<String,Object>>(result,HttpStatus.OK);
 	}
 	
@@ -666,20 +574,15 @@ public class UserController extends BaseController{
 	@RequestMapping(value="phone/exists",method=RequestMethod.POST)
 	public ResponseEntity<Map<String,Object>> phoeExsists(@RequestParam String mapstr) throws Exception{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
-//		Map<String,Object> success = new HashMap<String, Object>();	
 		Map<String,Object> result = new HashMap<String, Object>();
-//		String phone = (String) map.get("phone");
 		User user = userService.findUserByPhone((String) map.get("phone"));
 		if(user!=null){
-//			result = CommonMapUtil.baseMsgToMapConvertor(Constant.PHONE_ALREADY_EXISTS,Constant.PHONE_ALREADY_EXISTS_CODE);
 			CommonMapUtil.generateResult(null,CommonMapUtil.baseMsgToMapConvertor(
 							Constant.PHONE_ALREADY_EXISTS,Constant.PHONE_ALREADY_EXISTS_CODE),result);
 		}else{
-//			result = CommonMapUtil.baseMsgToMapConvertor(Constant.PHONE_NOT_EXISTS,Constant.PHONE_NOT_EXISTS_CODE);
 			CommonMapUtil.generateResult(null,CommonMapUtil.baseMsgToMapConvertor(
 					Constant.PHONE_NOT_EXISTS,Constant.PHONE_NOT_EXISTS_CODE),result);
 		}
-//		success.put("success", result);
 		return new ResponseEntity<Map<String,Object>>(result,HttpStatus.OK);
 	}
 }

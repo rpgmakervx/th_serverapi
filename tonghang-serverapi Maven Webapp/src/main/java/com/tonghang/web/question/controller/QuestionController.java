@@ -48,12 +48,8 @@ public class QuestionController {
 	@ResponseBody
 	public ResponseEntity<Map<String,Object>> askQuestion(@PathVariable String asker_id,@PathVariable String anchor_id,@RequestParam String mapstr)throws Exception{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
-//		Map<String,Object> success = new HashMap<String, Object>();	
 		Map<String,Object> result = new HashMap<String, Object>();
-//		String content = (String)map.get("content");
 		questionService.sendQuestionRequest(asker_id, anchor_id,(String)map.get("content"));
-//		result = CommonMapUtil.baseMsgToMapConvertor();
-//		success.put("success", result);
 		CommonMapUtil.generateResult(null, CommonMapUtil.baseMsgToMapConvertor(), result);
 		return new ResponseEntity<Map<String,Object>>(result,HttpStatus.OK);
 	}
@@ -72,28 +68,16 @@ public class QuestionController {
 	public ResponseEntity<Map<String,Object>> answerQuestion(HttpServletRequest request,@PathVariable String asker_id,@PathVariable String anchor_id,
 												@RequestParam CommonsMultipartFile voice ,@RequestParam String mapstr)throws Exception{
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
-//		Map<String,Object> success = new HashMap<String, Object>();	
 		Map<String,Object> result = new HashMap<String, Object>();
-//		String content = (String)map.get("content");
-//		String question_id = (String)map.get("question_id");
 		Question question = questionService.findQuestionById((String)map.get("question_id"));
 		if(question==null){
 			question = new Question.QuestionBuilder().create().setAnchor(userService.findUserById(anchor_id)).
 					setQuestion_id(SecurityUtil.getMD5(asker_id+(String)map.get("content")+new Date().getTime())).
 					setAsker(userService.findUserById(asker_id)).setAnswer_times(1).setCreated_at(new Date()).
 					setContent((String)map.get("content")).build();
-//			question = new Question();
-//			question.setAnchor(userService.findUserById(anchor_id));
-//			question.setAsker(userService.findUserById(asker_id));
-//			question.setCreated_at(new Date());
-//			question.setContent((String)map.get("content"));
-//			question.setAnswer_times(1);
-//			question.setQuestion_id(SecurityUtil.getMD5(asker_id+(String)map.get("content")+new Date().getTime()));
 			questionService.save(question);
 		}else questionService.addTimes(question);
 		requestUtil.voiceReceiver(request, anchor_id, question.getQuestion_id(), voice);
-//		result = CommonMapUtil.baseMsgToMapConvertor();
-//		success.put("success", result);
 		CommonMapUtil.generateResult(questionService.sendAnswerRequest(question, asker_id, anchor_id),
 																CommonMapUtil.baseMsgToMapConvertor(), result);
 		return new ResponseEntity<Map<String,Object>>(result,HttpStatus.OK);

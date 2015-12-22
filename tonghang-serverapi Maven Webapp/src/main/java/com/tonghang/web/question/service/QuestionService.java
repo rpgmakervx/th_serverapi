@@ -68,7 +68,7 @@ public class QuestionService {
 	 * @param anchor_id
 	 */
 	public Map<String,Object> sendAnswerRequest(Question question,String asker_id,String anchor_id){
-		User anchor = userService.findUserById(asker_id);
+		User anchor = userService.findUserById(anchor_id);
 		JPushUtil.pushQuestion(asker_id, anchor_id, anchor.getUsername(),questionUtil.questionToMapConterter(question), Constant.ANSWER_QUESTION, anchor.getUsername()+Constant.ANSWER_QUESTION_MSG+question.getContent());
 		System.out.println("SEND: "+questionUtil.questionToMapConterter(question));
 		return questionUtil.questionToMapConterter(question);

@@ -56,6 +56,8 @@ public class Constant extends HuanXinUtil{
 	public static final String INVALID_CODE = "验证码错误！";
 	public static final String VALID_CODE_TIMEOUT = "验证码已失效，请重新获取";
 	
+	public static final String QUESTION_RESPONSE_FAIL = "回答问题失败，请按紧喇叭";
+	
 	
 	public static final String THEME1 = "是";
 	public static final String THEME2 = "方面的行家";

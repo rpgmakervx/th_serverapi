@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.tonghang.web.common.util.CommonMapUtil;
+import com.tonghang.web.common.util.Constant;
 import com.tonghang.web.common.util.RequestUtil;
 import com.tonghang.web.common.util.SecurityUtil;
 import com.tonghang.web.question.pojo.Question;
@@ -70,16 +71,20 @@ public class QuestionController {
 		Map map = new ObjectMapper().readValue(mapstr, HashMap.class);
 		Map<String,Object> result = new HashMap<String, Object>();
 		Question question = questionService.findQuestionById((String)map.get("question_id"));
-		if(question==null){
-			question = new Question.QuestionBuilder().create().setAnchor(userService.findUserById(anchor_id)).
-					setQuestion_id(SecurityUtil.getMD5(asker_id+(String)map.get("content")+new Date().getTime())).
-					setAsker(userService.findUserById(asker_id)).setAnswer_times(1).setCreated_at(new Date()).
-					setContent((String)map.get("content")).build();
-			questionService.save(question);
-		}else questionService.addTimes(question);
-		requestUtil.voiceReceiver(request, anchor_id, question.getQuestion_id(), voice);
-		CommonMapUtil.generateResult(questionService.sendAnswerRequest(question, asker_id, anchor_id),
-																CommonMapUtil.baseMsgToMapConvertor(), result);
+		if(voice!=null){
+			if(question==null){
+				question = new Question.QuestionBuilder().create().setAnchor(userService.findUserById(anchor_id)).
+						setQuestion_id(SecurityUtil.getMD5(asker_id+(String)map.get("content")+new Date().getTime())).
+						setAsker(userService.findUserById(asker_id)).setAnswer_times(1).setCreated_at(new Date()).
+						setContent((String)map.get("content")).build();
+				questionService.save(question);
+			}else questionService.addTimes(question);
+			requestUtil.voiceReceiver(request, anchor_id, question, voice);
+			CommonMapUtil.generateResult(questionService.sendAnswerRequest(question, asker_id, anchor_id),
+																	CommonMapUtil.baseMsgToMapConvertor(), result);
+		}else{
+			CommonMapUtil.generateResult(null,CommonMapUtil.baseMsgToMapConvertor(Constant.QUESTION_RESPONSE_FAIL,530), result);
+		}
 		return new ResponseEntity<Map<String,Object>>(result,HttpStatus.OK);
 	}
 	

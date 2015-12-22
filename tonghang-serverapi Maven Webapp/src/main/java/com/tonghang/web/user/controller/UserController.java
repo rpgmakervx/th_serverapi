@@ -55,6 +55,12 @@ public class UserController extends BaseController{
 	@Resource(name="requestUtil")
 	private RequestUtil requestUtil;
 	
+	@RequestMapping(value = "/test")
+	@ResponseBody public ResponseEntity<Map<String,Object>> test(@RequestParam String username,@RequestParam String password) throws Exception {		
+		Map<String,Object> response = new HashMap<String, Object>();
+		System.out.println("username: "+username+" password: "+password);
+		return new ResponseEntity<Map<String,Object>>(response, HttpStatus.OK);
+	}
 	/**
 	 * 
 	 * 业务功能：用户登录（调试通过）

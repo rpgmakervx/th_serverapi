@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
+import com.tonghang.web.question.pojo.Question;
 import com.tonghang.web.user.pojo.User;
 import com.tonghang.web.user.service.UserService;
 
@@ -68,13 +69,14 @@ public class RequestUtil {
 		return TimeUtil.timestamp(timestamp);
 	}
 	
-	public void voiceReceiver(HttpServletRequest request,String client_id,String quest_id, CommonsMultipartFile voice){
+	public void voiceReceiver(HttpServletRequest request,String client_id,Question question, CommonsMultipartFile voice){
 		if(voice!=null){
+			String sufix = voice.getOriginalFilename().substring(voice.getOriginalFilename().lastIndexOf("."));
 			String pictureRealPathDir = request.getSession().getServletContext().getRealPath("answer");
-			String fileName =pictureRealPathDir+File.separator+client_id+File.separator+quest_id+File.separator+voice.getOriginalFilename();              
+			String fileName =pictureRealPathDir+File.separator+client_id+File.separator+question.getQuestion_id()+File.separator+question.getAnswer_times()+sufix;              
 			try {
 				File f = new File(fileName);
-				File folder = new File(pictureRealPathDir+File.separator+client_id+File.separator+quest_id);
+				File folder = new File(pictureRealPathDir+File.separator+client_id+File.separator+question.getQuestion_id());
 				if(!folder.exists())
 					folder.mkdirs();
 				voice.getFileItem().write(f);
